@@ -2,7 +2,7 @@ package org.noopi.model.tape;
 
 import org.noopi.utils.machine.Symbol;
 
-public final class Tape implements ITape {
+public final class Tape extends AbstractTape {
 
   private Cell currentCell;
   private Symbol defaultSymbol;
