@@ -1,8 +1,8 @@
-package org.noopi.utils.events;
+package org.noopi.utils.events.tape;
 
 import org.noopi.utils.machine.Symbol;
 
-public class TapeWriteEvent implements ILayoutEvent {
+public class TapeWriteEvent {
   private final Symbol s;
 
   public TapeWriteEvent(Symbol s) {

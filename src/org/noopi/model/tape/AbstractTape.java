@@ -2,12 +2,12 @@ package org.noopi.model.tape;
 
 import javax.swing.event.EventListenerList;
 
-import org.noopi.utils.events.TapeMovedEvent;
-import org.noopi.utils.events.TapeResetEvent;
-import org.noopi.utils.events.TapeWriteEvent;
-import org.noopi.utils.listeners.TapeMovedEventListener;
-import org.noopi.utils.listeners.TapeResetEventListener;
-import org.noopi.utils.listeners.TapeWriteEventListener;
+import org.noopi.utils.events.tape.TapeMovedEvent;
+import org.noopi.utils.events.tape.TapeResetEvent;
+import org.noopi.utils.events.tape.TapeWriteEvent;
+import org.noopi.utils.listeners.tape.TapeMovedEventListener;
+import org.noopi.utils.listeners.tape.TapeResetEventListener;
+import org.noopi.utils.listeners.tape.TapeWriteEventListener;
 import org.noopi.utils.machine.Direction;
 import org.noopi.utils.machine.Symbol;
 
@@ -62,7 +62,7 @@ public abstract class AbstractTape implements ITape {
         tapeWriteEvent = new TapeWriteEvent(s);
         b = true;
       }
-      ((TapeWriteEventListener) list[i + 1]).onTapeWrite(tapeWriteEvent);
+      ((TapeWriteEventListener) list[i + 1]).onTapeWritten(tapeWriteEvent);
     }
   }
 

@@ -1,8 +1,8 @@
-package org.noopi.utils.events;
+package org.noopi.utils.events.tape;
 
 import org.noopi.utils.machine.Direction;
 
-public class TapeMovedEvent implements ILayoutEvent {
+public class TapeMovedEvent {
   private final Direction d;
 
   public TapeMovedEvent(Direction d) {

@@ -3,7 +3,16 @@ package org.noopi.view;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
-import org.noopi.utils.listeners.*;
+import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.AddRuleEventListener;
+import org.noopi.utils.listeners.view.NewFileEventListener;
+import org.noopi.utils.listeners.view.OpenFileEventListener;
+import org.noopi.utils.listeners.view.RemoveRuleEventListener;
+import org.noopi.utils.listeners.view.RunEventListener;
+import org.noopi.utils.listeners.view.SaveEventListener;
+import org.noopi.utils.listeners.view.SpeedChangeEventListener;
+import org.noopi.utils.listeners.view.StepEventListener;
+import org.noopi.utils.listeners.view.StopEventListener;
 
 public interface IFrameLayout {
 
