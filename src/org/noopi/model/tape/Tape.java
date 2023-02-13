@@ -1,5 +1,6 @@
 package org.noopi.model.tape;
 
+import org.noopi.utils.machine.Direction;
 import org.noopi.utils.machine.Symbol;
 
 public final class Tape extends AbstractTape {
@@ -31,16 +32,19 @@ public final class Tape extends AbstractTape {
       shiftRight();
     }
     currentCell = orig;
+    fireResetEvent();
   }
 
   @Override
   public void shiftRight() {
     currentCell = currentCell.getNext();
+    fireTapeMovedEvent(Direction.RIGHT);
   }
 
   @Override
   public void shiftLeft() {
     currentCell = currentCell.getPrev();
+    fireTapeMovedEvent(Direction.LEFT);
   }
 
   @Override
@@ -52,6 +56,7 @@ public final class Tape extends AbstractTape {
   public void writeSymbol(Symbol symbol) {
     assert symbol != null;
     currentCell.symbol = symbol;
+    fireTapeWriteEvent(symbol);
   }
 
   private class Cell {
