@@ -1,8 +1,14 @@
 package org.noopi.view;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.Dimension;
 
 import org.noopi.utils.listeners.AddRuleEventListener;
 import org.noopi.utils.listeners.NewFileEventListener;
@@ -20,6 +26,35 @@ public class FrameLayout implements IFrameLayout {
     //ATTRIBUTS
     private JPanel mainPanel;
     private JMenuBar menuBar;
+    private JButton stopButton;
+    private JButton startButton;
+    private JButton removeRuleButton;
+    private JButton addRuleButton;
+    private JButton stepButton;
+    private JButton initButton;
+    private JTextField addRuleSymbolTextField;
+    private JTextField addRuleStateTextField;
+    private JComponent addResuSymbolTextField;
+    private JTextField addResuStateTextField;
+    private JComponent addResuDirectionTextField;
+    private JComponent initialRubanTextField;
+    private JComponent removeRuleSymbolTextField;
+    private JComponent removeRuleStateTextField;
+    private JTextField removeResuSymbolTextField;
+    private JTextField removeResuStateTextField;
+    private JTextField removeResuDirectionTextField;
+    private JSlider speedSlider;
+    private JTextArea historyTextArea;
+    private JTextArea rulesTextArea;
+    private JTextArea paneRulesTextArea;
+
+    //CONSTRUCTEURS
+
+    public FrameLayout() {
+        createView();
+        placeComponent();
+        createController();
+    }
 
     @Override
     public JComponent getView() {
@@ -143,6 +178,64 @@ public class FrameLayout implements IFrameLayout {
     public void addSaveEventListener(SaveEventListener l) {
         // TODO Auto-generated method stub
         
+    }
+
+    // OUTILS
+    private void createView() {
+        mainPanel = new JPanel();
+
+        menuBar = new JMenuBar();
+
+        stopButton = new JButton("Stopper");
+        startButton = new JButton("Lancer");
+        removeRuleButton = new JButton("Retirer");
+        addRuleButton = new JButton("Ajouter");
+        stepButton = new JButton("Pas à pas");
+        initButton = new JButton("Initialiser");
+
+        addRuleSymbolTextField = new JTextField("Symbole");
+        addRuleSymbolTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(addRuleSymbolTextField, "Symbole");
+        addRuleStateTextField = new JTextField("Etat");
+        addRuleStateTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(addRuleStateTextField, "Etat");
+        addResuSymbolTextField = new JTextField("Symbole");
+        addResuSymbolTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(addResuSymbolTextField, "Symbole");
+        addResuStateTextField = new JTextField("Etat");
+        addResuStateTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(addResuStateTextField, "Etat");
+        addResuDirectionTextField = new JTextField("Direction");
+        addResuDirectionTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(addResuDirectionTextField, "Direction");
+        initialRubanTextField = new JTextField();
+        initialRubanTextField.setPreferredSize(new Dimension(100, 25));
+        removeRuleSymbolTextField = new JTextField("Symbole");
+        removeRuleSymbolTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(removeRuleSymbolTextField, "Symbole");
+        removeRuleStateTextField = new JTextField("Etat");
+        removeRuleStateTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(removeRuleStateTextField, "Etat");
+        removeResuSymbolTextField = new JTextField("Symbole");
+        removeResuSymbolTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(removeResuSymbolTextField, "Symbole");
+        removeResuStateTextField = new JTextField("Etat");
+        removeResuStateTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(removeResuStateTextField, "Etat");
+        removeResuDirectionTextField = new JTextField("Direction");
+        removeResuDirectionTextField.setForeground(Color.GRAY);
+        addAddAndRemoveRulesTextfieldEventListener(removeResuDirectionTextField, "Direction");
+
+        speedSlider = new JSlider(0, 100, 20);
+
+        historyTextArea = new JTextArea();
+        historyTextArea.setEditable(false);
+        rulesTextArea = new JTextArea();
+        rulesTextArea.setEditable(false);
+        paneRulesTextArea = new JTextArea();
+        paneRulesTextArea.setEditable(false);
+
+        tape = new GraphicTape();
     }
     
 }
