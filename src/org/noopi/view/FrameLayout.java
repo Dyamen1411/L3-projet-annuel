@@ -3,6 +3,7 @@ package org.noopi.view;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -19,8 +20,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
 import java.util.Map;
 import java.util.EnumMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.awt.event.FocusEvent;
 import java.awt.GridLayout;
 
@@ -34,6 +38,7 @@ import org.noopi.utils.listeners.SpeedChangeEventListener;
 import org.noopi.utils.listeners.StepEventListener;
 import org.noopi.utils.listeners.StopEventListener;
 import org.noopi.utils.listeners.TapeInitializationEventListener;
+import org.w3c.dom.events.MouseEvent;
 
 public class FrameLayout implements IFrameLayout {
 
@@ -63,6 +68,8 @@ public class FrameLayout implements IFrameLayout {
     private JTextArea paneRulesTextArea;
     private GraphicTape tape;
     private Map<Item, JMenuItem> menuItems;
+    private JFrame rulesFrame;
+
 
     //CONSTRUCTEURS
 
@@ -380,6 +387,49 @@ public class FrameLayout implements IFrameLayout {
         speedSlider.setPaintLabels(true); 
         speedSlider.setMajorTickSpacing(20); 
         speedSlider.setMinorTickSpacing(5); 
+    }
+
+    private void createController() {
+        rulesTextArea.addMouseListener(new MouseListener()
+        {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent arg0) {
+                createNewRulesFrame();
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent arg0) {
+                // Nothing to do
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent arg0) {
+                 // Nothing to do
+            }
+
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent arg0) {
+                 // Nothing to do
+            }
+
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent arg0) {
+                 // Nothing to do
+            }
+        });
+    }
+
+    private void createNewRulesFrame() {
+        rulesFrame = new JFrame("Liste des règles");
+        rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        rulesFrame.setPreferredSize(new Dimension(200, 400));
+        rulesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        paneRulesTextArea.append(rulesTextArea.getText()); 
+        JScrollPane newFrameRulesPane = new JScrollPane(paneRulesTextArea);
+        rulesFrame.add(newFrameRulesPane);
+        rulesFrame.pack();
+        rulesFrame.setLocationRelativeTo(null);
+        rulesFrame.setVisible(true);
     }
     
 }
