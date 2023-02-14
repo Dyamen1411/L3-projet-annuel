@@ -2,6 +2,7 @@ package org.noopi.view;
 
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 
 import org.noopi.utils.listeners.AddRuleEventListener;
 import org.noopi.utils.listeners.NewFileEventListener;
@@ -16,16 +17,18 @@ import org.noopi.utils.listeners.TapeInitializationEventListener;
 
 public class FrameLayout implements IFrameLayout {
 
+    //ATTRIBUTS
+    private JPanel mainPanel;
+    private JMenuBar menuBar;
+
     @Override
     public JComponent getView() {
-        // TODO Auto-generated method stub
-        return null;
+        return mainPanel;
     }
 
     @Override
     public JMenuBar getMenuBar() {
-        // TODO Auto-generated method stub
-        return null;
+        return menuBar;
     }
 
     @Override
