@@ -1,16 +1,23 @@
 package org.noopi.view;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
+import java.awt.GridLayout;
 
 import org.noopi.utils.listeners.AddRuleEventListener;
 import org.noopi.utils.listeners.NewFileEventListener;
@@ -184,8 +191,9 @@ public class FrameLayout implements IFrameLayout {
     }
 
     // OUTILS
+
     private void createView() {
-        mainPanel = new JPanel();
+        mainPanel = new JPanel(new BorderLayout());
 
         menuBar = new JMenuBar();
 
@@ -251,7 +259,6 @@ public class FrameLayout implements IFrameLayout {
                     textField.setForeground(Color.BLACK);
                 }
             }
-
             @Override
             public void focusLost(FocusEvent arg0) {
                 if (textField.getText().isEmpty()) {
@@ -259,9 +266,83 @@ public class FrameLayout implements IFrameLayout {
                     textField.setText(s);
                 }
             }
-
         }
         );
+    }
+
+    private void placeComponent() {
+        setMenuBar();
+        {//--
+            JPanel q = new JPanel();
+            Border rulesBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
+            q.setBorder(BorderFactory.createTitledBorder(rulesBorder, "REGLES"));
+            {//--
+                JScrollPane rulePane = new JScrollPane(rulesTextArea);
+                rulePane.setPreferredSize(new Dimension(300, 175));
+                Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
+                rulePane.setBorder(BorderFactory.createTitledBorder(rulesBorderPane, "Cliquez pour aggrandir"));
+                q.add(rulePane);
+                JPanel r = new JPanel(new GridLayout(2, 5));
+                {//--
+                    r.add(addRuleButton);
+                    r.add(new JLabel("          :"));
+                    r.add(addRuleSymbolTextField);
+                    r.add(addRuleStateTextField);
+                    r.add(new JLabel("       =>"));
+                    r.add(addResuSymbolTextField);
+                    r.add(addResuStateTextField);
+                    r.add(addResuDirectionTextField);
+                    r.add(removeRuleButton);
+                    r.add(new JLabel("          :"));
+                    r.add(removeRuleSymbolTextField);
+                    r.add(removeRuleStateTextField);
+                    r.add(new JLabel("       =>"));
+                    r.add(removeResuSymbolTextField);
+                    r.add(removeResuStateTextField);
+                    r.add(removeResuDirectionTextField);
+                }//--
+                q.add(r);
+            }//--
+            mainPanel.add(q);
+            q = new JPanel();
+            Border tapeBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
+            q.setBorder(BorderFactory.createTitledBorder(tapeBorder, "RUBAN"));
+            {//--
+                q.add(tape);
+            }//--
+            mainPanel.add(q);
+            q = new JPanel(new GridLayout(0, 1));
+            Border execBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
+            q.setBorder(BorderFactory.createTitledBorder(execBorder, "EXECUTION"));
+            {//--
+                JPanel r = new JPanel();
+                {//--
+                    r.add(new JLabel("Ruban initial :"));
+                    r.add(initialRubanTextField);
+                }//--
+                q.add(r);
+                r = new JPanel();
+                {//--
+                    r.add(initButton);
+                    r.add(stepButton);
+                }//--
+                q.add(r);
+                r = new JPanel();
+                {//--
+                    r.add(startButton);
+                    r.add(stopButton);
+                    setSpeedSlider();
+                    r.add(speedSlider);
+                }//--
+                q.add(r);
+            }//--
+            mainPanel.add(q);
+        }//--
+        JScrollPane historyScrollPane = new JScrollPane(historyTextArea);
+        historyScrollPane.setPreferredSize(new Dimension(300, 500));
+        Border historyBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
+        historyScrollPane.setBorder(BorderFactory.createTitledBorder(historyBorder, "HISTORIQUE"));
+        mainPanel.add(historyScrollPane, BorderLayout.EAST);
     }
     
 }
