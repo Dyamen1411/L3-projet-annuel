@@ -28,6 +28,9 @@ import java.util.List;
 import java.awt.event.FocusEvent;
 import java.awt.GridLayout;
 
+import org.noopi.model.history.ITransitionHistory;
+import org.noopi.model.machine.ITuringMachine;
+import org.noopi.model.tape.ITape;
 import org.noopi.utils.listeners.AddRuleEventListener;
 import org.noopi.utils.listeners.NewFileEventListener;
 import org.noopi.utils.listeners.OpenFileEventListener;
@@ -70,14 +73,23 @@ public class FrameLayout implements IFrameLayout {
     private Map<Item, JMenuItem> menuItems;
     private JFrame rulesFrame;
 
+    // Models
+
+    private ITape tapeModel;
+    private ITuringMachine machineModel;
+    private ITransitionHistory historyModel;
+
 
     //CONSTRUCTEURS
 
     public FrameLayout() {
+        createModel();
         createView();
         placeComponent();
         createController();
     }
+
+    //REQUETES
 
     @Override
     public JComponent getView() {
@@ -98,28 +110,26 @@ public class FrameLayout implements IFrameLayout {
         return menuItems;
     }
 
+    // COMMANDES
+
     @Override
     public void shiftTapeRight() {
-        // TODO Auto-generated method stub
-        
+        tapeModel.shiftRight();
     }
 
     @Override
     public void shiftTapeLeft() {
-        // TODO Auto-generated method stub
-        
+        tapeModel.shiftLeft();
     }
 
     @Override
     public void setSymbolOnTape() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void setMachineState() {
-        // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -213,7 +223,11 @@ public class FrameLayout implements IFrameLayout {
     }
 
     // OUTILS
-
+    private void createModel() {
+        tapeModel = new Tape();
+        machineModel = new TuringMachine();
+        historyModel = new TransitionHistory();
+    }
     private void createView() {
         mainPanel = new JPanel(new BorderLayout());
 
