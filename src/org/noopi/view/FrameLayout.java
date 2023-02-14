@@ -72,6 +72,7 @@ public class FrameLayout implements IFrameLayout {
     private GraphicTape tape;
     private Map<Item, JMenuItem> menuItems;
     private JFrame rulesFrame;
+    private List<JTextField> textFieldList;
 
     // Models
 
@@ -239,39 +240,30 @@ public class FrameLayout implements IFrameLayout {
         addRuleButton = new JButton("Ajouter");
         stepButton = new JButton("Pas à pas");
         initButton = new JButton("Initialiser");
-
+        textFieldList = new LinkedList<JTextField>();
         addRuleSymbolTextField = new JTextField("Symbole");
-        addRuleSymbolTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(addRuleSymbolTextField, "Symbole");
+        textFieldList.add(addRuleSymbolTextField);
         addRuleStateTextField = new JTextField("Etat");
-        addRuleStateTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(addRuleStateTextField, "Etat");
+        textFieldList.add(addRuleStateTextField);
         addResuSymbolTextField = new JTextField("Symbole");
-        addResuSymbolTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(addResuSymbolTextField, "Symbole");
+        textFieldList.add(addResuSymbolTextField);
         addResuStateTextField = new JTextField("Etat");
-        addResuStateTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(addResuStateTextField, "Etat");
+        textFieldList.add(addResuStateTextField);
         addResuDirectionTextField = new JTextField("Direction");
-        addResuDirectionTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(addResuDirectionTextField, "Direction");
+        textFieldList.add(addResuDirectionTextField);
+        removeRuleSymbolTextField = new JTextField("Symbole");
+        textFieldList.add(removeRuleSymbolTextField);
+        removeRuleStateTextField = new JTextField("Etat");
+        textFieldList.add(removeRuleStateTextField);
+        removeResuSymbolTextField = new JTextField("Symbole");
+        textFieldList.add(removeResuSymbolTextField);
+        removeResuStateTextField = new JTextField("Etat");
+        textFieldList.add(removeResuStateTextField);
+        removeResuDirectionTextField = new JTextField("Direction");
+        textFieldList.add(removeResuDirectionTextField);
+        setTextField();
         initialRubanTextField = new JTextField();
         initialRubanTextField.setPreferredSize(new Dimension(100, 25));
-        removeRuleSymbolTextField = new JTextField("Symbole");
-        removeRuleSymbolTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(removeRuleSymbolTextField, "Symbole");
-        removeRuleStateTextField = new JTextField("Etat");
-        removeRuleStateTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(removeRuleStateTextField, "Etat");
-        removeResuSymbolTextField = new JTextField("Symbole");
-        removeResuSymbolTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(removeResuSymbolTextField, "Symbole");
-        removeResuStateTextField = new JTextField("Etat");
-        removeResuStateTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(removeResuStateTextField, "Etat");
-        removeResuDirectionTextField = new JTextField("Direction");
-        removeResuDirectionTextField.setForeground(Color.GRAY);
-        addAddAndRemoveRulesTextfieldEventListener(removeResuDirectionTextField, "Direction");
 
         speedSlider = new JSlider(0, 100, 20);
 
@@ -284,7 +276,12 @@ public class FrameLayout implements IFrameLayout {
 
         tape = new GraphicTape();
     }
-
+    private void setTextField() {
+        for (JTextField tf : textFieldList) {
+            tf.setForeground(Color.GRAY);
+            addAddAndRemoveRulesTextfieldEventListener(tf, tf.getText());
+        }
+    }
     private void addAddAndRemoveRulesTextfieldEventListener(JTextField textField, String s) {
         textField.addFocusListener(new FocusListener() {
 
