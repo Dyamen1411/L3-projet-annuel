@@ -19,9 +19,6 @@ public final class Window {
   private JFrame frame;
   private IFrameLayout layout;
 
-  // Controler
-  private IController controller;
-
   public Window() {
     createModel();
     createView();
@@ -49,7 +46,7 @@ public final class Window {
   }
 
   private void createController() {
-
+    
   }
 
   private void refreshView() {
