@@ -2,8 +2,37 @@ package org.noopi.gui;
 
 import javax.swing.JFrame;
 
-import org.noopi.controller.IController;
 import org.noopi.model.tape.ITape;
+import org.noopi.utils.events.history.HistoryPopEvent;
+import org.noopi.utils.events.history.HistoryPushEvent;
+import org.noopi.utils.events.history.HistoryResetEvent;
+import org.noopi.utils.events.tape.TapeMovedEvent;
+import org.noopi.utils.events.tape.TapeResetEvent;
+import org.noopi.utils.events.tape.TapeWriteEvent;
+import org.noopi.utils.events.view.AddRuleEvent;
+import org.noopi.utils.events.view.NewFileEvent;
+import org.noopi.utils.events.view.OpenFileEvent;
+import org.noopi.utils.events.view.RemoveRuleEvent;
+import org.noopi.utils.events.view.RunEvent;
+import org.noopi.utils.events.view.SaveEvent;
+import org.noopi.utils.events.view.SpeedChangeEvent;
+import org.noopi.utils.events.view.StepEvent;
+import org.noopi.utils.events.view.StopEvent;
+import org.noopi.utils.listeners.history.HistoryPopEventListener;
+import org.noopi.utils.listeners.history.HistoryPushEventListener;
+import org.noopi.utils.listeners.history.HistoryResetEventListener;
+import org.noopi.utils.listeners.tape.TapeMovedEventListener;
+import org.noopi.utils.listeners.tape.TapeResetEventListener;
+import org.noopi.utils.listeners.tape.TapeWriteEventListener;
+import org.noopi.utils.listeners.view.AddRuleEventListener;
+import org.noopi.utils.listeners.view.NewFileEventListener;
+import org.noopi.utils.listeners.view.OpenFileEventListener;
+import org.noopi.utils.listeners.view.RemoveRuleEventListener;
+import org.noopi.utils.listeners.view.RunEventListener;
+import org.noopi.utils.listeners.view.SaveEventListener;
+import org.noopi.utils.listeners.view.SpeedChangeEventListener;
+import org.noopi.utils.listeners.view.StepEventListener;
+import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
 import org.noopi.view.IFrameLayout;
@@ -34,19 +63,148 @@ public final class Window {
   }
 
   private void createModel() {
-
   }
 
   private void createView() {
-
   }
 
   private void placeComponents() {
-
+    
   }
 
   private void createController() {
-    
+
+    // TAPE
+
+    tape.addTapeMovedEventListener(new TapeMovedEventListener() {
+      @Override
+      public void onTapeMoved(TapeMovedEvent e) {
+        switch(e.getDirection()) {
+          case LEFT:
+            layout.shiftTapeLeft();
+            break;
+          case RIGHT:
+            layout.shiftTapeRight();
+            break;
+        }
+      }
+    });
+
+    tape.addTapeResetEventListener(new TapeResetEventListener() {
+      @Override
+      public void onTapeReset(TapeResetEvent e) {
+        // TODO
+      }
+    });
+
+    tape.addTapeWriteEventListener(new TapeWriteEventListener() {
+
+      @Override
+      public void onTapeWritten(TapeWriteEvent e) {
+        layout.setSymbolOnTape();
+      }
+      
+    });
+
+    // HISTORY
+
+    history.addHistoryPushEventListener(new HistoryPushEventListener() {
+
+      @Override
+      public void onHistoryPush(HistoryPushEvent e) {
+        layout.addRule();
+      }
+    });
+
+    history.addHistoryPopEventListener(new HistoryPopEventListener() {
+
+      @Override
+      public void onHistoryPop(HistoryPopEvent e) {
+        layout.removeRule();
+      }
+      
+    });
+
+    history.addHistoryResetEventListener(new HistoryResetEventListener() {
+
+      @Override
+      public void onHistoryReset(HistoryResetEvent e) {
+        layout.resetRules();
+      }
+      
+    });
+
+    // LISTENERS ON VIEW
+
+    layout.addAddRuleEventListener(new AddRuleEventListener() {
+
+      @Override
+      public void onRuleAdded(AddRuleEvent e) {
+        machine.addTransition(e.getRuleAdded());
+      }
+      
+    });
+
+    layout.addRemoveRuleEventListener(new RemoveRuleEventListener() {
+
+      @Override
+      public void onRuleRemoved(RemoveRuleEvent e) {
+        machine.removeTransition(e.getRemovedRule());
+      }
+      
+    });
+
+    layout.addStepEventListener(new StepEventListener() {
+      @Override
+      public void onStep(StepEvent e) {
+        machine.step();
+      }
+    });
+
+    layout.addStopEventListener(new StopEventListener() {
+
+      @Override
+      public void onStop(StopEvent e) {
+        // machine.stop();
+      }
+      
+    });
+
+    layout.addSpeedChangeEventListener(new SpeedChangeEventListener() {
+
+      @Override
+      public void onSpeedChanged(SpeedChangeEvent e) {
+        
+      }
+      
+    });
+
+    layout.addNewFileEventListener(new NewFileEventListener() {
+
+      @Override
+      public void onNewFile(NewFileEvent e) {
+        // A voir comment on s'organise
+      }
+      
+    });
+
+    layout.addOpenFileEventListener(new OpenFileEventListener() {
+
+      @Override
+      public void onFileOpened(OpenFileEvent e) {
+        // A voir comment on s'organise
+      }
+      
+    });
+
+    layout.addSaveEventListener(new SaveEventListener() {
+
+      @Override
+      public void onSave(SaveEvent e) {
+        // A voir comment on sauvegarde
+      }
+      
+    });
   }
 
   private void refreshView() {
