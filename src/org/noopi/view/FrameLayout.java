@@ -49,6 +49,7 @@ public class FrameLayout implements IFrameLayout {
     private JTextArea historyTextArea;
     private JTextArea rulesTextArea;
     private JTextArea paneRulesTextArea;
+    private GraphicTape tape;
 
     //CONSTRUCTEURS
 
