@@ -12,8 +12,6 @@ import org.noopi.utils.machine.Transition;
 
 public final class TuringMachine extends AbstractTuringMachine {
 
-  private State defaultState;
-
   private State currentState;
   
   private final HashMap<K, V> rules;
@@ -33,7 +31,7 @@ public final class TuringMachine extends AbstractTuringMachine {
   public void reset(State defaultState) {
     rules.clear(); 
     finalStates.clear();
-    this.defaultState = defaultState;
+    currentState = defaultState;
     operationnal = true;
     done = false;
     fireResetEvent();
@@ -66,8 +64,8 @@ public final class TuringMachine extends AbstractTuringMachine {
     if (v == null) {
       throw new MachineDecidabilityExecption();
     }
-    this.currentState = v.s;
-    if (finalStates.contains(this.currentState)) {
+    currentState = v.s;
+    if (finalStates.contains(currentState)) {
       done = true;
     }
     fireStepEvent(new Transition(k.s, k.w, v.d, v.s, v.w));
