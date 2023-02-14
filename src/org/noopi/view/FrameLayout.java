@@ -9,6 +9,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 
 import org.noopi.utils.listeners.AddRuleEventListener;
 import org.noopi.utils.listeners.NewFileEventListener;
@@ -34,12 +36,12 @@ public class FrameLayout implements IFrameLayout {
     private JButton initButton;
     private JTextField addRuleSymbolTextField;
     private JTextField addRuleStateTextField;
-    private JComponent addResuSymbolTextField;
+    private JTextField addResuSymbolTextField;
     private JTextField addResuStateTextField;
-    private JComponent addResuDirectionTextField;
-    private JComponent initialRubanTextField;
-    private JComponent removeRuleSymbolTextField;
-    private JComponent removeRuleStateTextField;
+    private JTextField addResuDirectionTextField;
+    private JTextField initialRubanTextField;
+    private JTextField removeRuleSymbolTextField;
+    private JTextField removeRuleStateTextField;
     private JTextField removeResuSymbolTextField;
     private JTextField removeResuStateTextField;
     private JTextField removeResuDirectionTextField;
@@ -236,6 +238,29 @@ public class FrameLayout implements IFrameLayout {
         paneRulesTextArea.setEditable(false);
 
         tape = new GraphicTape();
+    }
+
+    private void addAddAndRemoveRulesTextfieldEventListener(JTextField textField, String s) {
+        textField.addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent arg0) {
+                if (textField.getText().equals(s)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent arg0) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.GRAY);
+                    textField.setText(s);
+                }
+            }
+
+        }
+        );
     }
     
 }
