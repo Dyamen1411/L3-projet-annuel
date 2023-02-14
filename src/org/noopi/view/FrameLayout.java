@@ -4,9 +4,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -16,6 +19,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusListener;
+import java.util.Map;
+import java.util.EnumMap;
 import java.awt.event.FocusEvent;
 import java.awt.GridLayout;
 
@@ -57,6 +62,7 @@ public class FrameLayout implements IFrameLayout {
     private JTextArea rulesTextArea;
     private JTextArea paneRulesTextArea;
     private GraphicTape tape;
+    private Map<Item, JMenuItem> menuItems;
 
     //CONSTRUCTEURS
 
@@ -74,6 +80,15 @@ public class FrameLayout implements IFrameLayout {
     @Override
     public JMenuBar getMenuBar() {
         return menuBar;
+    }
+
+    public Map<Item, JMenuItem> getMenuItemsMap() {
+        menuItems = new EnumMap<Item, JMenuItem>(Item.class);
+        for(Item i : Item.values()) {
+            JMenuItem item = new JMenuItem(i.label());
+            menuItems.put(i, item);
+        }
+        return menuItems;
     }
 
     @Override
@@ -343,6 +358,28 @@ public class FrameLayout implements IFrameLayout {
         Border historyBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
         historyScrollPane.setBorder(BorderFactory.createTitledBorder(historyBorder, "HISTORIQUE"));
         mainPanel.add(historyScrollPane, BorderLayout.EAST);
+    }
+
+    private void setMenuBar() {
+        for (Menu m : Menu.STRUCT.keySet()) {
+            JMenu menu = new JMenu(m.label());
+            for (Item i : Menu.STRUCT.get(m)) {
+                if (i == null) {
+                    menu.add(new JSeparator());
+                } else {
+                    menu.add(getMenuItemsMap().get(i));
+                }
+            }
+            menuBar.add(menu);
+        }
+    }
+
+    private void setSpeedSlider() {
+        speedSlider.setPaintTrack(true); 
+        speedSlider.setPaintTicks(true); 
+        speedSlider.setPaintLabels(true); 
+        speedSlider.setMajorTickSpacing(20); 
+        speedSlider.setMinorTickSpacing(5); 
     }
     
 }
