@@ -29,6 +29,7 @@ import java.awt.event.FocusEvent;
 import java.awt.GridLayout;
 
 import org.noopi.model.history.ITransitionHistory;
+import org.noopi.model.history.ITransitionHistory.Action;
 import org.noopi.model.machine.ITuringMachine;
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.listeners.AddRuleEventListener;
@@ -41,11 +42,13 @@ import org.noopi.utils.listeners.SpeedChangeEventListener;
 import org.noopi.utils.listeners.StepEventListener;
 import org.noopi.utils.listeners.StopEventListener;
 import org.noopi.utils.listeners.TapeInitializationEventListener;
+import org.noopi.utils.machine.Transition;
 import org.w3c.dom.events.MouseEvent;
 
 public class FrameLayout implements IFrameLayout {
 
     //ATTRIBUTS
+    
     private JPanel mainPanel;
     private JMenuBar menuBar;
     private JButton stopButton;
@@ -76,10 +79,8 @@ public class FrameLayout implements IFrameLayout {
 
     // Models
 
-    private ITape tapeModel;
     private ITuringMachine machineModel;
     private ITransitionHistory historyModel;
-
 
     //CONSTRUCTEURS
 
@@ -115,12 +116,12 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void shiftTapeRight() {
-        tapeModel.shiftRight();
+        
     }
 
     @Override
     public void shiftTapeLeft() {
-        tapeModel.shiftLeft();
+        
     }
 
     @Override
@@ -147,20 +148,16 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void resetRules() {
-        // TODO Auto-generated method stub
-        
+        rulesTextArea.setText(null);
     }
 
     @Override
     public void pushHistory() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void popHistory() {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -225,9 +222,7 @@ public class FrameLayout implements IFrameLayout {
 
     // OUTILS
     private void createModel() {
-        tapeModel = new Tape();
-        machineModel = new TuringMachine();
-        historyModel = new TransitionHistory();
+
     }
     private void createView() {
         mainPanel = new JPanel(new BorderLayout());
@@ -287,10 +282,8 @@ public class FrameLayout implements IFrameLayout {
 
             @Override
             public void focusGained(FocusEvent arg0) {
-                if (textField.getText().equals(s)) {
-                    textField.setText("");
-                    textField.setForeground(Color.BLACK);
-                }
+                textField.setText("");
+                textField.setForeground(Color.BLACK);
             }
             @Override
             public void focusLost(FocusEvent arg0) {
