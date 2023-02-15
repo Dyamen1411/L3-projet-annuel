@@ -19,19 +19,13 @@ import java.awt.BorderLayout;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.util.Map;
 import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.awt.event.FocusEvent;
+
 import java.awt.GridLayout;
 
-import org.noopi.model.history.ITransitionHistory;
-import org.noopi.model.history.ITransitionHistory.Action;
-import org.noopi.model.machine.ITuringMachine;
-import org.noopi.model.tape.ITape;
+
 import org.noopi.utils.listeners.AddRuleEventListener;
 import org.noopi.utils.listeners.NewFileEventListener;
 import org.noopi.utils.listeners.OpenFileEventListener;
@@ -42,32 +36,19 @@ import org.noopi.utils.listeners.SpeedChangeEventListener;
 import org.noopi.utils.listeners.StepEventListener;
 import org.noopi.utils.listeners.StopEventListener;
 import org.noopi.utils.listeners.TapeInitializationEventListener;
-import org.noopi.utils.machine.Transition;
-import org.w3c.dom.events.MouseEvent;
+
 
 public class FrameLayout implements IFrameLayout {
 
     //ATTRIBUTS
-    
+
     private JPanel mainPanel;
     private JMenuBar menuBar;
     private JButton stopButton;
     private JButton startButton;
-    private JButton removeRuleButton;
-    private JButton addRuleButton;
     private JButton stepButton;
     private JButton initButton;
-    private JTextField addRuleSymbolTextField;
-    private JTextField addRuleStateTextField;
-    private JTextField addResuSymbolTextField;
-    private JTextField addResuStateTextField;
-    private JTextField addResuDirectionTextField;
     private JTextField initialRubanTextField;
-    private JTextField removeRuleSymbolTextField;
-    private JTextField removeRuleStateTextField;
-    private JTextField removeResuSymbolTextField;
-    private JTextField removeResuStateTextField;
-    private JTextField removeResuDirectionTextField;
     private JSlider speedSlider;
     private JTextArea historyTextArea;
     private JTextArea rulesTextArea;
@@ -75,12 +56,7 @@ public class FrameLayout implements IFrameLayout {
     private GraphicTape tape;
     private Map<Item, JMenuItem> menuItems;
     private JFrame rulesFrame;
-    private List<JTextField> textFieldList;
-
-    // Models
-
-    private ITuringMachine machineModel;
-    private ITransitionHistory historyModel;
+    private AddAndRemoveRulesComponent addAndRemoveRulesComponent;
 
     //CONSTRUCTEURS
 
@@ -231,32 +207,9 @@ public class FrameLayout implements IFrameLayout {
 
         stopButton = new JButton("Stopper");
         startButton = new JButton("Lancer");
-        removeRuleButton = new JButton("Retirer");
-        addRuleButton = new JButton("Ajouter");
         stepButton = new JButton("Pas à pas");
         initButton = new JButton("Initialiser");
-        textFieldList = new LinkedList<JTextField>();
-        addRuleSymbolTextField = new JTextField("Symbole");
-        textFieldList.add(addRuleSymbolTextField);
-        addRuleStateTextField = new JTextField("Etat");
-        textFieldList.add(addRuleStateTextField);
-        addResuSymbolTextField = new JTextField("Symbole");
-        textFieldList.add(addResuSymbolTextField);
-        addResuStateTextField = new JTextField("Etat");
-        textFieldList.add(addResuStateTextField);
-        addResuDirectionTextField = new JTextField("Direction");
-        textFieldList.add(addResuDirectionTextField);
-        removeRuleSymbolTextField = new JTextField("Symbole");
-        textFieldList.add(removeRuleSymbolTextField);
-        removeRuleStateTextField = new JTextField("Etat");
-        textFieldList.add(removeRuleStateTextField);
-        removeResuSymbolTextField = new JTextField("Symbole");
-        textFieldList.add(removeResuSymbolTextField);
-        removeResuStateTextField = new JTextField("Etat");
-        textFieldList.add(removeResuStateTextField);
-        removeResuDirectionTextField = new JTextField("Direction");
-        textFieldList.add(removeResuDirectionTextField);
-        setTextField();
+        addAndRemoveRulesComponent = new AddAndRemoveRulesComponent();
         initialRubanTextField = new JTextField();
         initialRubanTextField.setPreferredSize(new Dimension(100, 25));
 
@@ -271,30 +224,6 @@ public class FrameLayout implements IFrameLayout {
 
         tape = new GraphicTape();
     }
-    private void setTextField() {
-        for (JTextField tf : textFieldList) {
-            tf.setForeground(Color.GRAY);
-            addAddAndRemoveRulesTextfieldEventListener(tf, tf.getText());
-        }
-    }
-    private void addAddAndRemoveRulesTextfieldEventListener(JTextField textField, String s) {
-        textField.addFocusListener(new FocusListener() {
-
-            @Override
-            public void focusGained(FocusEvent arg0) {
-                textField.setText("");
-                textField.setForeground(Color.BLACK);
-            }
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                if (textField.getText().isEmpty()) {
-                    textField.setForeground(Color.GRAY);
-                    textField.setText(s);
-                }
-            }
-        }
-        );
-    }
 
     private void placeComponent() {
         setMenuBar();
@@ -308,26 +237,7 @@ public class FrameLayout implements IFrameLayout {
                 Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
                 rulePane.setBorder(BorderFactory.createTitledBorder(rulesBorderPane, "Cliquez pour aggrandir"));
                 q.add(rulePane);
-                JPanel r = new JPanel(new GridLayout(2, 5));
-                {//--
-                    r.add(addRuleButton);
-                    r.add(new JLabel("          :"));
-                    r.add(addRuleSymbolTextField);
-                    r.add(addRuleStateTextField);
-                    r.add(new JLabel("       =>"));
-                    r.add(addResuSymbolTextField);
-                    r.add(addResuStateTextField);
-                    r.add(addResuDirectionTextField);
-                    r.add(removeRuleButton);
-                    r.add(new JLabel("          :"));
-                    r.add(removeRuleSymbolTextField);
-                    r.add(removeRuleStateTextField);
-                    r.add(new JLabel("       =>"));
-                    r.add(removeResuSymbolTextField);
-                    r.add(removeResuStateTextField);
-                    r.add(removeResuDirectionTextField);
-                }//--
-                q.add(r);
+                q.add(addAndRemoveRulesComponent.getAddAndRemoveRulesPanel());
             }//--
             mainPanel.add(q);
             q = new JPanel();
