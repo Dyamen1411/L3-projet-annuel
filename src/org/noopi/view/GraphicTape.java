@@ -55,8 +55,8 @@ public class GraphicTape extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int width = PREFERED_WIDTH;
-        int height = PREFERED_HEIGHT;
+        int width = getWidth();
+        int height = getHeight();
         int tapeHeight = height / 3;
         int h = (height - tapeHeight) / 2;
         
