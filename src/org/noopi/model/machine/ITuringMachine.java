@@ -15,7 +15,7 @@ public interface ITuringMachine {
   void removeTransition(Transition t);
 
   void step(Symbol s) throws MachineDecidabilityExecption;
-  void stepBack();
+  void setState(State s);
 
   State getState();
 

@@ -72,8 +72,8 @@ public final class TuringMachine extends AbstractTuringMachine {
   }
 
   @Override
-  public void stepBack() {
-    throw new UnsupportedOperationException();
+  public void setState(State s) {
+    this.currentState = s;
   }
 
   @Override
