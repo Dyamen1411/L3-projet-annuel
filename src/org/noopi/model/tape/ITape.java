@@ -3,6 +3,7 @@ package org.noopi.model.tape;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
+import org.noopi.utils.machine.Direction;
 import org.noopi.utils.machine.Symbol;
 
 public interface ITape {
@@ -22,16 +23,10 @@ public interface ITape {
   void reset(Symbol defaultSymbol, Symbol[] symbols);
 
   /**
-   * Moves the tape on cell to the right thus moving the tape pointer one cell
-   * to the left.
+   * Moves the tape on a given direction
+   * (thus moving the pointer to the opposite direction).
    */
-  void shiftRight();
-
-  /**
-   * Moves the tape on cell to the left thus moving the tape pointer one cell
-   * to the right.
-   */
-  void shiftLeft();
+  void shift(Direction d);
 
   /**
    * @return the symbol under the tape pointer.
