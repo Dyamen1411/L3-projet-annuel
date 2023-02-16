@@ -3,6 +3,8 @@ package org.noopi.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 
 import javax.swing.JComponent;
 
@@ -16,11 +18,11 @@ public class GraphicTape extends JComponent {
     //private StdTapeModel tapeModel;
 
     // Marge horizontale de part et d'autre du composant
-    private static final int MARGIN = 20;
+    // private static final int MARGIN = 20;
     // Largeur préférée du ruban
-    private static final int PREFERED_WIDTH = 2 * MARGIN + 800;
+    private static final int PREFERED_WIDTH =  800;
 
-    private static final int PREFERED_HEIGHT = 100;
+    private static final int PREFERED_HEIGHT = 200;
     // Epaisseur du bord du ruban
     private static final int THICK = 2;
 
@@ -42,33 +44,33 @@ public class GraphicTape extends JComponent {
 
     }
 
-    public void setState(State s) {
-
+    public void setSymbol(Symbol s) {
+ 
     }
 
-    public void setSymbol(Symbol s) {
+    public void setState(State s) {
 
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int w = getWidth() - 2 * MARGIN;
-        int frame = getWidth() / 8;
-        int tapeHeight = getHeight() / 2;
-        int h = getHeight() / 3;
-        int e = MARGIN + getWidth() / 10;
+        int width = PREFERED_WIDTH;
+        int height = PREFERED_HEIGHT;
+        int tapeHeight = height / 3;
+        int h = (height - tapeHeight) / 2;
         
         // Barres horizontales du ruban
-        g.setColor(Color.RED);
-        g.fillRect(MARGIN, h, w, THICK);
-        g.fillRect(MARGIN, h + tapeHeight, w, THICK);
+        Graphics2D g2D = (Graphics2D) g;
+        g2D.setColor(Color.RED);
+        g2D.drawLine(0, h, width, h);
+        g2D.drawLine(0, h + tapeHeight, width, h + tapeHeight);
+        g2D.setStroke(new BasicStroke(THICK));
 
         // Barres verticales du ruban
-        int barreNb = 9;
-        for (int i = 0; i < barreNb; i++) {
-            int x = i * frame + MARGIN + e;
-            g.fillRect(x, h, 1, tapeHeight);
+        for(int i = width / 80; i <= width; i += 80) {
+            g.drawLine(i, h, i, h + tapeHeight);
         }
     }
 }
+
