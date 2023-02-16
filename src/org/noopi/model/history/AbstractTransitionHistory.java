@@ -10,6 +10,9 @@ import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
 
+/**
+ * Manages all the listener mechanics of a ITransitionHistory.
+ */
 public abstract class AbstractTransitionHistory implements ITransitionHistory {
   
   private EventListenerList listenerList;
@@ -22,6 +25,9 @@ public abstract class AbstractTransitionHistory implements ITransitionHistory {
     listenerList = new EventListenerList();
   }
 
+  /**
+   * Sends a <code>HistoryResetEvent</code> to every subscribed listeners.
+   */
   protected void fireHistoryResetEvent() {
     Object[] list = listenerList.getListenerList();
     for (int i = list.length - 2; i >= 0; i -= 2) {
@@ -36,6 +42,9 @@ public abstract class AbstractTransitionHistory implements ITransitionHistory {
     }
   }
 
+  /**
+   * Sends a <code>HistoryPushEvent</code> to every subscribed listeners.
+   */
   protected void fireHistoryPushEvent() {
     Object[] list = listenerList.getListenerList();
     for (int i = list.length - 2; i >= 0; i -= 2) {
@@ -49,6 +58,9 @@ public abstract class AbstractTransitionHistory implements ITransitionHistory {
     }
   }
 
+  /**
+   * Sends a <code>HistoryPopEvent</code> to every subscribed listeners.
+   */
   protected void fireHistoryPopEvent() {
     Object[] list = listenerList.getListenerList();
     for (int i = list.length - 2; i >= 0; i -= 2) {
