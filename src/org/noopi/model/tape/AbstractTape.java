@@ -11,6 +11,9 @@ import org.noopi.utils.listeners.tape.TapeWriteEventListener;
 import org.noopi.utils.machine.Direction;
 import org.noopi.utils.machine.Symbol;
 
+/**
+ * Manages all the listener mechanics of a ITape.
+ */
 public abstract class AbstractTape implements ITape {
   private EventListenerList listenerList;
 
@@ -22,6 +25,9 @@ public abstract class AbstractTape implements ITape {
     listenerList = new EventListenerList();
   }
 
+  /**
+   * Sends a <code>TapeResetEvent</code> to every subscribed listeners.
+   */
   protected void fireResetEvent() {
     Object[] list = listenerList.getListenerList();
     for (int i = list.length - 2; i >= 0; i -= 2) {
@@ -35,6 +41,9 @@ public abstract class AbstractTape implements ITape {
     }
   }
 
+  /**
+   * Sends a <code>TapeMovedEvent</code> to every subscribed listeners.
+   */
   protected void fireTapeMovedEvent(Direction d) {
     assert d != null;
     Object[] list = listenerList.getListenerList();
@@ -51,6 +60,9 @@ public abstract class AbstractTape implements ITape {
     }
   }
 
+  /**
+   * Sends a <code>TapeWriteEvent</code> to every subscribed listeners.
+   */
   protected void fireTapeWriteEvent(Symbol s) {
     Object[] list = listenerList.getListenerList();
     boolean b = false;
