@@ -3,7 +3,11 @@ package org.noopi.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+
 import javax.swing.JComponent;
+
+import org.noopi.utils.machine.State;
+import org.noopi.utils.machine.Symbol;
 
 public class GraphicTape extends JComponent {
 
@@ -38,12 +42,12 @@ public class GraphicTape extends JComponent {
 
     }
 
-    public void setState() {
+    public void setState(State s) {
 
     }
 
-    public void setSymbol() {
-        
+    public void setSymbol(Symbol s) {
+
     }
 
     @Override
