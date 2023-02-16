@@ -124,8 +124,8 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void addRule(Transition t) {
-        // TODO Auto-generated method stub
-        
+        rulesTextArea.append("(" + t.getOldState() + ", " + t.getOldSymbol()
+        + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
     }
 
     @Override
@@ -142,7 +142,6 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void addAddRuleEventListener(AddRuleEventListener l) {
-        // TODO Auto-generated method stub
         
     }
 
