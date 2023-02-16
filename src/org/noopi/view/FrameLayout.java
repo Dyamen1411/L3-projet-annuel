@@ -58,7 +58,7 @@ public class FrameLayout implements IFrameLayout {
     private JSlider speedSlider;
     private JList<JLabel> historyJList;
     private JList<JLabel> rulesJList;
-    private JTextArea paneRulesTextArea;
+    private JList<JLabel> paneRulesTextArea;
     private GraphicTape tape;
     private Map<Item, JMenuItem> menuItems;
     private JFrame rulesFrame;
@@ -227,8 +227,7 @@ public class FrameLayout implements IFrameLayout {
 
         historyJList = new JList<JLabel>();
         rulesJList = new JList<JLabel>();
-        paneRulesTextArea = new JTextArea();
-        paneRulesTextArea.setEditable(false);
+        paneRulesTextArea = new JList<JLabel>();
 
         tape = new GraphicTape();
     }
@@ -346,7 +345,7 @@ public class FrameLayout implements IFrameLayout {
         rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         rulesFrame.setPreferredSize(new Dimension(200, 400));
         rulesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        paneRulesTextArea.append(rulesJList.getText()); 
+        paneRulesTextArea = rulesJList;
         JScrollPane newFrameRulesPane = new JScrollPane(paneRulesTextArea);
         rulesFrame.add(newFrameRulesPane);
         rulesFrame.pack();
