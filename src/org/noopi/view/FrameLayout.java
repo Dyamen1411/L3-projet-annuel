@@ -113,10 +113,6 @@ public class FrameLayout implements IFrameLayout {
     }
 
     @Override
-    public void popHistory() {
-    }
-
-    @Override
     public void setSymbolOnTape(Symbol s) {
         // TODO Auto-generated method stub
         
@@ -130,22 +126,25 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void addRule(Transition t) {
-        JLabel newRulesLine = new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
-        + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
+        JLabel newRulesLine = createJLabel(t);
         rulesJList.add(newRulesLine);
     }
 
     @Override
     public void removeRule(Transition t) {
-        JLabel ruleToRemove = new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
-        + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
+        JLabel ruleToRemove = createJLabel(t);
         rulesJList.remove(ruleToRemove);
     }
 
     @Override
     public void pushHistory(Transition t) {
-        historyJList.append("(" + t.getOldState() + ", " + t.getOldSymbol()
-        + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
+        JLabel newHistoryLine = createJLabel(t);
+        historyJList.add(newHistoryLine, 0);
+    }
+
+    @Override
+    public void popHistory() {
+        historyJList.remove(0);
     }
 
     @Override
@@ -353,5 +352,10 @@ public class FrameLayout implements IFrameLayout {
         rulesFrame.pack();
         rulesFrame.setLocationRelativeTo(null);
         rulesFrame.setVisible(true);
+    }
+
+    private JLabel createJLabel(Transition t) {
+        return new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
+        + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
     }
 }
