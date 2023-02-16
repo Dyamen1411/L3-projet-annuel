@@ -15,6 +15,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+import javax.swing.event.EventListenerList;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.AddRuleEventListener;
@@ -44,6 +45,8 @@ public class FrameLayout implements IFrameLayout {
 
     //ATTRIBUTS
 
+    private EventListenerList listenerList;
+
     private JPanel mainPanel;
     private JMenuBar menuBar;
     private JButton stopButton;
@@ -63,6 +66,8 @@ public class FrameLayout implements IFrameLayout {
     //CONSTRUCTEURS
 
     public FrameLayout() {
+        listenerList = new EventListenerList();
+
         createView();
         placeComponent();
         createController();
@@ -142,62 +147,62 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void addAddRuleEventListener(AddRuleEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(AddRuleEventListener.class, l);
     }
 
     @Override
     public void addRemoveRuleEventListener(RemoveRuleEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(RemoveRuleEventListener.class, l);
     }
 
     @Override
     public void addTapeInitializationEventListener(TapeInitializationEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(TapeInitializationEventListener.class, l);
     }
 
     @Override
     public void addStepEventListener(StepEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(StepEventListener.class, l);
     }
 
     @Override
     public void addRunEventListener(RunEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(RunEventListener.class, l);
     }
 
     @Override
     public void addStopEventListener(StopEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(StopEventListener.class, l);
     }
 
     @Override
     public void addSpeedChangeEventListener(SpeedChangeEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(SpeedChangeEventListener.class, l);
     }
 
     @Override
     public void addOpenFileEventListener(OpenFileEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(OpenFileEventListener.class, l);
     }
 
     @Override
     public void addNewFileEventListener(NewFileEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(NewFileEventListener.class, l);
     }
 
     @Override
     public void addSaveEventListener(SaveEventListener l) {
-        // TODO Auto-generated method stub
-        
+        assert l != null;
+        listenerList.add(SaveEventListener.class, l);
     }
 
     // OUTILS
