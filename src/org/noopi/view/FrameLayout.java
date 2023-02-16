@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -52,8 +53,8 @@ public class FrameLayout implements IFrameLayout {
     private JButton initButton;
     private JTextField initialRubanTextField;
     private JSlider speedSlider;
-    private JTextArea historyTextArea;
-    private JTextArea rulesTextArea;
+    private JList<JLabel> historyJList;
+    private JList<JLabel> rulesJList;
     private JTextArea paneRulesTextArea;
     private GraphicTape tape;
     private Map<Item, JMenuItem> menuItems;
@@ -103,7 +104,7 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void resetRules() {
-        rulesTextArea.setText(null);
+        rulesJList.removeAll();
     }
 
     @Override
@@ -124,19 +125,21 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void addRule(Transition t) {
-        rulesTextArea.append("(" + t.getOldState() + ", " + t.getOldSymbol()
+        JLabel newRulesLine = new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
         + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
+        rulesJList.add(newRulesLine);
     }
 
     @Override
     public void removeRule(Transition t) {
-        // TODO Auto-generated method stub
-        
+        JLabel ruleToRemove = new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
+        + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
+        rulesJList.remove(ruleToRemove);
     }
 
     @Override
     public void pushHistory(Transition t) {
-        historyTextArea.append("(" + t.getOldState() + ", " + t.getOldSymbol()
+        historyJList.append("(" + t.getOldState() + ", " + t.getOldSymbol()
         + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
     }
 
@@ -216,10 +219,8 @@ public class FrameLayout implements IFrameLayout {
 
         speedSlider = new JSlider(0, 100, 20);
 
-        historyTextArea = new JTextArea();
-        historyTextArea.setEditable(false);
-        rulesTextArea = new JTextArea();
-        rulesTextArea.setEditable(false);
+        historyJList = new JList<JLabel>();
+        rulesJList = new JList<JLabel>();
         paneRulesTextArea = new JTextArea();
         paneRulesTextArea.setEditable(false);
 
@@ -233,7 +234,7 @@ public class FrameLayout implements IFrameLayout {
             Border rulesBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
             q.setBorder(BorderFactory.createTitledBorder(rulesBorder, "REGLES"));
             {//--
-                JScrollPane rulePane = new JScrollPane(rulesTextArea);
+                JScrollPane rulePane = new JScrollPane(rulesJList);
                 rulePane.setPreferredSize(new Dimension(300, 175));
                 Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
                 rulePane.setBorder(BorderFactory.createTitledBorder(rulesBorderPane, "Cliquez pour aggrandir"));
@@ -275,7 +276,7 @@ public class FrameLayout implements IFrameLayout {
             }//--
             mainPanel.add(q);
         }//--
-        JScrollPane historyScrollPane = new JScrollPane(historyTextArea);
+        JScrollPane historyScrollPane = new JScrollPane(historyJList);
         historyScrollPane.setPreferredSize(new Dimension(300, 500));
         Border historyBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
         historyScrollPane.setBorder(BorderFactory.createTitledBorder(historyBorder, "HISTORIQUE"));
@@ -283,7 +284,7 @@ public class FrameLayout implements IFrameLayout {
     }
 
     private void createController() {
-        rulesTextArea.addMouseListener(new MouseListener()
+        rulesJList.addMouseListener(new MouseListener()
         {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent arg0) {
@@ -339,7 +340,7 @@ public class FrameLayout implements IFrameLayout {
         rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         rulesFrame.setPreferredSize(new Dimension(200, 400));
         rulesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        paneRulesTextArea.append(rulesTextArea.getText()); 
+        paneRulesTextArea.append(rulesJList.getText()); 
         JScrollPane newFrameRulesPane = new JScrollPane(paneRulesTextArea);
         rulesFrame.add(newFrameRulesPane);
         rulesFrame.pack();
