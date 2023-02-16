@@ -8,6 +8,9 @@ import org.noopi.utils.listeners.machine.MachineResetEventListener;
 import org.noopi.utils.listeners.machine.MachineStepEventListener;
 import org.noopi.utils.machine.Transition;
 
+/**
+ * Manages all the listener mechanics of a IAbstractTuringMachine.
+ */
 public abstract class AbstractTuringMachine implements ITuringMachine {
 
   private EventListenerList listenerList;
@@ -43,6 +46,9 @@ public abstract class AbstractTuringMachine implements ITuringMachine {
     listenerList.add(MachineResetEventListener.class, l);
   }
 
+  /**
+   * Sends a <code>MachineStepEvent</code> to every subscribed listeners.
+   */
   protected void fireStepEvent(Transition t) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
@@ -58,6 +64,9 @@ public abstract class AbstractTuringMachine implements ITuringMachine {
     }
   }
 
+  /**
+   * Sends a <code>MachineResetEvent</code> to every subscribed listeners.
+   */
   protected void fireResetEvent() {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {

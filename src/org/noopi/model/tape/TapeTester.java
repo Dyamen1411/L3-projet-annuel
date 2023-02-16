@@ -1,5 +1,6 @@
 package org.noopi.model.tape;
 
+import org.noopi.utils.machine.Direction;
 import org.noopi.utils.machine.Symbol;
 
 public class TapeTester {
@@ -15,26 +16,26 @@ public class TapeTester {
     tape.writeSymbol(TEST_SYMBOL);
     assert tape.readSymbol().equals(TEST_SYMBOL);
 
-    tape.shiftRight();
+    tape.shift(Direction.RIGHT);
     assert tape.readSymbol().equals(DEFAULT_SYMBOL);
 
-    tape.shiftLeft();
+    tape.shift(Direction.LEFT);
     assert tape.readSymbol().equals(TEST_SYMBOL);
 
-    tape.shiftLeft();
+    tape.shift(Direction.LEFT);
     assert tape.readSymbol().equals(DEFAULT_SYMBOL);
 
     tape.reset(TEST_SYMBOL);
     assert tape.readSymbol().equals(TEST_SYMBOL);
 
-    tape.shiftLeft();
+    tape.shift(Direction.LEFT);
     assert tape.readSymbol().equals(TEST_SYMBOL);
 
     Symbol[] testList = { TEST_SYMBOL, DEFAULT_SYMBOL, DEFAULT_SYMBOL, TEST_SYMBOL };
     tape.reset(DEFAULT_SYMBOL, testList);
     for (Symbol s : testList) {
       assert tape.readSymbol().equals(s);
-      tape.shiftRight();
+      tape.shift(Direction.RIGHT);
     }
 
     System.out.println("yipee");

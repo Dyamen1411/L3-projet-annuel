@@ -29,22 +29,20 @@ public final class Tape extends AbstractTape {
     currentCell = orig;
     for (Symbol s : symbols) {
       currentCell.symbol = s;
-      shiftRight();
+      shift(Direction.RIGHT);
     }
     currentCell = orig;
     fireResetEvent();
   }
 
   @Override
-  public void shiftRight() {
-    currentCell = currentCell.getNext();
-    fireTapeMovedEvent(Direction.RIGHT);
-  }
-
-  @Override
-  public void shiftLeft() {
-    currentCell = currentCell.getPrev();
-    fireTapeMovedEvent(Direction.LEFT);
+  public void shift(Direction d) {
+    assert d != null;
+    switch (d) {
+      case LEFT: currentCell = currentCell.getPrev(); break;
+      case RIGHT: currentCell = currentCell.getNext(); break;
+    }
+    fireTapeMovedEvent(d);
   }
 
   @Override
