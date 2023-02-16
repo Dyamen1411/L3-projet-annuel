@@ -126,18 +126,21 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void addRule(Transition t) {
+        assert t != null;
         JLabel newRulesLine = createJLabel(t);
         rulesJList.add(newRulesLine);
     }
 
     @Override
     public void removeRule(Transition t) {
+        assert t != null;
         JLabel ruleToRemove = createJLabel(t);
         rulesJList.remove(ruleToRemove);
     }
 
     @Override
     public void pushHistory(Transition t) {
+        assert t != null;
         JLabel newHistoryLine = createJLabel(t);
         historyJList.add(newHistoryLine, 0);
     }
