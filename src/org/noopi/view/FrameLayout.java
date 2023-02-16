@@ -16,6 +16,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.EventListenerList;
+import java.awt.event.MouseAdapter;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.AddRuleEventListener;
@@ -124,22 +125,19 @@ public class FrameLayout implements IFrameLayout {
     @Override
     public void addRule(Transition t) {
         assert t != null;
-        JLabel newRulesLine = createJLabel(t);
-        rulesJList.add(newRulesLine);
+        rulesJList.add(createJLabel(t));
     }
 
     @Override
     public void removeRule(Transition t) {
         assert t != null;
-        JLabel ruleToRemove = createJLabel(t);
-        rulesJList.remove(ruleToRemove);
+        rulesJList.remove(createJLabel(t));
     }
 
     @Override
     public void pushHistory(Transition t) {
         assert t != null;
-        JLabel newHistoryLine = createJLabel(t);
-        historyJList.add(newHistoryLine, 0);
+        historyJList.add(createJLabel(t), 0);
     }
 
     @Override
@@ -234,10 +232,10 @@ public class FrameLayout implements IFrameLayout {
 
     private void placeComponent() {
         setMenuBar();
+        Border border = BorderFactory.createLineBorder(Color.GRAY, 3);
         {//--
             JPanel q = new JPanel();
-            Border rulesBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
-            q.setBorder(BorderFactory.createTitledBorder(rulesBorder, "REGLES"));
+            q.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
             {//--
                 JScrollPane rulePane = new JScrollPane(rulesJList);
                 rulePane.setPreferredSize(new Dimension(300, 175));
@@ -248,15 +246,13 @@ public class FrameLayout implements IFrameLayout {
             }//--
             mainPanel.add(q);
             q = new JPanel();
-            Border tapeBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
-            q.setBorder(BorderFactory.createTitledBorder(tapeBorder, "RUBAN"));
+            q.setBorder(BorderFactory.createTitledBorder(border, "RUBAN"));
             {//--
                 q.add(tape);
             }//--
             mainPanel.add(q);
             q = new JPanel(new GridLayout(0, 1));
-            Border execBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
-            q.setBorder(BorderFactory.createTitledBorder(execBorder, "EXECUTION"));
+            q.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
             {//--
                 JPanel r = new JPanel();
                 {//--
@@ -283,37 +279,15 @@ public class FrameLayout implements IFrameLayout {
         }//--
         JScrollPane historyScrollPane = new JScrollPane(historyJList);
         historyScrollPane.setPreferredSize(new Dimension(300, 500));
-        Border historyBorder = BorderFactory.createLineBorder(Color.GRAY, 3);
-        historyScrollPane.setBorder(BorderFactory.createTitledBorder(historyBorder, "HISTORIQUE"));
+        historyScrollPane.setBorder(BorderFactory.createTitledBorder(border, "HISTORIQUE"));
         mainPanel.add(historyScrollPane, BorderLayout.EAST);
     }
 
     private void createController() {
-        rulesJList.addMouseListener(new MouseListener()
-        {
+        rulesJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent arg0) {
                 createNewRulesFrame();
-            }
-
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent arg0) {
-                // Nothing to do
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent arg0) {
-                 // Nothing to do
-            }
-
-            @Override
-            public void mousePressed(java.awt.event.MouseEvent arg0) {
-                 // Nothing to do
-            }
-
-            @Override
-            public void mouseReleased(java.awt.event.MouseEvent arg0) {
-                 // Nothing to do
             }
         });
     }
