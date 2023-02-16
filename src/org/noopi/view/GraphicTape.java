@@ -15,10 +15,6 @@ public class GraphicTape extends JComponent {
 
     // ATTRIBUTS
 
-    //private StdTapeModel tapeModel;
-
-    // Marge horizontale de part et d'autre du composant
-
     // Largeur préférée du ruban
     private static final int PREFERED_WIDTH =  800;
 
@@ -60,12 +56,13 @@ public class GraphicTape extends JComponent {
         int tapeHeight = height / 3;
         int h = (height - tapeHeight) / 2;
         
-        // Barres horizontales du ruban
         Graphics2D g2D = (Graphics2D) g;
         g2D.setColor(Color.RED);
+        g2D.setStroke(new BasicStroke(THICK));
+
+        // Barres horizontales du ruban
         g2D.drawLine(0, h, width, h);
         g2D.drawLine(0, h + tapeHeight, width, h + tapeHeight);
-        g2D.setStroke(new BasicStroke(THICK));
 
         // Barres verticales du ruban
         for(int i = 40; i <= width; i += 80) {
