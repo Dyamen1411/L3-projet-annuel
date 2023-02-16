@@ -1,6 +1,10 @@
 package org.noopi.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.events.history.HistoryPopEvent;
@@ -43,6 +47,7 @@ public final class Window {
   private ITuringMachine machine;
   private ITape tape;
   private ITransitionHistory history;
+  private Timer timer;
 
   // View
   private JFrame frame;
@@ -63,13 +68,21 @@ public final class Window {
   }
 
   private void createModel() {
+    timer = new Timer(0, new ActionListener(){
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        machine.step();
+      }
+
+    });
   }
 
   private void createView() {
+    frame.add(layout.getView());
   }
 
   private void placeComponents() {
-    
   }
 
   private void createController() {
@@ -93,7 +106,7 @@ public final class Window {
     tape.addTapeResetEventListener(new TapeResetEventListener() {
       @Override
       public void onTapeReset(TapeResetEvent e) {
-        // TODO
+        tape.reset(null);
       }
     });
 
@@ -154,6 +167,15 @@ public final class Window {
       
     });
 
+    layout.addRunEventListener(new RunEventListener() {
+
+      @Override
+      public void onRun(RunEvent e) {
+        timer.start();
+      }
+      
+    });
+
     layout.addStepEventListener(new StepEventListener() {
       @Override
       public void onStep(StepEvent e) {
@@ -165,7 +187,7 @@ public final class Window {
 
       @Override
       public void onStop(StopEvent e) {
-        // machine.stop();
+        timer.stop();
       }
       
     });
@@ -174,7 +196,7 @@ public final class Window {
 
       @Override
       public void onSpeedChanged(SpeedChangeEvent e) {
-        
+        // Ajouter un Timer a la machine pour pouvoir regler sa vitesse
       }
       
     });
@@ -205,6 +227,8 @@ public final class Window {
       }
       
     });
+
+
   }
 
   private void refreshView() {
