@@ -1,7 +1,5 @@
 package org.noopi.view;
 
-import java.lang.Thread.State;
-
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
@@ -15,6 +13,7 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
 

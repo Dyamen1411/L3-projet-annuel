@@ -27,6 +27,7 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
 
@@ -35,7 +36,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseListener;
-import java.lang.Thread.State;
 import java.util.Map;
 import java.util.EnumMap;
 
@@ -113,14 +113,12 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void setSymbolOnTape(Symbol s) {
-        // TODO Auto-generated method stub
-        
+        tape.setSymbol(s);
     }
 
     @Override
     public void setMachineState(State s) {
-        // TODO Auto-generated method stub
-        
+        tape.setState(s);
     }
 
     @Override
