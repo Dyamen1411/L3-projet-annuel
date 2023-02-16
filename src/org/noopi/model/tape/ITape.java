@@ -6,17 +6,60 @@ import org.noopi.utils.listeners.tape.TapeWriteEventListener;
 import org.noopi.utils.machine.Symbol;
 
 public interface ITape {
+
+  /**
+   * Every cell of the tape are now <code>defaultSymbol</code>.
+   */
   void reset(Symbol defaultSymbol);
+
+  /**
+   * The tape cells are now of [..., <code>defaultSymbols</code>,
+   * <code>symbols</code>, <code>defaultSymbol</code>, ...] and the tape pointer
+   * is set on the first symbol of <code>symbols</code>.
+   * @param defaultSymbol the default symbol on the tape.
+   * @param symbols the sequence of symbol under the pointer.
+   */
   void reset(Symbol defaultSymbol, Symbol[] symbols);
 
+  /**
+   * Moves the tape on cell to the right thus moving the tape pointer one cell
+   * to the left.
+   */
   void shiftRight();
+
+  /**
+   * Moves the tape on cell to the left thus moving the tape pointer one cell
+   * to the right.
+   */
   void shiftLeft();
 
+  /**
+   * @return the symbol under the tape pointer.
+   */
   Symbol readSymbol();
+
+  /**
+   * Writes <code>symbol</code> under the tape pointer.
+   * @param symbol the symbol to be written.
+   */
   void writeSymbol(Symbol symbol);
 
+  /**
+   * When the <code>reset</code> method is called, it will send a
+   * <code>TapeResetEvent</code> event to this listener.
+   */
   void addTapeResetEventListener(TapeResetEventListener l);
+
+  /**
+   * When the <code>shiftLeft</code> or <code>shiftRight</code> methods are
+   * called, it will send a <code>TapeMovedEvent</code> event to this listener.
+   */
   void addTapeMovedEventListener(TapeMovedEventListener l);
+
+  /**
+   * When the <code>writeSymbol</code> method is called, it will send an
+   * <code>TapeWriteEvent</code> event to this listener.
+   */
   void addTapeWriteEventListener(TapeWriteEventListener l);
 
   void removeTapeResetEventListener(TapeResetEventListener l);
