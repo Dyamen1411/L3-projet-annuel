@@ -35,6 +35,14 @@ public class GraphicTape extends JComponent {
     }
 
     public void shiftTapeLeft() {
+
+    }
+
+    public void setState() {
+
+    }
+
+    public void setSymbol() {
         
     }
 
