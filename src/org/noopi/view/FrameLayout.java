@@ -15,28 +15,30 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+
+import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.AddRuleEventListener;
+import org.noopi.utils.listeners.view.NewFileEventListener;
+import org.noopi.utils.listeners.view.OpenFileEventListener;
+import org.noopi.utils.listeners.view.RemoveRuleEventListener;
+import org.noopi.utils.listeners.view.RunEventListener;
+import org.noopi.utils.listeners.view.SaveEventListener;
+import org.noopi.utils.listeners.view.SpeedChangeEventListener;
+import org.noopi.utils.listeners.view.StepEventListener;
+import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.machine.Transition;
+
 import java.awt.BorderLayout;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseListener;
+import java.lang.Thread.State;
 import java.util.Map;
 import java.util.EnumMap;
 
 import java.awt.GridLayout;
-
-
-import org.noopi.utils.listeners.AddRuleEventListener;
-import org.noopi.utils.listeners.NewFileEventListener;
-import org.noopi.utils.listeners.OpenFileEventListener;
-import org.noopi.utils.listeners.RemoveRuleEventListener;
-import org.noopi.utils.listeners.RunEventListener;
-import org.noopi.utils.listeners.SaveEventListener;
-import org.noopi.utils.listeners.SpeedChangeEventListener;
-import org.noopi.utils.listeners.StepEventListener;
-import org.noopi.utils.listeners.StopEventListener;
-import org.noopi.utils.listeners.TapeInitializationEventListener;
-
 
 public class FrameLayout implements IFrameLayout {
 
@@ -61,7 +63,6 @@ public class FrameLayout implements IFrameLayout {
     //CONSTRUCTEURS
 
     public FrameLayout() {
-        createModel();
         createView();
         placeComponent();
         createController();
@@ -101,39 +102,42 @@ public class FrameLayout implements IFrameLayout {
     }
 
     @Override
-    public void setSymbolOnTape() {
-        
-    }
-
-    @Override
-    public void setMachineState() {
-
-    }
-
-    @Override
-    public void addRule() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void removeRule() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public void resetRules() {
         rulesTextArea.setText(null);
     }
 
     @Override
-    public void pushHistory() {
+    public void popHistory() {
+    }
+
+    @Override
+    public void setSymbolOnTape(Symbol s) {
+        // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void popHistory() {
+    public void setMachineState(State s) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addRule(Transition t) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void removeRule(Transition t) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void pushHistory(Transition t) {
+        // TODO Auto-generated method stub
+        
     }
 
     @Override
@@ -197,9 +201,7 @@ public class FrameLayout implements IFrameLayout {
     }
 
     // OUTILS
-    private void createModel() {
 
-    }
     private void createView() {
         mainPanel = new JPanel(new BorderLayout());
 
@@ -281,28 +283,6 @@ public class FrameLayout implements IFrameLayout {
         mainPanel.add(historyScrollPane, BorderLayout.EAST);
     }
 
-    private void setMenuBar() {
-        for (Menu m : Menu.STRUCT.keySet()) {
-            JMenu menu = new JMenu(m.label());
-            for (Item i : Menu.STRUCT.get(m)) {
-                if (i == null) {
-                    menu.add(new JSeparator());
-                } else {
-                    menu.add(getMenuItemsMap().get(i));
-                }
-            }
-            menuBar.add(menu);
-        }
-    }
-
-    private void setSpeedSlider() {
-        speedSlider.setPaintTrack(true); 
-        speedSlider.setPaintTicks(true); 
-        speedSlider.setPaintLabels(true); 
-        speedSlider.setMajorTickSpacing(20); 
-        speedSlider.setMinorTickSpacing(5); 
-    }
-
     private void createController() {
         rulesTextArea.addMouseListener(new MouseListener()
         {
@@ -333,6 +313,28 @@ public class FrameLayout implements IFrameLayout {
         });
     }
 
+    private void setMenuBar() {
+        for (Menu m : Menu.STRUCT.keySet()) {
+            JMenu menu = new JMenu(m.label());
+            for (Item i : Menu.STRUCT.get(m)) {
+                if (i == null) {
+                    menu.add(new JSeparator());
+                } else {
+                    menu.add(getMenuItemsMap().get(i));
+                }
+            }
+            menuBar.add(menu);
+        }
+    }
+
+    private void setSpeedSlider() {
+        speedSlider.setPaintTrack(true); 
+        speedSlider.setPaintTicks(true); 
+        speedSlider.setPaintLabels(true); 
+        speedSlider.setMajorTickSpacing(20); 
+        speedSlider.setMinorTickSpacing(5); 
+    }
+
     private void createNewRulesFrame() {
         rulesFrame = new JFrame("Liste des règles");
         rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -345,5 +347,4 @@ public class FrameLayout implements IFrameLayout {
         rulesFrame.setLocationRelativeTo(null);
         rulesFrame.setVisible(true);
     }
-    
 }
