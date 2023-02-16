@@ -28,6 +28,16 @@ public class GraphicTape extends JComponent {
         setPreferredSize(preferedSize);
     }
 
+    // COMMANDES
+
+    public void shiftTapeRight() {
+
+    }
+
+    public void shiftTapeLeft() {
+        
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

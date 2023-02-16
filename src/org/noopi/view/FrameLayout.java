@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.EventListenerList;
@@ -99,12 +98,12 @@ public class FrameLayout implements IFrameLayout {
 
     @Override
     public void shiftTapeRight() {
-        
+        tape.shiftTapeRight();
     }
 
     @Override
     public void shiftTapeLeft() {
-        
+        tape.shiftTapeLeft();
     }
 
     @Override
