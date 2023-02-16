@@ -1,13 +1,63 @@
 package org.noopi.model.tape;
 
+import org.noopi.utils.listeners.tape.TapeMovedEventListener;
+import org.noopi.utils.listeners.tape.TapeResetEventListener;
+import org.noopi.utils.listeners.tape.TapeWriteEventListener;
+import org.noopi.utils.machine.Direction;
 import org.noopi.utils.machine.Symbol;
 
 public interface ITape {
-  void reset();
-  void reset(Symbol[] symbols);
 
-  void shiftRight();
-  void shiftLeft();
+  /**
+   * Every cell of the tape are now <code>defaultSymbol</code>.
+   */
+  void reset(Symbol defaultSymbol);
 
-  Symbol getCurrentSymbol();
+  /**
+   * The tape cells are now of [..., <code>defaultSymbols</code>,
+   * <code>symbols</code>, <code>defaultSymbol</code>, ...] and the tape pointer
+   * is set on the first symbol of <code>symbols</code>.
+   * @param defaultSymbol the default symbol on the tape.
+   * @param symbols the sequence of symbol under the pointer.
+   */
+  void reset(Symbol defaultSymbol, Symbol[] symbols);
+
+  /**
+   * Moves the tape on a given direction
+   * (thus moving the pointer to the opposite direction).
+   */
+  void shift(Direction d);
+
+  /**
+   * @return the symbol under the tape pointer.
+   */
+  Symbol readSymbol();
+
+  /**
+   * Writes <code>symbol</code> under the tape pointer.
+   * @param symbol the symbol to be written.
+   */
+  void writeSymbol(Symbol symbol);
+
+  /**
+   * When the <code>reset</code> method is called, it will send a
+   * <code>TapeResetEvent</code> event to this listener.
+   */
+  void addTapeResetEventListener(TapeResetEventListener l);
+
+  /**
+   * When the <code>shiftLeft</code> or <code>shiftRight</code> methods are
+   * called, it will send a <code>TapeMovedEvent</code> event to this listener.
+   */
+  void addTapeMovedEventListener(TapeMovedEventListener l);
+
+  /**
+   * When the <code>writeSymbol</code> method is called, it will send an
+   * <code>TapeWriteEvent</code> event to this listener.
+   */
+  void addTapeWriteEventListener(TapeWriteEventListener l);
+
+  void removeTapeResetEventListener(TapeResetEventListener l);
+  void removeTapeMovedEventListener(TapeMovedEventListener l);
+  void removeTapeWriteEventListener(TapeWriteEventListener l);
 }

@@ -1,9 +1,22 @@
 package org.noopi.view;
 
+import java.lang.Thread.State;
+
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
-import org.noopi.utils.listeners.*;
+import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.AddRuleEventListener;
+import org.noopi.utils.listeners.view.NewFileEventListener;
+import org.noopi.utils.listeners.view.OpenFileEventListener;
+import org.noopi.utils.listeners.view.RemoveRuleEventListener;
+import org.noopi.utils.listeners.view.RunEventListener;
+import org.noopi.utils.listeners.view.SaveEventListener;
+import org.noopi.utils.listeners.view.SpeedChangeEventListener;
+import org.noopi.utils.listeners.view.StepEventListener;
+import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.machine.Transition;
 
 public interface IFrameLayout {
 
@@ -36,22 +49,22 @@ public interface IFrameLayout {
   /**
    * Sets a new symbol on the tape under the head.
    */
-  void setSymbolOnTape(/* TODO: define data type */);
+  void setSymbolOnTape(Symbol s);
 
   /**
    * Sets the machine state.
    */
-  void setMachineState(/* TODO: define data type */);
+  void setMachineState(State s);
 
   /**
    * Adds a new rule on the rule board.
    */
-  void addRule(/* TODO: define data type */);
+  void addRule(Transition t);
 
   /**
    * Removes a rule from the rule board.
    */
-  void removeRule(/* TODO: define data type */);
+  void removeRule(Transition t);
 
   /**
    * Removes all the rules from the rule board.
@@ -61,7 +74,7 @@ public interface IFrameLayout {
   /**
    * Adds an action to the top of the history.
    */
-  void pushHistory(/* TODO: define data type */);
+  void pushHistory(Transition t);
 
   /**
    * Removes the last action from the top of the history.
