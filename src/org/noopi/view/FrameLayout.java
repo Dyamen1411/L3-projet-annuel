@@ -20,6 +20,16 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.awt.event.MouseAdapter;
 
+import org.noopi.utils.events.tape.TapeInitializationEvent;
+import org.noopi.utils.events.view.AddRuleEvent;
+import org.noopi.utils.events.view.NewFileEvent;
+import org.noopi.utils.events.view.OpenFileEvent;
+import org.noopi.utils.events.view.RemoveRuleEvent;
+import org.noopi.utils.events.view.RunEvent;
+import org.noopi.utils.events.view.SaveEvent;
+import org.noopi.utils.events.view.SpeedChangeEvent;
+import org.noopi.utils.events.view.StepEvent;
+import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.AddRuleEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
@@ -48,6 +58,17 @@ public class FrameLayout implements IFrameLayout {
     //ATTRIBUTS
 
     private EventListenerList listenerList;
+
+    private AddRuleEvent addRuleEvent;
+    private RemoveRuleEvent removeRuleEvent;
+    private TapeInitializationEvent tapeInitializationEvent;
+    private StepEvent stepEvent;
+    private RunEvent runEvent;
+    private StopEvent stopEvent;
+    private SpeedChangeEvent speedChangeEvent;
+    private OpenFileEvent openFileEvent;
+    private NewFileEvent newFileEvent;
+    private SaveEvent saveEvent;
 
     private JPanel mainPanel;
     private JMenuBar menuBar;
@@ -336,4 +357,125 @@ public class FrameLayout implements IFrameLayout {
         return new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
         + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
     }
+
+    protected void fireAddRuleEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == AddRuleEventListener.class) {
+                if (addRuleEvent == null) {
+                    addRuleEvent = new AddRuleEvent();
+                }
+                ((AddRuleEventListener) listeners[i + 1]).onRuleAdded(addRuleEvent);
+            }
+        }
+    }
+
+    protected void fireRemoveRuleEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == RemoveRuleEventListener.class) {
+                if (removeRuleEvent == null) {
+                    removeRuleEvent = new RemoveRuleEvent();
+                }
+                ((RemoveRuleEventListener) listeners[i + 1]).onRuleRemoved(removeRuleEvent);
+            }
+        }
+    }
+
+    protected void fireTapeInitializationEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == TapeInitializationEventListener.class) {
+                if (tapeInitializationEvent == null) {
+                    tapeInitializationEvent = new TapeInitializationEvent();
+                }
+                ((TapeInitializationEventListener) listeners[i + 1]).onTapeInitialized(tapeInitializationEvent);
+            }
+        }
+    }
+
+    protected void fireStepEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == StepEventListener.class) {
+                if (stepEvent == null) {
+                    stepEvent = new StepEvent();
+                }
+                ((StepEventListener) listeners[i + 1]).onStep(stepEvent);
+            }
+        }
+    }
+
+    protected void fireRunEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == RunEventListener.class) {
+                if (runEvent == null) {
+                    runEvent = new RunEvent();
+                }
+                ((RunEventListener) listeners[i + 1]).onRun(runEvent);
+            }
+        }
+    }
+
+    protected void fireStopEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == StopEventListener.class) {
+                if (stopEvent == null) {
+                    stopEvent = new StopEvent();
+                }
+                ((StopEventListener) listeners[i + 1]).onStop(stopEvent);
+            }
+        }
+    }
+
+    protected void fireSpeedChangeEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == SpeedChangeEventListener.class) {
+                if (speedChangeEvent == null) {
+                    speedChangeEvent = new SpeedChangeEvent();
+                }
+                ((SpeedChangeEventListener) listeners[i + 1]).onSpeedChanged(speedChangeEvent);
+            }
+        }
+    }
+
+    protected void fireOpenFileEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == OpenFileEventListener.class) {
+                if (openFileEvent == null) {
+                    openFileEvent = new OpenFileEvent();
+                }
+                ((OpenFileEventListener) listeners[i + 1]).onFileOpened(openFileEvent);
+            }
+        }
+    }
+
+    protected void fireNewFileEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == NewFileEventListener.class) {
+                if (newFileEvent == null) {
+                    newFileEvent = new NewFileEvent();
+                }
+                ((NewFileEventListener) listeners[i + 1]).onNewFile(newFileEvent);
+            }
+        }
+    }
+
+    protected void fireSaveEvent() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == SaveEventListener.class) {
+                if (saveEvent == null) {
+                    saveEvent = new SaveEvent();
+                }
+                ((SaveEventListener) listeners[i + 1]).onSave(saveEvent);
+            }
+        }
+    }
+
 }
