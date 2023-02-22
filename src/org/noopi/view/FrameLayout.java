@@ -18,13 +18,14 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
-import org.noopi.utils.events.view.AddRuleEvent;
 import org.noopi.utils.events.view.NewFileEvent;
 import org.noopi.utils.events.view.OpenFileEvent;
-import org.noopi.utils.events.view.RemoveRuleEvent;
 import org.noopi.utils.events.view.RunEvent;
 import org.noopi.utils.events.view.SaveEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
@@ -59,8 +60,6 @@ public class FrameLayout implements IFrameLayout {
 
     private EventListenerList listenerList;
 
-    private AddRuleEvent addRuleEvent;
-    private RemoveRuleEvent removeRuleEvent;
     private TapeInitializationEvent tapeInitializationEvent;
     private StepEvent stepEvent;
     private RunEvent runEvent;
@@ -312,10 +311,30 @@ public class FrameLayout implements IFrameLayout {
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent arg0) {
-                speedSlider.getValue();
+                fireSpeedChangeEvent((double) speedSlider.getValue() / (double) speedSlider.getMaximum());
             }
         });
 
+        stepButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                fireStepEvent();
+            }
+        });
+
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                fireRunEvent();
+            }
+        });
+
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                fireStopEvent();
+            }
+        });
     }
 
     private void setMenuBar() {
@@ -406,16 +425,17 @@ public class FrameLayout implements IFrameLayout {
         }
     }
 
-    protected void fireSpeedChangeEvent() {
+    protected void fireSpeedChangeEvent(double v) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == SpeedChangeEventListener.class) {
                 if (speedChangeEvent == null) {
-                    speedChangeEvent = new SpeedChangeEvent();
+                    speedChangeEvent = new SpeedChangeEvent(v);
                 }
                 ((SpeedChangeEventListener) listeners[i + 1]).onSpeedChanged(speedChangeEvent);
             }
         }
+        speedChangeEvent = null;
     }
 
     protected void fireOpenFileEvent() {
