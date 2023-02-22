@@ -349,6 +349,13 @@ public class FrameLayout implements IFrameLayout {
                 fireOpenFileEvent();
             }
         });
+
+        menuItems.get(Item.SAVE).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                fireSaveEvent();
+            }
+        });
     }
 
     private void setMenuBar() {
