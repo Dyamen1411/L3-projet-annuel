@@ -170,14 +170,13 @@ public class FrameLayout implements IFrameLayout {
     @Override
     public void addAddRuleEventListener(AddRuleEventListener l) {
         assert l != null;
-        listenerList.add(AddRuleEventListener.class, l);
-        
+        addAndRemoveRulesComponent.addAddRuleEventListener(l);
     }
 
     @Override
     public void addRemoveRuleEventListener(RemoveRuleEventListener l) {
         assert l != null;
-        listenerList.add(RemoveRuleEventListener.class, l);
+        addAndRemoveRulesComponent.addRemoveRuleEventListener(l);
     }
 
     @Override
@@ -316,6 +315,7 @@ public class FrameLayout implements IFrameLayout {
                 speedSlider.getValue();
             }
         });
+
     }
 
     private void setMenuBar() {
@@ -356,30 +356,6 @@ public class FrameLayout implements IFrameLayout {
     private JLabel createJLabel(Transition t) {
         return new JLabel("(" + t.getOldState() + ", " + t.getOldSymbol()
         + " => " + "(" + t.getNewState() + ", " + t.getNewSymbol() + ", " + t.getNewDirection() + ")");
-    }
-
-    protected void fireAddRuleEvent() {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == AddRuleEventListener.class) {
-                if (addRuleEvent == null) {
-                    addRuleEvent = new AddRuleEvent();
-                }
-                ((AddRuleEventListener) listeners[i + 1]).onRuleAdded(addRuleEvent);
-            }
-        }
-    }
-
-    protected void fireRemoveRuleEvent() {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == RemoveRuleEventListener.class) {
-                if (removeRuleEvent == null) {
-                    removeRuleEvent = new RemoveRuleEvent();
-                }
-                ((RemoveRuleEventListener) listeners[i + 1]).onRuleRemoved(removeRuleEvent);
-            }
-        }
     }
 
     protected void fireTapeInitializationEvent() {

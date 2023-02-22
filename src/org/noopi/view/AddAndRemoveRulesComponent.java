@@ -1,11 +1,25 @@
 package org.noopi.view;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.EventListenerList;
+
+import org.noopi.utils.events.view.AddRuleEvent;
+import org.noopi.utils.events.view.RemoveRuleEvent;
+import org.noopi.utils.listeners.view.AddRuleEventListener;
+import org.noopi.utils.listeners.view.RemoveRuleEventListener;
+import org.noopi.utils.machine.Direction;
+import org.noopi.utils.machine.State;
+import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.machine.Transition;
+
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.LinkedList;
@@ -23,19 +37,24 @@ public class AddAndRemoveRulesComponent extends JComponent {
     private JTextField addRuleStateTextField;
     private JTextField addResuSymbolTextField;
     private JTextField addResuStateTextField;
-    private JTextField addResuDirectionTextField;
+    private JComboBox<Direction> addDirection;
     private JTextField removeRuleSymbolTextField;
     private JTextField removeRuleStateTextField;
     private JTextField removeResuSymbolTextField;
     private JTextField removeResuStateTextField;
-    private JTextField removeResuDirectionTextField;
+    private JComboBox<Direction> removeDirection;
     private List<JTextField> textFieldList;
+    private EventListenerList listenerList;
+    private AddRuleEvent addRuleEvent;
+    private RemoveRuleEvent removeRuleEvent;
 
     // Constructeurs
 
     public AddAndRemoveRulesComponent() {
         createComponents();
+        createController();
         setPanel();
+        listenerList = new EventListenerList();
     }
 
     // REQUETES
@@ -56,7 +75,7 @@ public class AddAndRemoveRulesComponent extends JComponent {
             addAndRemoveRulesPanel.add(new JLabel("       =>"));
             addAndRemoveRulesPanel.add(addResuSymbolTextField);
             addAndRemoveRulesPanel.add(addResuStateTextField);
-            addAndRemoveRulesPanel.add(addResuDirectionTextField);
+            addAndRemoveRulesPanel.add(addDirection);
             addAndRemoveRulesPanel.add(removeRuleButton);
             addAndRemoveRulesPanel.add(new JLabel("          :"));
             addAndRemoveRulesPanel.add(removeRuleSymbolTextField);
@@ -64,7 +83,7 @@ public class AddAndRemoveRulesComponent extends JComponent {
             addAndRemoveRulesPanel.add(new JLabel("       =>"));
             addAndRemoveRulesPanel.add(removeResuSymbolTextField);
             addAndRemoveRulesPanel.add(removeResuStateTextField);
-            addAndRemoveRulesPanel.add(removeResuDirectionTextField);
+            addAndRemoveRulesPanel.add(removeDirection);
         }
     }
 
@@ -80,8 +99,7 @@ public class AddAndRemoveRulesComponent extends JComponent {
         textFieldList.add(addResuSymbolTextField);
         addResuStateTextField = new JTextField("Etat");
         textFieldList.add(addResuStateTextField);
-        addResuDirectionTextField = new JTextField("Direction");
-        textFieldList.add(addResuDirectionTextField);
+        addDirection = new JComboBox<Direction>(Direction.values());
         removeRuleSymbolTextField = new JTextField("Symbole");
         textFieldList.add(removeRuleSymbolTextField);
         removeRuleStateTextField = new JTextField("Etat");
@@ -90,8 +108,7 @@ public class AddAndRemoveRulesComponent extends JComponent {
         textFieldList.add(removeResuSymbolTextField);
         removeResuStateTextField = new JTextField("Etat");
         textFieldList.add(removeResuStateTextField);
-        removeResuDirectionTextField = new JTextField("Direction");
-        textFieldList.add(removeResuDirectionTextField);
+        removeDirection = new JComboBox<Direction>(Direction.values());
         setTextField();
     }
 
@@ -117,5 +134,65 @@ public class AddAndRemoveRulesComponent extends JComponent {
                 }
             }
         });
+    }
+
+    private void createController() {
+        addRuleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                State oldState = new State(addRuleStateTextField.getText());
+                Symbol oldSymbol = new Symbol(addRuleSymbolTextField.getText());
+                Direction newDirection = (Direction) addDirection.getSelectedItem();
+                State newState = new State(addResuStateTextField.getText());
+                Symbol newSymbol = new Symbol(addResuSymbolTextField.getText());
+                fireAddRuleEvent(new Transition(oldState, oldSymbol, newDirection, newState, newSymbol));
+            }
+        });
+        removeRuleButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                State oldState = new State(removeRuleStateTextField.getText());
+                Symbol oldSymbol = new Symbol(removeRuleSymbolTextField.getText());
+                Direction newDirection = (Direction) removeDirection.getSelectedItem();
+                State newState = new State(removeResuStateTextField.getText());
+                Symbol newSymbol = new Symbol(removeResuSymbolTextField.getText());
+                fireRemoveRuleEvent(new Transition(oldState, oldSymbol, newDirection, newState, newSymbol));
+            }
+        });
+    }
+
+    public void addAddRuleEventListener(AddRuleEventListener l) {
+        assert l != null;
+        listenerList.add(AddRuleEventListener.class, l);
+        
+    }
+
+    public void addRemoveRuleEventListener(RemoveRuleEventListener l) {
+        assert l != null;
+        listenerList.add(RemoveRuleEventListener.class, l);
+    }
+
+    protected void fireAddRuleEvent(Transition t) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == AddRuleEventListener.class) {
+                if (addRuleEvent == null) {
+                    addRuleEvent = new AddRuleEvent(t);
+                }
+                ((AddRuleEventListener) listeners[i + 1]).onRuleAdded(addRuleEvent);
+            }
+        }
+        addRuleEvent = null;
+    }
+
+    protected void fireRemoveRuleEvent(Transition t) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == RemoveRuleEventListener.class) {
+                if (removeRuleEvent == null) {
+                    removeRuleEvent = new RemoveRuleEvent();
+                }
+                ((RemoveRuleEventListener) listeners[i + 1]).onRuleRemoved(removeRuleEvent);
+            }
+        }
     }
 }
