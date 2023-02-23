@@ -311,7 +311,10 @@ public class FrameLayout implements IFrameLayout {
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent arg0) {
-                fireSpeedChangeEvent((double) speedSlider.getValue() / (double) speedSlider.getMaximum());
+                final double speedRatio
+                    = (double) speedSlider.getValue()
+                    / (double) speedSlider.getMaximum();
+                fireSpeedChangeEvent(speedRatio);
             }
         });
 
