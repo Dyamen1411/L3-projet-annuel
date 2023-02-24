@@ -253,48 +253,52 @@ public class FrameLayout implements IFrameLayout {
     private void placeComponent() {
         setMenuBar();
         Border border = BorderFactory.createLineBorder(Color.GRAY, 3);
-        JPanel q = new JPanel();
-        q.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
-        {//--
-            JScrollPane rulePane = new JScrollPane(rulesJList);
-            rulePane.setPreferredSize(new Dimension(300, 175));
-            Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
-            rulePane.setBorder(BorderFactory.createTitledBorder(rulesBorderPane, "Cliquez pour aggrandir"));
-            q.add(rulePane);
-            q.add(addAndRemoveRulesComponent.getAddAndRemoveRulesPanel());
-        }//--
-        mainPanel.add(q);
-        q = new JPanel();
-        q.setBorder(BorderFactory.createTitledBorder(border, "RUBAN"));
-        {//--
-            q.add(tape);
-        }//--
-        mainPanel.add(q);
-        q = new JPanel(new GridLayout(0, 1));
-        q.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
-        {//--
-            JPanel r = new JPanel();
-            {//--
-                r.add(new JLabel("Ruban initial :"));
-                r.add(initialRubanTextField);
-            }//--
-            q.add(r);
-            r = new JPanel();
-            {//--
-                r.add(initButton);
-                r.add(stepButton);
-            }//--
-            q.add(r);
-            r = new JPanel();
-            {//--
-                r.add(startButton);
-                r.add(stopButton);
-                setSpeedSlider();
-                r.add(speedSlider);
-            }//--
-            q.add(r);
-        }//--
-        mainPanel.add(q);
+        JPanel p = new JPanel(new GridLayout(0, 1));
+            {//-
+                JPanel q = new JPanel();
+                q.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
+                {//--
+                    JScrollPane rulePane = new JScrollPane(rulesJList);
+                    rulePane.setPreferredSize(new Dimension(300, 175));
+                    Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
+                    rulePane.setBorder(BorderFactory.createTitledBorder(rulesBorderPane, "Cliquez pour aggrandir"));
+                    q.add(rulePane);
+                    q.add(addAndRemoveRulesComponent.getAddAndRemoveRulesPanel());
+                }//--
+                p.add(q);
+                q = new JPanel();
+                q.setBorder(BorderFactory.createTitledBorder(border, "RUBAN"));
+                {//--
+                    q.add(tape);
+                }//--
+                p.add(q);
+                q = new JPanel(new GridLayout(0, 1));
+                q.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
+                {//--
+                    JPanel r = new JPanel();
+                    {//--
+                        r.add(new JLabel("Ruban initial :"));
+                        r.add(initialRubanTextField);
+                    }//--
+                    q.add(r);
+                    r = new JPanel();
+                    {//--
+                        r.add(initButton);
+                        r.add(stepButton);
+                    }//--
+                    q.add(r);
+                    r = new JPanel();
+                    {//--
+                        r.add(startButton);
+                        r.add(stopButton);
+                        setSpeedSlider();
+                        r.add(speedSlider);
+                    }//--
+                    q.add(r);
+                }//--
+                p.add(q);
+            }//-
+        mainPanel.add(p, BorderLayout.CENTER);
         JScrollPane historyScrollPane = new JScrollPane(historyJList);
         historyScrollPane.setPreferredSize(new Dimension(300, 500));
         historyScrollPane.setBorder(BorderFactory.createTitledBorder(border, "HISTORIQUE"));
