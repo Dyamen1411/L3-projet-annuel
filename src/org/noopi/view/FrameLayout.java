@@ -267,7 +267,7 @@ public class FrameLayout implements IFrameLayout {
                 }//--
                 p.add(q);
                 q = new JPanel();
-                q.setBorder(BorderFactory.createTitledBorder(border, "RUBAN"));
+                q.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTTION GRAPHIQUE"));
                 {//--
                     q.add(tape);
                 }//--

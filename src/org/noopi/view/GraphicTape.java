@@ -15,9 +15,10 @@ public class GraphicTape extends JComponent {
 
     // ATTRIBUTS
 
+    private static final int NB_CASE_IN_TAPE = 9;
     // Largeur préférée du ruban
     private static final int PREFERED_WIDTH =  800;
-
+    // Hauteur préférée du ruban
     private static final int PREFERED_HEIGHT = 200;
     // Epaisseur du bord du ruban
     private static final int THICK = 2;
@@ -33,7 +34,7 @@ public class GraphicTape extends JComponent {
     // COMMANDES
 
     public void shiftTapeRight() {
-
+        
     }
 
     public void shiftTapeLeft() {
