@@ -1,6 +1,8 @@
 package org.noopi.utils.machine;
 
 public final class State {
+  public static final State EMPTY_STATE = new State("");
+
   private final String name;
 
   public State(String name) {

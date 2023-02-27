@@ -1,6 +1,9 @@
 package org.noopi.utils.machine;
 
 public final class Symbol {
+
+  public static final Symbol EMPTY_SYMBOL = new Symbol("");
+
   private final String name;
 
   public Symbol(String name) {
