@@ -11,15 +11,27 @@ public class HintableTextField extends JTextField {
   private boolean hinted;
 
   public HintableTextField() {
-    this("", "");
+    this("", "", 0);
+  }
+
+  public HintableTextField(int columns) {
+    this("", "", columns);
   }
 
   public HintableTextField(String text) {
-    this(text, "");
+    this(text, "", 0);
+  }
+
+  public HintableTextField(String text, int columns) {
+    this(text, "", columns);
   }
 
   public HintableTextField(String text, String hint) {
-    super(text);
+    this(text, "", 0);
+  }
+
+  public HintableTextField(String text, String hint, int columns) {
+    super(text, columns);
     this.hint = hint;
     hint();
     
