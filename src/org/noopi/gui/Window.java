@@ -2,6 +2,9 @@ package org.noopi.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -35,7 +38,9 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.machine.StateDatabase;
 import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.machine.SymbolDatabase;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.history.TransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
@@ -50,6 +55,9 @@ public final class Window {
   private ITape tape;
   private ITransitionHistory history;
   private Timer timer;
+
+  private SymbolDatabase symbolDatabase;
+  private StateDatabase stateDatabase;
 
   // View
   private JFrame frame;
@@ -88,6 +96,9 @@ public final class Window {
     tape = new Tape(Symbol.EMPTY_SYMBOL);
     machine = new TuringMachine();
     history = new TransitionHistory();
+
+    symbolDatabase = new SymbolDatabase();
+    stateDatabase = new StateDatabase();
   }
 
   private void createView() {
