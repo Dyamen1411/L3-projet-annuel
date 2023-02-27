@@ -91,11 +91,10 @@ public class FrameLayout implements IFrameLayout {
   //CONSTRUCTEURS
 
   public FrameLayout() {
-    listenerList = new EventListenerList();
-
     createView();
     placeComponent();
     createController();
+    listenerList = new EventListenerList();
   }
 
   //REQUETES
