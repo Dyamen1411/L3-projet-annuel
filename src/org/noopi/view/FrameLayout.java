@@ -281,66 +281,77 @@ public class FrameLayout implements IFrameLayout {
 
   private void placeComponent() {
     setMenuBar();
-    Border border = BorderFactory.createLineBorder(Color.GRAY, 3);
-    JPanel p = new JPanel(new GridLayout(0, 1));
-    {//-
-      JPanel q = new JPanel();
-      q.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
-      {//--
-        JScrollPane rulePane = new JScrollPane(rulesJList);
-        rulePane.setPreferredSize(new Dimension(300, 175));
-        Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
-        rulePane.setBorder(BorderFactory.createTitledBorder(
-          rulesBorderPane, "Cliquez pour aggrandir"
-        ));
-        q.add(rulePane);
-        JPanel qq = new JPanel(new GridLayout(2, 1));
-        {
-          qq.add(addRule);
-          qq.add(removeRule);
-        }
-        q.add(qq);
-      }//--
-      p.add(q);
-      q = new JPanel();
-      q.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTTION GRAPHIQUE"));
-      {//--
-        q.add(tape);
-      }//--
-      p.add(q);
-      q = new JPanel(new GridLayout(0, 1));
-      q.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
-      {//--
-        JPanel r = new JPanel();
-        {//--
-          r.add(new JLabel("Ruban initial :"));
-          r.add(initialRubanTextField);
-        }//--
-        q.add(r);
-        r = new JPanel();
-        {//--
-          r.add(initButton);
-          r.add(stepButton);
-        }//--
-        q.add(r);
-        r = new JPanel();
-        {//--
-          r.add(startButton);
-          r.add(stopButton);
-          setSpeedSlider();
-          r.add(speedSlider);
-        }//--
-        q.add(r);
-      }//--
-      p.add(q);
-    }//-
-    mainPanel.add(p, BorderLayout.CENTER);
+    final Border border = BorderFactory.createLineBorder(Color.GRAY, 3);
+    mainPanel.add(createGUI(border), BorderLayout.CENTER);
+    mainPanel.add(createHistoryGUI(border), BorderLayout.EAST);
+  }
+
+  private JPanel createRulesGUI(Border border) {
+    JPanel rules = new JPanel();
+    rules.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
+
+    JScrollPane rulePane = new JScrollPane(rulesJList);
+    rulePane.setPreferredSize(new Dimension(300, 175));
+    Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
+    rulePane.setBorder(BorderFactory.createTitledBorder(
+      rulesBorderPane, "Cliquez pour aggrandir"
+    ));
+    rules.add(rulePane);
+
+    JPanel transitionEditor = new JPanel(new GridLayout(2, 1));
+    transitionEditor.add(addRule);
+    transitionEditor.add(removeRule);
+    rules.add(transitionEditor);
+
+    return rules;
+  }
+
+  private JPanel createMachineGUI(Border border) {
+    JPanel machine = new JPanel();
+    machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTTION GRAPHIQUE"));
+    machine.add(tape);
+    return machine;
+  }
+
+  private JPanel createControlsGUI(Border border) {
+    JPanel controls = new JPanel(new GridLayout(0, 1));
+    controls.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
+
+    JPanel tapeControls = new JPanel();
+    tapeControls.add(new JLabel("Ruban initial :"));
+    tapeControls.add(initialRubanTextField);
+    controls.add(tapeControls);
+
+    JPanel stateControls = new JPanel();
+    stateControls.add(initButton);
+    stateControls.add(stepButton);
+    controls.add(stateControls);
+
+    JPanel machineControls = new JPanel();
+    machineControls.add(startButton);
+    machineControls.add(stopButton);
+    setSpeedSlider();
+    machineControls.add(speedSlider);
+    controls.add(machineControls);
+
+    return controls;
+  }
+
+  private JPanel createGUI(Border border) {
+    JPanel gui = new JPanel(new GridLayout(0, 1));
+    gui.add(createRulesGUI(border));
+    gui.add(createMachineGUI(border));
+    gui.add(createControlsGUI(border));
+    return gui;
+  }
+
+  private JScrollPane createHistoryGUI(Border border) {
     JScrollPane historyScrollPane = new JScrollPane(historyJList);
     historyScrollPane.setPreferredSize(new Dimension(300, 500));
-    historyScrollPane.setBorder(BorderFactory.createTitledBorder(
-      border, "HISTORIQUE")
+    historyScrollPane.setBorder(
+      BorderFactory.createTitledBorder(border, "HISTORIQUE")
     );
-    mainPanel.add(historyScrollPane, BorderLayout.EAST);
+    return historyScrollPane;
   }
 
   private void createController() {
