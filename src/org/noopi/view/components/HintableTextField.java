@@ -59,7 +59,6 @@ public class HintableTextField extends JTextField {
 
   @Override
   public String getText() {
-    System.out.println("bite");
     return hinted
       ? ""
       : super.getText();
