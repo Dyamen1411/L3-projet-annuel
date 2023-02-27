@@ -4,28 +4,33 @@ import java.util.HashMap;
 
 import javax.swing.event.EventListenerList;
 
-import org.noopi.utils.events.database.symbol.SymbolRegisteredEvent;
-import org.noopi.utils.events.database.symbol.SymbolUnRegisteredEvent;
-import org.noopi.utils.exceptions.ExistingSymbolException;
-import org.noopi.utils.exceptions.NonExistingSymbolException;
-import org.noopi.utils.listeners.database.symbol.SymbolRegisteredEventListener;
-import org.noopi.utils.listeners.database.symbol.SymbolUnRegisteredEventListener;
+import org.noopi.utils.events.database.DatabaseRegisterEvent;
+import org.noopi.utils.events.database.DatabaseUnregisterEvent;
+import org.noopi.utils.exceptions.DatabaseDuplicateException;
+import org.noopi.utils.exceptions.DatabaseMissingEntryException;
+import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
+import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-public class SymbolDatabase {
+public class SymbolDatabase implements IDatabase<String, Symbol> {
   private HashMap<String, Symbol> symbols;
 
   private EventListenerList listenerList;
-  private SymbolRegisteredEvent registerEvent;
-  private SymbolUnRegisteredEvent unRegisterEvent;
+  private DatabaseRegisterEvent<Symbol> registerEvent;
+  private DatabaseUnregisterEvent<Symbol> unregisterEvent;
 
   public SymbolDatabase() {
     symbols = new HashMap<>();
     listenerList = new EventListenerList();
   }
 
-  public Symbol createSymbol(String name) throws ExistingSymbolException {
+  public boolean contains(String name) {
+    return symbols.containsKey(name);
+  }
+
+  @Override
+  public Symbol registerEntry(String name) throws DatabaseDuplicateException {
     if (symbols.containsKey(name)) {
-      throw new ExistingSymbolException();
+      throw new DatabaseDuplicateException();
     }
     Symbol s = new Symbol(name);
     symbols.put(name, s);
@@ -33,42 +38,46 @@ public class SymbolDatabase {
     return s;
   }
 
-  public void deleteSymbol(String name) throws NonExistingSymbolException {
+  @Override
+  public void unregisterEntry(String name) throws DatabaseMissingEntryException
+  {
     if (!symbols.containsKey(name)) {
-      throw new NonExistingSymbolException();
+      throw new DatabaseMissingEntryException();
     }
     Symbol s = symbols.get(name);
     symbols.remove(name);
     fireSymbolUnRegisteredEvent(s);
   }
 
-  public void addSymbolRegisteredEventListener(
-    SymbolRegisteredEventListener l
+  @Override
+  public void addDatabaseRegisterEventListener(
+    DatabaseRegisterEventListener<Symbol> l
   ) {
     assert l != null;
-    listenerList.add(SymbolRegisteredEventListener.class, l);
+    listenerList.add(DatabaseRegisterEventListener.class, l);
   }
 
-  public void addSymbolUnRegisteredEventListener(
-    SymbolUnRegisteredEventListener l
+  @Override
+  public void addDatabaseUnregisterEventListener(
+    DatabaseUnregisterEventListener<Symbol> l
   ) {
     assert l != null;
-    listenerList.add(SymbolUnRegisteredEventListener.class, l);
+    listenerList.add(DatabaseUnregisterEventListener.class, l);
   }
 
   protected void fireSymbolRegisteredEvent(Symbol s) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] != SymbolRegisteredEventListener.class) {
+      if (listeners[i] != DatabaseRegisterEventListener.class) {
         continue;
       }
       if (registerEvent == null || b) {
-        registerEvent = new SymbolRegisteredEvent(s);
+        registerEvent = new DatabaseRegisterEvent<>(s);
         b = true;
       }
-      ((SymbolRegisteredEventListener) listeners[i + 1])
-        .onSymbolRegistered(registerEvent);
+      ((DatabaseRegisterEventListener<Symbol>) listeners[i + 1])
+        .onRegisterEvent(registerEvent);
     }
   }
 
@@ -76,15 +85,15 @@ public class SymbolDatabase {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] != SymbolUnRegisteredEventListener.class) {
+      if (listeners[i] != DatabaseUnregisterEventListener.class) {
         continue;
       }
-      if (unRegisterEvent == null || b) {
-        unRegisterEvent = new SymbolUnRegisteredEvent(s);
+      if (unregisterEvent == null || b) {
+        unregisterEvent = new DatabaseUnregisterEvent<Symbol>(s);
         b = true;
       }
-      ((SymbolUnRegisteredEventListener) listeners[i + 1])
-        .onSymbolUnRegistered(unRegisterEvent);
+      ((DatabaseUnregisterEventListener<Symbol>) listeners[i + 1])
+        .onUnregisterEvent(unregisterEvent);
     }
   }
 }
