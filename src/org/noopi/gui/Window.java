@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import org.noopi.model.tape.ITape;
+import org.noopi.model.tape.Tape;
 import org.noopi.utils.exceptions.MachineDecidabilityExecption;
 import org.noopi.utils.events.history.HistoryPopEvent;
 import org.noopi.utils.events.history.HistoryPushEvent;
@@ -34,8 +35,11 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.machine.Symbol;
 import org.noopi.model.history.ITransitionHistory;
+import org.noopi.model.history.TransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
+import org.noopi.model.machine.TuringMachine;
 import org.noopi.view.FrameLayout;
 import org.noopi.view.IFrameLayout;
 
@@ -80,6 +84,10 @@ public final class Window {
       }
 
     });
+
+    tape = new Tape(Symbol.EMPTY_SYMBOL);
+    machine = new TuringMachine();
+    history = new TransitionHistory();
   }
 
   private void createView() {
