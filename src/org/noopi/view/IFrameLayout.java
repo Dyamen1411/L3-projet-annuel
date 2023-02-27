@@ -4,15 +4,14 @@ import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
-import org.noopi.utils.listeners.view.AddRuleEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
-import org.noopi.utils.listeners.view.RemoveRuleEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
 import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
@@ -85,18 +84,18 @@ public interface IFrameLayout {
   //------------------------//
 
   /**
-   * Adds a listener to an event <code>AddRuleEvent</code>.
+   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
    * This event is fired when the user wants to add a new rule from the GUI.
    * @param l the listener.
    */
-  void addAddRuleEventListener(AddRuleEventListener l);
+  void addTransitionAddedEventListener(TransitionModifiedEventListener l);
 
   /**
-   * Adds a listener to an event <code>RemoveRuleEvent</code>.
+   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
    * This event is fired when the user wants to remove a rule from the GUI.
    * @param l the listener.
    */
-  void addRemoveRuleEventListener(RemoveRuleEventListener l);
+  void addTransitionRemovedEventListener(TransitionModifiedEventListener l);
 
   /**
    * Adds a listener to an event <code>TapeInitializationEvent</code>.

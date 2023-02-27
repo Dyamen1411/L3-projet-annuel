@@ -40,4 +40,12 @@ public class Transition {
   public Symbol getNewSymbol() {
     return newSymbol;
   }
+
+  public String toString() {
+    return
+      "(" + oldState + ", " + oldSymbol + ")"
+      + " => "
+      + "(" + newState + ", " + newSymbol + ", " + newDirection + ")"
+    ;
+  }
 }

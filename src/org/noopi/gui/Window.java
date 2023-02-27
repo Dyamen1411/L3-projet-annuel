@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 
 import org.noopi.controller.IController;
 import org.noopi.model.tape.ITape;
+import org.noopi.utils.events.view.TransitionModifiedEvent;
+import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
 import org.noopi.view.FrameLayout;
@@ -54,7 +56,23 @@ public final class Window {
   }
 
   private void createController() {
+    layout.addTransitionAddedEventListener(
+      new TransitionModifiedEventListener() {
+        @Override
+        public void onTransitionModified(TransitionModifiedEvent e) {
+          System.out.println("added " + e.getTransition());
+        }
+      }
+    );
 
+    layout.addTransitionRemovedEventListener(
+      new TransitionModifiedEventListener() {
+        @Override
+        public void onTransitionModified(TransitionModifiedEvent e) {
+          System.out.println("removed " + e.getTransition());
+        }
+      }
+    );
   }
 
   private void refreshView() {
