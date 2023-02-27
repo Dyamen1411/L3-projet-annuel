@@ -4,28 +4,33 @@ import java.util.HashMap;
 
 import javax.swing.event.EventListenerList;
 
-import org.noopi.utils.events.database.state.StateRegisteredEvent;
-import org.noopi.utils.events.database.state.StateUnRegisteredEvent;
-import org.noopi.utils.exceptions.ExistingStateException;
-import org.noopi.utils.exceptions.NonExistingStateException;
-import org.noopi.utils.listeners.database.state.StateRegisteredEventListener;
-import org.noopi.utils.listeners.database.state.StateUnRegisteredEventListener;
+import org.noopi.utils.events.database.DatabaseRegisterEvent;
+import org.noopi.utils.events.database.DatabaseUnregisterEvent;
+import org.noopi.utils.exceptions.DatabaseDuplicateException;
+import org.noopi.utils.exceptions.DatabaseMissingEntryException;
+import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
+import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-public class StateDatabase {
+public class StateDatabase implements IDatabase<String, State> {
   private HashMap<String, State> states;
 
   private EventListenerList listenerList;
-  private StateRegisteredEvent registerEvent;
-  private StateUnRegisteredEvent unRegisterEvent;
+  private DatabaseRegisterEvent<State> registerEvent;
+  private DatabaseUnregisterEvent<State> unregisterEvent;
 
   public StateDatabase() {
     states = new HashMap<>();
     listenerList = new EventListenerList();
   }
 
-  public State createState(String name) throws ExistingStateException {
+  public boolean contains(String name) {
+    return states.containsKey(name);
+  }
+
+  @Override
+  public State registerEntry(String name) throws DatabaseDuplicateException {
     if (states.containsKey(name)) {
-      throw new ExistingStateException();
+      throw new DatabaseDuplicateException();
     }
     State s = new State(name);
     states.put(name, s);
@@ -33,42 +38,46 @@ public class StateDatabase {
     return s;
   }
 
-  public void deleteState(String name) throws NonExistingStateException {
+  @Override
+  public void unregisterEntry(String name) throws DatabaseMissingEntryException
+  {
     if (!states.containsKey(name)) {
-      throw new NonExistingStateException();
+      throw new DatabaseMissingEntryException();
     }
     State s = states.get(name);
     states.remove(name);
     fireStateUnRegisteredEvent(s);
   }
 
-  public void addStateRegisteredEventListener(
-    StateRegisteredEventListener l
+  @Override
+  public void addDatabaseRegisterEventListener(
+    DatabaseRegisterEventListener<State> l
   ) {
     assert l != null;
-    listenerList.add(StateRegisteredEventListener.class, l);
+    listenerList.add(DatabaseRegisterEventListener.class, l);
   }
 
-  public void addStateUnRegisteredEventListener(
-    StateUnRegisteredEventListener l
+  @Override
+  public void addDatabaseUnregisterEventListener(
+    DatabaseUnregisterEventListener<State> l
   ) {
     assert l != null;
-    listenerList.add(StateUnRegisteredEventListener.class, l);
+    listenerList.add(DatabaseUnregisterEventListener.class, l);
   }
 
   protected void fireStateRegisteredEvent(State s) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] != StateRegisteredEventListener.class) {
+      if (listeners[i] != DatabaseRegisterEventListener.class) {
         continue;
       }
       if (registerEvent == null || b) {
-        registerEvent = new StateRegisteredEvent(s);
+        registerEvent = new DatabaseRegisterEvent<>(s);
         b = true;
       }
-      ((StateRegisteredEventListener) listeners[i + 1])
-        .onStateRegistered(registerEvent);
+      ((DatabaseRegisterEventListener<State>) listeners[i + 1])
+        .onRegisterEvent(registerEvent);
     }
   }
 
@@ -76,15 +85,15 @@ public class StateDatabase {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] != StateUnRegisteredEventListener.class) {
+      if (listeners[i] != DatabaseUnregisterEventListener.class) {
         continue;
       }
-      if (unRegisterEvent == null || b) {
-        unRegisterEvent = new StateUnRegisteredEvent(s);
+      if (unregisterEvent == null || b) {
+        unregisterEvent = new DatabaseUnregisterEvent<State>(s);
         b = true;
       }
-      ((StateUnRegisteredEventListener) listeners[i + 1])
-        .onStateUnRegistered(unRegisterEvent);
+      ((DatabaseUnregisterEventListener<State>) listeners[i + 1])
+        .onUnregisterEvent(unregisterEvent);
     }
   }
 }
