@@ -2,6 +2,9 @@ package org.noopi.view.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -24,6 +27,8 @@ import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 public class ModifiableList extends JPanel {
 
   private static final int FIELD_DISPLAYABLE_WIDTH = 15;
+  private static final String PROPERTY_ADD_EVENT = "A";
+  private static final String PROPERTY_REM_EVENT = "R";
 
   private HintableTextField field;
   private JButton addButton;
@@ -31,6 +36,8 @@ public class ModifiableList extends JPanel {
   
   private DefaultListModel<String> model;
   private JList<String> list;
+
+  private VetoableChangeSupport vcs;
 
   private EventListenerList listenerList;
   private ElementAddedEvent addEvent;
@@ -46,6 +53,7 @@ public class ModifiableList extends JPanel {
     list = new JList<>();
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     listenerList = new EventListenerList();
+    vcs = new VetoableChangeSupport(this);
 
     list.setModel(model);
     setButtonsEnabled(false);
@@ -92,7 +100,12 @@ public class ModifiableList extends JPanel {
           return;
         }
         model.add(0, element);
-        fireElementAddedEvent(field.getText());
+        try {
+          vcs.fireVetoableChange(
+            new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
+          );
+          fireElementAddedEvent(field.getText());
+        } catch (Exception ex) {}
       }
     });
 
@@ -101,7 +114,12 @@ public class ModifiableList extends JPanel {
       public void actionPerformed(ActionEvent e) {
         String element = field.getText();
         if (model.removeElement(element)) {
-          fireElementRemovedEvent(element);
+          try {
+            vcs.fireVetoableChange(
+              new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
+            );
+            fireElementRemovedEvent(element);
+          } catch (Exception ex) {}
         }
       }
     });
@@ -138,6 +156,16 @@ public class ModifiableList extends JPanel {
   public void addElementRemovedEventListener(ElementRemovedEventListener l) {
     assert l != null;
     listenerList.add(ElementRemovedEventListener.class, l);
+  }
+
+  public void addElementAddedVetoableChangeListener(VetoableChangeListener l) {
+    assert l != null;
+    vcs.addVetoableChangeListener(PROPERTY_ADD_EVENT, l);
+  }
+
+  public void addElementRemovedVetoableChangeListener(VetoableChangeListener l) {
+    assert l != null;
+    vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
 
   protected void fireElementAddedEvent(String s) {
