@@ -1,9 +1,13 @@
 package org.noopi.view;
 
+import java.beans.VetoableChangeListener;
+
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.ElementAddedEventListener;
+import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -175,4 +179,53 @@ public interface IFrameLayout {
    * @param l the listener.
    */
   void addSaveEventListener(SaveEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolRegisteredEventListener(ElementAddedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateRegisteredEventListener(ElementAddedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolUnRegisteredEventListener(ElementRemovedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateUnRegisteredEventListener(ElementRemovedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolRegisteredVetoableChangeListener(VetoableChangeListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateRegisteredVetoableChangeListener(VetoableChangeListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolUnRegisteredVetoableChangeListener(VetoableChangeListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateRUnegisteredVetoableChangeListener(VetoableChangeListener l);
+
 }
