@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.events.view.NewFileEvent;
@@ -33,6 +34,8 @@ import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.ElementAddedEventListener;
+import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -45,6 +48,7 @@ import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
 import org.noopi.view.components.GraphicTape;
+import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionEditorComponent;
 
 import java.awt.BorderLayout;
@@ -87,6 +91,8 @@ public class FrameLayout implements IFrameLayout {
   private JFrame rulesFrame;
   private TransitionEditorComponent addRule;
   private TransitionEditorComponent removeRule;
+  private ModifiableList symbolList;
+  private ModifiableList stateList;
 
   //CONSTRUCTEURS
 
@@ -254,6 +260,54 @@ public class FrameLayout implements IFrameLayout {
     listenerList.add(SaveEventListener.class, l);
   }
 
+  public void addSymbolRegisteredEventListener(ElementAddedEventListener l) {
+    assert l != null;
+    symbolList.addElementAddedEventListener(l);
+  }
+
+  public void addStateRegisteredEventListener(ElementAddedEventListener l) {
+    assert l != null;
+    stateList.addElementAddedEventListener(l);
+  }
+
+  public void addSymbolUnRegisteredEventListener(ElementRemovedEventListener l) {
+    assert l != null;
+    symbolList.addElementRemovedEventListener(l);
+  }
+
+  public void addStateUnRegisteredEventListener(ElementRemovedEventListener l) {
+    assert l != null;
+    stateList.addElementRemovedEventListener(l);
+  }
+
+  public void addSymbolRegisteredVetoableChangeListener(
+    VetoableChangeListener l
+  ) {
+    assert l != null;
+    symbolList.addElementAddedVetoableChangeListener(l);
+  }
+
+  public void addStateRegisteredVetoableChangeListener(
+    VetoableChangeListener l
+  ) {
+    assert l != null;
+    stateList.addElementAddedVetoableChangeListener(l);
+  }
+
+  public void addSymbolUnRegisteredVetoableChangeListener(
+    VetoableChangeListener l
+  ) {
+    assert l != null;
+    symbolList.addElementRemovedVetoableChangeListener(l);
+  }
+
+  public void addStateRUnegisteredVetoableChangeListener(
+    VetoableChangeListener l
+  ) {
+    assert l != null;
+    stateList.addElementRemovedVetoableChangeListener(l);
+  }
+
   // OUTILS
 
   private void createView() {
@@ -269,6 +323,8 @@ public class FrameLayout implements IFrameLayout {
     removeRule = new TransitionEditorComponent("Retirer");
     initialRubanTextField = new JTextField();
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
+    symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
+    stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
 
     speedSlider = new JSlider(0, 100, 20);
 
@@ -289,6 +345,11 @@ public class FrameLayout implements IFrameLayout {
   private JPanel createRulesGUI(Border border) {
     JPanel rules = new JPanel();
     rules.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
+
+    JPanel symbolStateEditor = new JPanel();
+    symbolStateEditor.add(symbolList);
+    symbolStateEditor.add(stateList);
+    rules.add(symbolStateEditor);
 
     JScrollPane rulePane = new JScrollPane(rulesJList);
     rulePane.setPreferredSize(new Dimension(300, 175));
@@ -339,7 +400,7 @@ public class FrameLayout implements IFrameLayout {
 
   private JPanel createGUI(Border border) {
     JPanel gui = new JPanel(new GridLayout(0, 1));
-    gui.add(createRulesGUI(border));
+    gui.add(createRulesGUI(border), BorderLayout.CENTER);
     gui.add(createMachineGUI(border));
     gui.add(createControlsGUI(border));
     return gui;
