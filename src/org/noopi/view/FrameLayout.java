@@ -22,6 +22,7 @@ import javax.swing.event.EventListenerList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.events.view.NewFileEvent;
@@ -357,7 +358,7 @@ public class FrameLayout implements IFrameLayout {
   private void createController() {
     rulesJList.addMouseListener(new MouseAdapter() {
       @Override
-      public void mouseClicked(java.awt.event.MouseEvent e) {
+      public void mouseClicked(MouseEvent e) {
         createNewRulesFrame();
       }
     });
