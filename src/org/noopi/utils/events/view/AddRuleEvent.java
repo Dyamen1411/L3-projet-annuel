@@ -3,20 +3,21 @@ package org.noopi.utils.events.view;
 import org.noopi.utils.machine.Transition;
 
 public class AddRuleEvent {
+
   // ATTRIBUTS
 
-  private final Transition ruleAdded;
+  private Transition t;
 
-  // CONSTRUCTEUR
+  // CONSTRUCTEURS
 
-  public AddRuleEvent(Transition t){
+  public AddRuleEvent(Transition t) {
     assert t != null;
-    ruleAdded = t;
+    this.t = t;
   }
 
   // REQUETES
 
-  public Transition getRuleAdded() {
-    return ruleAdded;
+  public Transition geTransition() {
+    return t;
   }
 }

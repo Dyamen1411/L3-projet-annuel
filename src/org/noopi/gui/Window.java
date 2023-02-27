@@ -7,6 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import org.noopi.model.tape.ITape;
+import org.noopi.utils.events.view.TransitionModifiedEvent;
+import org.noopi.utils.exceptions.MachineDecidabilityExecption;
+import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.events.history.HistoryPopEvent;
 import org.noopi.utils.events.history.HistoryPushEvent;
 import org.noopi.utils.events.history.HistoryResetEvent;
@@ -39,6 +42,7 @@ import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
+import org.noopi.view.FrameLayout;
 import org.noopi.view.IFrameLayout;
 
 public final class Window {
@@ -62,6 +66,7 @@ public final class Window {
 
   public void display() {
     refreshView();
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
     frame.pack();
@@ -72,17 +77,26 @@ public final class Window {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        machine.step();
+        // TODO: fix
+        try {
+          machine.step(null);
+        } catch (MachineDecidabilityExecption ex) {
+
+        }
       }
 
     });
   }
 
   private void createView() {
-    frame.add(layout.getView());
+    frame = new JFrame();
+    layout = new FrameLayout();
+    
   }
 
   private void placeComponents() {
+    frame.setContentPane(layout.getView());
+    frame.setJMenuBar(layout.getMenuBar());
   }
 
   private void createController() {
@@ -106,6 +120,7 @@ public final class Window {
     tape.addTapeResetEventListener(new TapeResetEventListener() {
       @Override
       public void onTapeReset(TapeResetEvent e) {
+        // TODO: fix
         tape.reset(null);
       }
     });
@@ -114,7 +129,7 @@ public final class Window {
 
       @Override
       public void onTapeWritten(TapeWriteEvent e) {
-        layout.setSymbolOnTape();
+        layout.setSymbolOnTape(e.getSymbol());
       }
       
     });
@@ -125,7 +140,8 @@ public final class Window {
 
       @Override
       public void onHistoryPush(HistoryPushEvent e) {
-        layout.addRule();
+        // TODO: fix
+        layout.addRule(null);
       }
     });
 
@@ -133,7 +149,8 @@ public final class Window {
 
       @Override
       public void onHistoryPop(HistoryPopEvent e) {
-        layout.removeRule();
+        // TODO: fix
+        layout.removeRule(null);
       }
       
     });
@@ -149,23 +166,25 @@ public final class Window {
 
     // LISTENERS ON VIEW
 
-    layout.addAddRuleEventListener(new AddRuleEventListener() {
+    // TODO: fix
+    // layout.addAddRuleEventListener(new AddRuleEventListener() {
 
-      @Override
-      public void onRuleAdded(AddRuleEvent e) {
-        machine.addTransition(e.getRuleAdded());
-      }
+    //   @Override
+    //   public void onRuleAdded(AddRuleEvent e) {
+    //     machine.addTransition(e.getRuleAdded());
+    //   }
       
-    });
+    // });
 
-    layout.addRemoveRuleEventListener(new RemoveRuleEventListener() {
+    // TODO: fix
+    // layout.addRemoveRuleEventListener(new RemoveRuleEventListener() {
 
-      @Override
-      public void onRuleRemoved(RemoveRuleEvent e) {
-        machine.removeTransition(e.getRemovedRule());
-      }
+    //   @Override
+    //   public void onRuleRemoved(RemoveRuleEvent e) {
+    //     machine.removeTransition(e.getRemovedRule());
+    //   }
       
-    });
+    // });
 
     layout.addRunEventListener(new RunEventListener() {
 
@@ -179,7 +198,10 @@ public final class Window {
     layout.addStepEventListener(new StepEventListener() {
       @Override
       public void onStep(StepEvent e) {
-        machine.step();
+        // TODO: fix
+        try {
+          machine.step(null);
+        } catch(MachineDecidabilityExecption ex) {}
       }
     });
 
@@ -196,7 +218,7 @@ public final class Window {
 
       @Override
       public void onSpeedChanged(SpeedChangeEvent e) {
-        // Ajouter un Timer a la machine pour pouvoir regler sa vitesse
+        // TODO: Ajouter un Timer a la machine pour pouvoir regler sa vitesse
       }
       
     });
@@ -205,7 +227,7 @@ public final class Window {
 
       @Override
       public void onNewFile(NewFileEvent e) {
-        // A voir comment on s'organise
+        // TODO: A voir comment on s'organise
       }
       
     });
@@ -214,7 +236,7 @@ public final class Window {
 
       @Override
       public void onFileOpened(OpenFileEvent e) {
-        // A voir comment on s'organise
+        // TODO: A voir comment on s'organise
       }
       
     });
@@ -223,12 +245,10 @@ public final class Window {
 
       @Override
       public void onSave(SaveEvent e) {
-        // A voir comment on sauvegarde
+        // TODO: A voir comment on sauvegarde
       }
       
     });
-
-
   }
 
   private void refreshView() {

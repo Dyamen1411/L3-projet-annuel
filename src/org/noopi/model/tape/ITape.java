@@ -40,6 +40,12 @@ public interface ITape {
   void writeSymbol(Symbol symbol);
 
   /**
+   * Gets a slice of <code>2 * spanWidth + 1</code> cells of the tape under the
+   * head. <code>spanWidth</code> must be greater or equal than 0.
+   */
+  Symbol[] getSlice(int spanWidth);
+
+  /**
    * When the <code>reset</code> method is called, it will send a
    * <code>TapeResetEvent</code> event to this listener.
    */

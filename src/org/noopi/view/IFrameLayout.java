@@ -1,20 +1,22 @@
 package org.noopi.view;
 
-import java.lang.Thread.State;
+import java.beans.VetoableChangeListener;
 
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
-import org.noopi.utils.listeners.view.AddRuleEventListener;
+import org.noopi.utils.listeners.view.ElementAddedEventListener;
+import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
-import org.noopi.utils.listeners.view.RemoveRuleEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
 import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
+import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
 
@@ -81,23 +83,42 @@ public interface IFrameLayout {
    */
   void popHistory();
 
+  /**
+   * Asks the user if they accecp something ot not.
+   * @param message The message to show.
+   * @return wether the action is acepted or not.
+   */
+  boolean showConfirmDialog(String message);
+
+  /**
+   * Shows a message to the user.
+   * @param message The message to show.
+   */
+  void showInformation(String message);
+
+  /**
+   * Shows an error message to the user.
+   * @param message The message to show.
+   */
+  void showError(String message);
+
   //------------------------//
   //--- Listener binding ---//
   //------------------------//
 
   /**
-   * Adds a listener to an event <code>AddRuleEvent</code>.
+   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
    * This event is fired when the user wants to add a new rule from the GUI.
    * @param l the listener.
    */
-  void addAddRuleEventListener(AddRuleEventListener l);
+  void addTransitionAddedEventListener(TransitionModifiedEventListener l);
 
   /**
-   * Adds a listener to an event <code>RemoveRuleEvent</code>.
+   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
    * This event is fired when the user wants to remove a rule from the GUI.
    * @param l the listener.
    */
-  void addRemoveRuleEventListener(RemoveRuleEventListener l);
+  void addTransitionRemovedEventListener(TransitionModifiedEventListener l);
 
   /**
    * Adds a listener to an event <code>TapeInitializationEvent</code>.
@@ -158,4 +179,53 @@ public interface IFrameLayout {
    * @param l the listener.
    */
   void addSaveEventListener(SaveEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolRegisteredEventListener(ElementAddedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateRegisteredEventListener(ElementAddedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolUnRegisteredEventListener(ElementRemovedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateUnRegisteredEventListener(ElementRemovedEventListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolRegisteredVetoableChangeListener(VetoableChangeListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateRegisteredVetoableChangeListener(VetoableChangeListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addSymbolUnRegisteredVetoableChangeListener(VetoableChangeListener l);
+
+  /**
+   * TODO: decribe
+   * @param l
+   */
+  void addStateRUnegisteredVetoableChangeListener(VetoableChangeListener l);
+
 }

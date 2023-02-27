@@ -57,6 +57,35 @@ public final class Tape extends AbstractTape {
     fireTapeWriteEvent(symbol);
   }
 
+  @Override
+  public Symbol[] getSlice(int spanWidth) {
+    assert spanWidth >= 0;
+    Symbol[] span = new Symbol[2 * spanWidth + 1];
+    Cell cl = currentCell;
+    Cell cg = currentCell;
+    Symbol sl;
+    Symbol sg;
+    for (int i = 0; i < spanWidth; ++i) {
+      if (cl.prev != null) {
+        cl = cl.prev;
+        sl = cl.symbol;
+      } else {
+        sl = defaultSymbol;
+      }
+      if (cg.next != null) {
+        cg = cg.next;
+        sg = cg.symbol;
+      } else {
+        sg = defaultSymbol;
+      }
+      span[spanWidth - i - 1] = sl;
+      span[spanWidth + i + 1] = sg;
+    }
+    span[spanWidth] = currentCell.symbol;
+    return span;
+  }
+
+
   private class Cell {
     private Cell next;
     private Cell prev;
