@@ -362,6 +362,7 @@ public class FrameLayout implements IFrameLayout {
         createNewRulesFrame();
       }
     });
+    
     speedSlider.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
