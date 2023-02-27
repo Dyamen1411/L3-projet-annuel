@@ -141,7 +141,7 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public void setMachineState(State s) {
-    tape.setState(s);
+    //TODO
   }
 
   @Override
