@@ -23,6 +23,10 @@ public class SymbolDatabase {
     listenerList = new EventListenerList();
   }
 
+  public boolean contains(String name) {
+    return symbols.containsKey(name);
+  }
+
   public Symbol createSymbol(String name) throws ExistingSymbolException {
     if (symbols.containsKey(name)) {
       throw new ExistingSymbolException();

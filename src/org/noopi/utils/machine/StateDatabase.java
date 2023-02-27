@@ -23,6 +23,10 @@ public class StateDatabase {
     listenerList = new EventListenerList();
   }
 
+  public boolean contains(String name) {
+    return states.containsKey(name);
+  }
+
   public State createState(String name) throws ExistingStateException {
     if (states.containsKey(name)) {
       throw new ExistingStateException();
