@@ -255,7 +255,7 @@ public class FrameLayout implements IFrameLayout {
     rulesJList = new JList<JLabel>();
     paneRulesTextArea = new JList<JLabel>();
 
-    tape = new GraphicTape();
+    tape = new GraphicTape(new Symbol(""));
   }
 
   private void placeComponent() {

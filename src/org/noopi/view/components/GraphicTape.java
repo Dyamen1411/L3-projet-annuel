@@ -1,72 +1,60 @@
 package org.noopi.view.components;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 
-import javax.swing.JComponent;
-
-import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 
-public class GraphicTape extends JComponent {
+public class GraphicTape extends JList<String> {
+
+  public static final int CELL_COUNT = 9;
+  private static final int PREFERED_WIDTH =  800;
+  private static final int PREFERED_HEIGHT = 200;
 
   // ATTRIBUTS
-
-  // Largeur préférée du ruban
-  private static final int PREFERED_WIDTH =  800;
-
-  private static final int PREFERED_HEIGHT = 200;
-  // Epaisseur du bord du ruban
-  private static final int THICK = 2;
+  private DefaultListModel<String> model;
+  private Symbol defaultSymbol;
 
   // CONSTRUCTEUR
 
-  public GraphicTape() {
-    Dimension preferedSize = new Dimension(PREFERED_WIDTH, PREFERED_HEIGHT);
-    setPreferredSize(preferedSize);
+  public GraphicTape(Symbol defaultSymbol) {
+    assert defaultSymbol != null;
+    
+    model = new DefaultListModel<>();
+    for (int i = CELL_COUNT; i > 0; --i) {
+      model.add(0, defaultSymbol.toString());
+    }
+    setModel(model);
+
+    setEnabled(false);
+    setVisibleRowCount(1);
+    setPreferredSize(null);
+    setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    setFixedCellWidth(PREFERED_WIDTH / CELL_COUNT);
+    setFixedCellHeight(PREFERED_HEIGHT);
+    this.defaultSymbol = defaultSymbol;
   }
 
   // COMMANDES
 
   public void shiftTapeRight() {
-
+    model.remove(CELL_COUNT - 1);
+    model.add(0, defaultSymbol.toString());
   }
 
   public void shiftTapeLeft() {
-
+    model.remove(0);
+    model.add(CELL_COUNT - 1, defaultSymbol.toString());
   }
 
   public void setSymbol(Symbol s) {
-
+    assert s != null;
+    model.remove(CELL_COUNT / 2);
+    model.add(CELL_COUNT / 2,  s.toString());
   }
 
-  public void setState(State s) {
-
-  }
-
-  @Override
-  protected void paintComponent(Graphics g) {
-    super.paintComponent(g);
-    int width = getWidth();
-    int height = getHeight();
-    int tapeHeight = height / 3;
-    int h = (height - tapeHeight) / 2;
-    
-    Graphics2D g2D = (Graphics2D) g;
-    g2D.setColor(Color.RED);
-    g2D.setStroke(new BasicStroke(THICK));
-
-    // Barres horizontales du ruban
-    g2D.drawLine(0, h, width, h);
-    g2D.drawLine(0, h + tapeHeight, width, h + tapeHeight);
-
-    // Barres verticales du ruban
-    for(int i = 40; i <= width; i += 80) {
-      g.drawLine(i, h, i, h + tapeHeight);
-    }
+  public void setDefaultSymbol(Symbol defaultSymbol) {
+    this.defaultSymbol = defaultSymbol;
   }
 }
 
