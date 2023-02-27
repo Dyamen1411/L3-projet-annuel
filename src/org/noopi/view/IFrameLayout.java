@@ -79,6 +79,25 @@ public interface IFrameLayout {
    */
   void popHistory();
 
+  /**
+   * Asks the user if they accecp something ot not.
+   * @param message The message to show.
+   * @return wether the action is acepted or not.
+   */
+  boolean showConfirmDialog(String message);
+
+  /**
+   * Shows a message to the user.
+   * @param message The message to show.
+   */
+  void showInformation(String message);
+
+  /**
+   * Shows an error message to the user.
+   * @param message The message to show.
+   */
+  void showError(String message);
+
   //------------------------//
   //--- Listener binding ---//
   //------------------------//

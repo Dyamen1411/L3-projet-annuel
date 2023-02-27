@@ -168,6 +168,27 @@ public class FrameLayout implements IFrameLayout {
   }
 
   @Override
+  public boolean showConfirmDialog(String message) {
+    throw new UnsupportedOperationException(
+      "showConfirmDialog is not implemented yet."
+    );
+  }
+
+  @Override
+  public void showInformation(String message) {
+    throw new UnsupportedOperationException(
+      "showInformation is not implemented yet."
+    );
+  }
+
+  @Override
+  public void showError(String message) {
+    throw new UnsupportedOperationException(
+      "showError is not implemented yet."
+    );
+  }
+
+  @Override
   public void addTransitionAddedEventListener(
     TransitionModifiedEventListener l
   ) {
