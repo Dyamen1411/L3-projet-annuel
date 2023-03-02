@@ -11,6 +11,8 @@ import javax.swing.Timer;
 
 import org.noopi.model.tape.ITape;
 import org.noopi.model.tape.Tape;
+import org.noopi.utils.exceptions.DatabaseDuplicateException;
+import org.noopi.utils.exceptions.DatabaseMissingEntryException;
 import org.noopi.utils.exceptions.MachineDecidabilityExecption;
 import org.noopi.utils.events.history.HistoryPopEvent;
 import org.noopi.utils.events.history.HistoryPushEvent;
@@ -18,6 +20,8 @@ import org.noopi.utils.events.history.HistoryResetEvent;
 import org.noopi.utils.events.tape.TapeMovedEvent;
 import org.noopi.utils.events.tape.TapeResetEvent;
 import org.noopi.utils.events.tape.TapeWriteEvent;
+import org.noopi.utils.events.view.ElementAddedEvent;
+import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.NewFileEvent;
 import org.noopi.utils.events.view.OpenFileEvent;
 import org.noopi.utils.events.view.RunEvent;
@@ -31,6 +35,8 @@ import org.noopi.utils.listeners.history.HistoryResetEventListener;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
+import org.noopi.utils.listeners.view.ElementAddedEventListener;
+import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -262,6 +268,108 @@ public final class Window {
       }
       
     });
+
+    layout.addSymbolRegisteredVetoableChangeListener(
+      new VetoableChangeListener() {
+        @Override
+        public void vetoableChange(PropertyChangeEvent e)
+          throws PropertyVetoException
+        {
+          String newValue = (String) e.getNewValue();
+          if (symbolDatabase.contains(newValue)) {
+            throw new PropertyVetoException("Symbol already contained", e);
+          }
+        }
+      }
+    );
+
+    layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        try {
+          symbolDatabase.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen.
+        }
+      }
+    });
+
+    layout.addSymbolUnRegisteredVetoableChangeListener(
+      new VetoableChangeListener() {
+        @Override
+        public void vetoableChange(PropertyChangeEvent evt)
+          throws PropertyVetoException
+        {
+          if (!symbolDatabase.contains((String) evt.getOldValue())) {
+            throw new PropertyVetoException("Unknown symbol", evt);
+          }
+        }
+      }
+    );
+
+    layout.addSymbolUnRegisteredEventListener(
+      new ElementRemovedEventListener() {
+        @Override
+        public void onElementRemoved(ElementRemovedEvent e) {
+          try {
+            symbolDatabase.unregisterEntry(e.getElement());
+          } catch (DatabaseMissingEntryException ex) {
+            // Should never happen.
+          }
+        }
+      }
+    );
+
+    layout.addStateRegisteredVetoableChangeListener(
+      new VetoableChangeListener() {
+        @Override
+        public void vetoableChange(PropertyChangeEvent e)
+          throws PropertyVetoException
+        {
+          String newValue = (String) e.getNewValue();
+          if (!stateDatabase.contains(newValue)) {
+            throw new PropertyVetoException("State already contained", e);
+          }
+        }
+      }
+    );
+
+    layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        try {
+          stateDatabase.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen.
+        }
+      }
+    });
+
+    layout.addStateRUnegisteredVetoableChangeListener(
+      new VetoableChangeListener() {
+        @Override
+        public void vetoableChange(PropertyChangeEvent evt)
+          throws PropertyVetoException
+        {
+          if (!stateDatabase.contains((String) evt.getOldValue())) {
+            throw new PropertyVetoException("Unknown State", evt);
+          }
+        }
+      }
+    );
+
+    layout.addStateUnRegisteredEventListener(
+      new ElementRemovedEventListener() {
+        @Override
+        public void onElementRemoved(ElementRemovedEvent e) {
+          try {
+            stateDatabase.unregisterEntry(e.getElement());
+          } catch (DatabaseMissingEntryException ex) {
+            // Should never happen.
+          }
+        }
+      }
+    );
   }
 
   private void refreshView() {
