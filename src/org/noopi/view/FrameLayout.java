@@ -23,6 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
@@ -543,9 +545,8 @@ public class FrameLayout implements IFrameLayout {
     }
     rulesFrame = new JFrame("Liste des règles");
     rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    rulesFrame.setPreferredSize(new Dimension(200, 400));
     rulesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    paneRulesTextArea = rulesJList;
+    paneRulesTextArea = new JList<JLabel>(rulesJList.getModel());
     JScrollPane newFrameRulesPane = new JScrollPane(paneRulesTextArea);
     rulesFrame.add(newFrameRulesPane);
     rulesFrame.pack();
