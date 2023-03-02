@@ -26,6 +26,8 @@ import java.awt.event.MouseEvent;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
+import org.noopi.utils.events.view.ElementAddedEvent;
+import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.NewFileEvent;
 import org.noopi.utils.events.view.OpenFileEvent;
 import org.noopi.utils.events.view.RunEvent;
@@ -474,6 +476,42 @@ public class FrameLayout implements IFrameLayout {
         fireSaveEvent();
       }
     });
+
+    symbolList.addElementAddedEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        addRule.registerSymbol(e.getElement());
+        removeRule.registerSymbol(e.getElement());
+      }
+    });
+
+    symbolList.addElementRemovedEventListener(
+      new ElementRemovedEventListener() {
+        @Override
+        public void onElementRemoved(ElementRemovedEvent e) {
+          addRule.unregisterSymbol(e.getElement());
+          removeRule.unregisterSymbol(e.getElement());
+        }
+      }
+    );
+
+    stateList.addElementAddedEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        addRule.registerState(e.getElement());
+        removeRule.registerState(e.getElement());
+      }
+    });
+
+    stateList.addElementRemovedEventListener(
+      new ElementRemovedEventListener() {
+        @Override
+        public void onElementRemoved(ElementRemovedEvent e) {
+          addRule.unregisterState(e.getElement());
+          removeRule.unregisterState(e.getElement());
+        }
+      }
+    );
   }
 
   private void setMenuBar() {

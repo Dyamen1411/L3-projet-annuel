@@ -126,11 +126,14 @@ public final class Window {
       @Override
       public void onTapeMoved(TapeMovedEvent e) {
         switch(e.getDirection()) {
-          case LEFT:
+          case TAPE_LEFT:
             layout.shiftTapeLeft();
             break;
-          case RIGHT:
+          case TAPE_RIGHT:
             layout.shiftTapeRight();
+            break;
+          case MACHINE_STOP:
+            // What does it do ?
             break;
         }
       }
@@ -327,7 +330,7 @@ public final class Window {
           throws PropertyVetoException
         {
           String newValue = (String) e.getNewValue();
-          if (!stateDatabase.contains(newValue)) {
+          if (stateDatabase.contains(newValue)) {
             throw new PropertyVetoException("State already contained", e);
           }
         }

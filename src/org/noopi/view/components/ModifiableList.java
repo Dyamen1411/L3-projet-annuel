@@ -57,7 +57,6 @@ public class ModifiableList extends JPanel {
     vcs = new VetoableChangeSupport(this);
 
     list.setModel(model);
-    setButtonsEnabled(false);
 
     JPanel header = new JPanel();
     header.add(field);
@@ -75,7 +74,6 @@ public class ModifiableList extends JPanel {
           return;
         }
         field.setText(model.get(e.getFirstIndex()));
-        setButtonsEnabled(true);
       }
     });
 
@@ -85,11 +83,9 @@ public class ModifiableList extends JPanel {
       }
       @Override
       public void insertUpdate(DocumentEvent e) {
-        setButtonsEnabled(true);
       }
       @Override
       public void removeUpdate(DocumentEvent e) {
-        setButtonsEnabled(e.getLength() != 0);
       }
     });
 
@@ -191,10 +187,5 @@ public class ModifiableList extends JPanel {
       }
       ((ElementRemovedEventListener) list[i + 1]).onElementRemoved(removeEvent);
     }
-  }
-
-  private void setButtonsEnabled(boolean enabled) {
-    addButton.setEnabled(enabled);
-    removeButton.setEnabled(enabled);
   }
 }
