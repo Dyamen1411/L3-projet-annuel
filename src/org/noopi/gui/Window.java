@@ -29,6 +29,7 @@ import org.noopi.utils.events.view.SaveEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
+import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
@@ -44,6 +45,7 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.machine.StateDatabase;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.SymbolDatabase;
@@ -188,25 +190,24 @@ public final class Window {
 
     // LISTENERS ON VIEW
 
-    // TODO: fix
-    // layout.addAddRuleEventListener(new AddRuleEventListener() {
+    layout.addTransitionAddedEventListener(
+      new TransitionModifiedEventListener() {
+        @Override
+        public void onTransitionModified(TransitionModifiedEvent e) {
+          machine.addTransition(e.getTransition());
+          System.out.println("New transition : " + e.getTransition());
+        }
+      }
+    );
 
-    //   @Override
-    //   public void onRuleAdded(AddRuleEvent e) {
-    //     machine.addTransition(e.getRuleAdded());
-    //   }
-      
-    // });
-
-    // TODO: fix
-    // layout.addRemoveRuleEventListener(new RemoveRuleEventListener() {
-
-    //   @Override
-    //   public void onRuleRemoved(RemoveRuleEvent e) {
-    //     machine.removeTransition(e.getRemovedRule());
-    //   }
-      
-    // });
+    layout.addTransitionRemovedEventListener(
+      new TransitionModifiedEventListener() {
+        @Override
+        public void onTransitionModified(TransitionModifiedEvent e) {
+          machine.removeTransition(e.getTransition());
+        }
+      }
+    );
 
     layout.addRunEventListener(new RunEventListener() {
 
