@@ -3,6 +3,7 @@ package org.noopi.view.components;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
 
@@ -96,16 +97,13 @@ public class ModifiableList extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         String element = field.getText();
-        if (model.contains(element)) {
-          return;
-        }
-        model.add(0, element);
         try {
           vcs.fireVetoableChange(
             new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
           );
+          model.add(0, element);
           fireElementAddedEvent(field.getText());
-        } catch (Exception ex) {}
+        } catch (PropertyVetoException ex) {}
       }
     });
 
