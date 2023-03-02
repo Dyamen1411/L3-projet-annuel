@@ -111,14 +111,13 @@ public class ModifiableList extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         String element = field.getText();
-        if (model.removeElement(element)) {
-          try {
-            vcs.fireVetoableChange(
-              new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
-            );
-            fireElementRemovedEvent(element);
-          } catch (Exception ex) {}
-        }
+        try {
+          vcs.fireVetoableChange(
+            new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
+          );
+          model.removeElement(element);
+          fireElementRemovedEvent(element);
+        } catch (Exception ex) {}
       }
     });
   }
