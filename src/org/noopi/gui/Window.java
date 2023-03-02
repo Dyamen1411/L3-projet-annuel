@@ -4,7 +4,11 @@ import javax.swing.JFrame;
 
 import org.noopi.controller.IController;
 import org.noopi.model.tape.ITape;
+import org.noopi.utils.events.view.ElementAddedEvent;
+import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.TransitionModifiedEvent;
+import org.noopi.utils.listeners.view.ElementAddedEventListener;
+import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
@@ -56,23 +60,18 @@ public final class Window {
   }
 
   private void createController() {
-    layout.addTransitionAddedEventListener(
-      new TransitionModifiedEventListener() {
-        @Override
-        public void onTransitionModified(TransitionModifiedEvent e) {
-          System.out.println("added " + e.getTransition());
-        }
+    layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        System.out.println("added " + e.getElement());
       }
-    );
-
-    layout.addTransitionRemovedEventListener(
-      new TransitionModifiedEventListener() {
-        @Override
-        public void onTransitionModified(TransitionModifiedEvent e) {
-          System.out.println("removed " + e.getTransition());
-        }
+    });
+    layout.addSymbolUnRegisteredEventListener(new ElementRemovedEventListener() {
+      @Override
+      public void onElementRemoved(ElementRemovedEvent e) {
+        System.out.println("removed " + e.getElement());
       }
-    );
+    });
   }
 
   private void refreshView() {
