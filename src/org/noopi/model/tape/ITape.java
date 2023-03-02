@@ -3,7 +3,7 @@ package org.noopi.model.tape;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
-import org.noopi.utils.machine.Direction;
+import org.noopi.utils.machine.MachineAction;
 import org.noopi.utils.machine.Symbol;
 
 public interface ITape {
@@ -26,7 +26,7 @@ public interface ITape {
    * Moves the tape on a given direction
    * (thus moving the pointer to the opposite direction).
    */
-  void shift(Direction d);
+  void shift(MachineAction d);
 
   /**
    * @return the symbol under the tape pointer.

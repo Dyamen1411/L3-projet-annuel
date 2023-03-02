@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.noopi.utils.exceptions.MachineDecidabilityExecption;
-import org.noopi.utils.machine.Direction;
+import org.noopi.utils.machine.MachineAction;
 import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
@@ -113,9 +113,9 @@ public final class TuringMachine extends AbstractTuringMachine {
   private final class V {
     final State s;
     final Symbol w;
-    final Direction d;
+    final MachineAction d;
 
-    public V(State s, Symbol w, Direction d) {
+    public V(State s, Symbol w, MachineAction d) {
       this.s = s;
       this.w = w;
       this.d = d;
