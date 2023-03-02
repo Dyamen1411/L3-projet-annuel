@@ -4,12 +4,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.event.EventListenerList;
 
 import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.Direction;
+import org.noopi.utils.machine.MachineAction;
 import org.noopi.utils.machine.State;
 import org.noopi.utils.machine.Symbol;
 import org.noopi.utils.machine.Transition;
@@ -23,11 +22,11 @@ public class TransitionEditorComponent extends JPanel {
   // ATTRIBUTS
 
   private JButton confirmButton;
-  private JTextField oldSymbolTextField;
-  private JTextField oldRuleTextField;
-  private JTextField newSymbolTextField;
-  private JTextField newStateTextField;
-  private JComboBox<Direction> direction;
+  private JComboBox<String> oldSymbolList;
+  private JComboBox<String> oldStateList;
+  private JComboBox<String> newSymbolList;
+  private JComboBox<String> newStateList;
+  private JComboBox<MachineAction> direction;
   
   private EventListenerList listenerList;
   private TransitionModifiedEvent event;
@@ -52,22 +51,23 @@ public class TransitionEditorComponent extends JPanel {
     { //-
       add(confirmButton);
       add(new JLabel("          :"));
-      add(oldSymbolTextField);
-      add(oldRuleTextField);
+      add(oldSymbolList);
+      add(oldStateList);
       add(new JLabel("       =>"));
-      add(newSymbolTextField);
-      add(newStateTextField);
+      add(newSymbolList);
+      add(newStateList);
       add(direction);
     } //-
   }
 
   private void initialize(String actionName) {
     confirmButton = new JButton(actionName);
-    oldSymbolTextField = new HintableTextField("", "Symbole");
-    oldRuleTextField = new HintableTextField("", "Etat");
-    newSymbolTextField = new HintableTextField("", "Symbole");
-    newStateTextField = new HintableTextField("", "Etat");
-    direction = new JComboBox<Direction>(Direction.values());
+    oldSymbolList = new JComboBox<>();
+    oldStateList = new JComboBox<>();
+    newSymbolList = new JComboBox<>();
+    newStateList = new JComboBox<>();
+
+    direction = new JComboBox<MachineAction>(MachineAction.values());
   }
 
   private void createController() {
@@ -79,6 +79,30 @@ public class TransitionEditorComponent extends JPanel {
     });
   }
 
+  public void registerSymbol(String s) {
+    assert s != null;
+    oldSymbolList.addItem(s);
+    newSymbolList.addItem(s);
+  }
+
+  public void unregisterSymbol(String s) {
+    assert s != null;
+    oldSymbolList.removeItem(s);
+    newSymbolList.removeItem(s);
+  }
+
+  public void registerState(String s) {
+    assert s != null;
+    oldStateList.addItem(s);
+    newStateList.addItem(s);
+  }
+
+  public void unregisterState(String s) {
+    assert s != null;
+    oldStateList.removeItem(s);
+    newStateList.removeItem(s);
+  }
+
   public void addTransitionModifiedEventListener(
     TransitionModifiedEventListener l
   ) {
@@ -87,11 +111,11 @@ public class TransitionEditorComponent extends JPanel {
   }
 
   private Transition getTransition() {
-    State ost = new State(oldRuleTextField.getText());
-    Symbol osy = new Symbol(oldSymbolTextField.getText());
-    Direction d = (Direction) direction.getSelectedItem();
-    State nst = new State(newStateTextField.getText());
-    Symbol nsy = new Symbol(newSymbolTextField.getText());
+    State ost = new State((String) oldStateList.getSelectedItem());
+    Symbol osy = new Symbol((String) oldSymbolList.getSelectedItem());
+    MachineAction d = (MachineAction) direction.getSelectedItem();
+    State nst = new State((String) newStateList.getSelectedItem());
+    Symbol nsy = new Symbol((String) newSymbolList.getSelectedItem());
     return new Transition(ost, osy, d, nst, nsy);
   }
 
