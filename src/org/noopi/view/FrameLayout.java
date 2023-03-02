@@ -373,7 +373,7 @@ public class FrameLayout implements IFrameLayout {
 
   private JPanel createMachineGUI(Border border) {
     JPanel machine = new JPanel();
-    machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTTION GRAPHIQUE"));
+    machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
     machine.add(tape);
     return machine;
   }
