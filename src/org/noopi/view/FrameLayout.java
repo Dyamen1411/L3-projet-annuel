@@ -44,9 +44,9 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionEditorComponent;
@@ -84,13 +84,13 @@ public class FrameLayout implements IFrameLayout {
   private JTextField initialRubanTextField;
   private JSlider speedSlider;
   private JList<JLabel> historyJList;
-  private JList<JLabel> rulesJList;
-  private JList<JLabel> paneRulesTextArea;
+  private JList<JLabel> transitionsJList;
+  private JList<JLabel> paneTransitionsTextArea;
   private GraphicTape tape;
   private Map<Item, JMenuItem> menuItems;
-  private JFrame rulesFrame;
-  private TransitionEditorComponent addRule;
-  private TransitionEditorComponent removeRule;
+  private JFrame transitionsFrame;
+  private TransitionEditorComponent addTransition;
+  private TransitionEditorComponent removeTransition;
   private ModifiableList symbolList;
   private ModifiableList stateList;
 
@@ -136,8 +136,8 @@ public class FrameLayout implements IFrameLayout {
   }
 
   @Override
-  public void resetRules() {
-    rulesJList.removeAll();
+  public void resetTransitions() {
+    transitionsJList.removeAll();
   }
 
   @Override
@@ -151,15 +151,15 @@ public class FrameLayout implements IFrameLayout {
   }
 
   @Override
-  public void addRule(Transition t) {
+  public void addTransition(Transition t) {
     assert t != null;
-    rulesJList.add(createJLabel(t));
+    transitionsJList.add(createJLabel(t));
   }
 
   @Override
-  public void removeRule(Transition t) {
+  public void removeTransition(Transition t) {
     assert t != null;
-    rulesJList.remove(createJLabel(t));
+    transitionsJList.remove(createJLabel(t));
   }
 
   @Override
@@ -199,7 +199,7 @@ public class FrameLayout implements IFrameLayout {
     TransitionModifiedEventListener l
   ) {
     assert l != null;
-    addRule.addTransitionModifiedEventListener(l);
+    addTransition.addTransitionModifiedEventListener(l);
   }
 
   @Override
@@ -207,7 +207,7 @@ public class FrameLayout implements IFrameLayout {
     TransitionModifiedEventListener l
   ) {
     assert l != null;
-    removeRule.addTransitionModifiedEventListener(l);
+    removeTransition.addTransitionModifiedEventListener(l);
   }
 
   @Override
@@ -319,8 +319,8 @@ public class FrameLayout implements IFrameLayout {
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
     initButton = new JButton("Initialiser");
-    addRule = new TransitionEditorComponent("Ajouter");
-    removeRule = new TransitionEditorComponent("Retirer");
+    addTransition = new TransitionEditorComponent("Ajouter");
+    removeTransition = new TransitionEditorComponent("Retirer");
     initialRubanTextField = new JTextField();
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
@@ -329,10 +329,10 @@ public class FrameLayout implements IFrameLayout {
     speedSlider = new JSlider(0, 100, 20);
 
     historyJList = new JList<JLabel>();
-    rulesJList = new JList<JLabel>();
-    paneRulesTextArea = new JList<JLabel>();
+    transitionsJList = new JList<JLabel>();
+    paneTransitionsTextArea = new JList<JLabel>();
 
-    tape = new GraphicTape(new Symbol(""));
+    tape = new GraphicTape(Symbol.DEFAULT);
   }
 
   private void placeComponent() {
@@ -342,29 +342,29 @@ public class FrameLayout implements IFrameLayout {
     mainPanel.add(createHistoryGUI(border), BorderLayout.EAST);
   }
 
-  private JPanel createRulesGUI(Border border) {
-    JPanel rules = new JPanel();
-    rules.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
+  private JPanel createTransitionsGUI(Border border) {
+    JPanel transitions = new JPanel();
+    transitions.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
 
     JPanel symbolStateEditor = new JPanel();
     symbolStateEditor.add(symbolList);
     symbolStateEditor.add(stateList);
-    rules.add(symbolStateEditor);
+    transitions.add(symbolStateEditor);
 
-    JScrollPane rulePane = new JScrollPane(rulesJList);
-    rulePane.setPreferredSize(new Dimension(300, 175));
-    Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
-    rulePane.setBorder(BorderFactory.createTitledBorder(
-      rulesBorderPane, "Cliquez pour aggrandir"
+    JScrollPane transitionPane = new JScrollPane(transitionsJList);
+    transitionPane.setPreferredSize(new Dimension(300, 175));
+    Border transitionsBorderPane = BorderFactory.createLineBorder(Color.GRAY);
+    transitionPane.setBorder(BorderFactory.createTitledBorder(
+      transitionsBorderPane, "Cliquez pour aggrandir"
     ));
-    rules.add(rulePane);
+    transitions.add(transitionPane);
 
     JPanel transitionEditor = new JPanel(new GridLayout(2, 1));
-    transitionEditor.add(addRule);
-    transitionEditor.add(removeRule);
-    rules.add(transitionEditor);
+    transitionEditor.add(addTransition);
+    transitionEditor.add(removeTransition);
+    transitions.add(transitionEditor);
 
-    return rules;
+    return transitions;
   }
 
   private JPanel createMachineGUI(Border border) {
@@ -400,7 +400,7 @@ public class FrameLayout implements IFrameLayout {
 
   private JPanel createGUI(Border border) {
     JPanel gui = new JPanel(new GridLayout(0, 1));
-    gui.add(createRulesGUI(border), BorderLayout.CENTER);
+    gui.add(createTransitionsGUI(border), BorderLayout.CENTER);
     gui.add(createMachineGUI(border));
     gui.add(createControlsGUI(border));
     return gui;
@@ -416,10 +416,10 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private void createController() {
-    rulesJList.addMouseListener(new MouseAdapter() {
+    transitionsJList.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        createNewRulesFrame();
+        createNewTransitionsFrame();
       }
     });
     
@@ -497,22 +497,22 @@ public class FrameLayout implements IFrameLayout {
     speedSlider.setMinorTickSpacing(5); 
   }
 
-  private void createNewRulesFrame() {
-    // TODO: add listener on dispose to set <code>rulesFrame</code> to null !
+  private void createNewTransitionsFrame() {
+    // TODO: add listener on dispose to set <code>transitionsFrame</code> to null !
     // Else cannot recreate frame
-    if (rulesFrame != null) {
-      rulesFrame.dispose();
+    if (transitionsFrame != null) {
+      transitionsFrame.dispose();
     }
-    rulesFrame = new JFrame("Liste des règles");
-    rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    rulesFrame.setPreferredSize(new Dimension(200, 400));
-    rulesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    paneRulesTextArea = rulesJList;
-    JScrollPane newFrameRulesPane = new JScrollPane(paneRulesTextArea);
-    rulesFrame.add(newFrameRulesPane);
-    rulesFrame.pack();
-    rulesFrame.setLocationRelativeTo(null);
-    rulesFrame.setVisible(true);
+    transitionsFrame = new JFrame("Liste des règles");
+    transitionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    transitionsFrame.setPreferredSize(new Dimension(200, 400));
+    transitionsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+    paneTransitionsTextArea = transitionsJList;
+    JScrollPane newFrameTransitionsPane = new JScrollPane(paneTransitionsTextArea);
+    transitionsFrame.add(newFrameTransitionsPane);
+    transitionsFrame.pack();
+    transitionsFrame.setLocationRelativeTo(null);
+    transitionsFrame.setVisible(true);
   }
 
   private JLabel createJLabel(Transition t) {

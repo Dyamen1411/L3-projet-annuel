@@ -1,8 +1,8 @@
 package org.noopi.utils.events.view;
 
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.Transition;
 
-public class AddRuleEvent {
+public class AddTransitionEvent {
 
   // ATTRIBUTS
 
@@ -10,7 +10,7 @@ public class AddRuleEvent {
 
   // CONSTRUCTEURS
 
-  public AddRuleEvent(Transition t) {
+  public AddTransitionEvent(Transition t) {
     transition = t;
   }
 

@@ -16,9 +16,9 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 
 public interface IFrameLayout {
 
@@ -59,19 +59,19 @@ public interface IFrameLayout {
   void setMachineState(State s);
 
   /**
-   * Adds a new rule on the rule board.
+   * Adds a new transition on the transition board.
    */
-  void addRule(Transition t);
+  void addTransition(Transition t);
 
   /**
-   * Removes a rule from the rule board.
+   * Removes a transition from the transition board.
    */
-  void removeRule(Transition t);
+  void removeTransition(Transition t);
 
   /**
-   * Removes all the rules from the rule board.
+   * Removes all the transitions from the transition board.
    */
-  void resetRules();
+  void resetTransitions();
 
   /**
    * Adds an action to the top of the history.
@@ -108,14 +108,16 @@ public interface IFrameLayout {
 
   /**
    * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to add a new rule from the GUI.
+   * This event is fired when the user wants to add a new transition from the
+   * GUI.
    * @param l the listener.
    */
   void addTransitionAddedEventListener(TransitionModifiedEventListener l);
 
   /**
    * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to remove a rule from the GUI.
+   * This event is fired when the user wants to remove a transition from the
+   * GUI.
    * @param l the listener.
    */
   void addTransitionRemovedEventListener(TransitionModifiedEventListener l);

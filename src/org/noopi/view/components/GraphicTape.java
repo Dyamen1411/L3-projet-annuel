@@ -3,7 +3,7 @@ package org.noopi.view.components;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.Symbol;
 
 public class GraphicTape extends JList<String> {
 

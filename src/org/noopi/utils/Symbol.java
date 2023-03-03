@@ -1,6 +1,8 @@
 package org.noopi.utils;
 
 public final class Symbol {
+  public static final Symbol DEFAULT = new Symbol("");
+
   private final String name;
 
   protected Symbol(String name) {

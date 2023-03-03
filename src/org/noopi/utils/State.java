@@ -1,6 +1,9 @@
 package org.noopi.utils;
 
 public final class State {
+
+  public static final State DEFAULT = new State("");
+
   private final String name;
 
   protected State(String name) {

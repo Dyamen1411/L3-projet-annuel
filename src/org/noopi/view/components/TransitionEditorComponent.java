@@ -1,5 +1,6 @@
 package org.noopi.view.components;
 
+import javax.naming.OperationNotSupportedException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -9,10 +10,10 @@ import javax.swing.event.EventListenerList;
 
 import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.Direction;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -24,10 +25,10 @@ public class TransitionEditorComponent extends JPanel {
 
   private JButton confirmButton;
   private JTextField oldSymbolTextField;
-  private JTextField oldRuleTextField;
+  private JTextField oldStateTextField;
   private JTextField newSymbolTextField;
   private JTextField newStateTextField;
-  private JComboBox<Direction> direction;
+  private JComboBox<MachineAction> direction;
   
   private EventListenerList listenerList;
   private TransitionModifiedEvent event;
@@ -53,7 +54,7 @@ public class TransitionEditorComponent extends JPanel {
       add(confirmButton);
       add(new JLabel("          :"));
       add(oldSymbolTextField);
-      add(oldRuleTextField);
+      add(oldStateTextField);
       add(new JLabel("       =>"));
       add(newSymbolTextField);
       add(newStateTextField);
@@ -64,10 +65,10 @@ public class TransitionEditorComponent extends JPanel {
   private void initialize(String actionName) {
     confirmButton = new JButton(actionName);
     oldSymbolTextField = new HintableTextField("", "Symbole");
-    oldRuleTextField = new HintableTextField("", "Etat");
+    oldStateTextField = new HintableTextField("", "Etat");
     newSymbolTextField = new HintableTextField("", "Symbole");
     newStateTextField = new HintableTextField("", "Etat");
-    direction = new JComboBox<Direction>(Direction.values());
+    direction = new JComboBox<MachineAction>(MachineAction.values());
   }
 
   private void createController() {
@@ -87,12 +88,13 @@ public class TransitionEditorComponent extends JPanel {
   }
 
   private Transition getTransition() {
-    State ost = new State(oldRuleTextField.getText());
-    Symbol osy = new Symbol(oldSymbolTextField.getText());
-    Direction d = (Direction) direction.getSelectedItem();
-    State nst = new State(newStateTextField.getText());
-    Symbol nsy = new Symbol(newSymbolTextField.getText());
-    return new Transition(ost, osy, d, nst, nsy);
+    // State ost = new State(oldStateTextField.getText());
+    // Symbol osy = new Symbol(oldSymbolTextField.getText());
+    // MachineAction d = (MachineAction) direction.getSelectedItem();
+    // State nst = new State(newStateTextField.getText());
+    // Symbol nsy = new Symbol(newSymbolTextField.getText());
+    // return new Transition(ost, osy, d, nst, nsy);
+    throw new UnsupportedOperationException("not implemented yet");
   }
 
   protected void fireTransitionModifiedEvent(Transition t) {
