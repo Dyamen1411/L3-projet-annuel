@@ -2,7 +2,7 @@ package org.noopi.model.history;
 
 import java.util.Arrays;
 
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.Transition;
 
 public class TransitionHistory extends AbstractTransitionHistory {
 

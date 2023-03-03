@@ -1,7 +1,7 @@
 package org.noopi.model.tape;
 
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 
 public final class Tape extends AbstractTape {
 
@@ -41,6 +41,7 @@ public final class Tape extends AbstractTape {
     switch (d) {
       case TAPE_LEFT: currentCell = currentCell.getPrev(); break;
       case TAPE_RIGHT: currentCell = currentCell.getNext(); break;
+      case MACHINE_STOP: return; // TODO: throw exception maybe ?
     }
     fireTapeMovedEvent(d);
   }

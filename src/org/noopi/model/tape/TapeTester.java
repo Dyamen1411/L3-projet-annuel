@@ -1,7 +1,7 @@
 package org.noopi.model.tape;
 
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 
 public class TapeTester {
 

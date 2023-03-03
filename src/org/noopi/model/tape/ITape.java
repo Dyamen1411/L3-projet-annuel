@@ -1,10 +1,10 @@
 package org.noopi.model.tape;
 
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.Symbol;
 
 public interface ITape {
 

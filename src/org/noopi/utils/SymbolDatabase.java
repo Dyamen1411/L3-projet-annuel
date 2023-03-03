@@ -1,4 +1,4 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 import java.util.HashMap;
 
@@ -95,5 +95,15 @@ public class SymbolDatabase implements IDatabase<String, Symbol> {
       ((DatabaseUnregisterEventListener<Symbol>) listeners[i + 1])
         .onUnregisterEvent(unregisterEvent);
     }
+  }
+
+  @Override
+  public Symbol[] values() {
+    return symbols.values().toArray(new Symbol[0]);
+  }
+
+  @Override
+  public String[] entries() {
+    return symbols.entrySet().toArray(new String[0]);
   }
 }

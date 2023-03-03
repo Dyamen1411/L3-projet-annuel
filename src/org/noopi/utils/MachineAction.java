@@ -1,4 +1,4 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 public enum MachineAction {
   TAPE_RIGHT("left"),

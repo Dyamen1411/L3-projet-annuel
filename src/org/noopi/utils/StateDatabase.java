@@ -1,4 +1,4 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 import java.util.HashMap;
 
@@ -95,5 +95,15 @@ public class StateDatabase implements IDatabase<String, State> {
       ((DatabaseUnregisterEventListener<State>) listeners[i + 1])
         .onUnregisterEvent(unregisterEvent);
     }
+  }
+
+  @Override
+  public State[] values() {
+    return states.values().toArray(new State[0]);
+  }
+
+  @Override
+  public String[] entries() {
+    return states.entrySet().toArray(new String[0]);
   }
 }
