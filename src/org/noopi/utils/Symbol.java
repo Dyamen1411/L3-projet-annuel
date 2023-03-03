@@ -3,7 +3,7 @@ package org.noopi.utils;
 public final class Symbol {
   private final String name;
 
-  public Symbol(String name) {
+  protected Symbol(String name) {
     assert name != null;
     this.name = name;
   }

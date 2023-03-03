@@ -3,7 +3,7 @@ package org.noopi.utils;
 public final class State {
   private final String name;
 
-  public State(String name) {
+  protected State(String name) {
     assert name != null;
     this.name = name;
   }
