@@ -1,16 +1,16 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 public class Transition {
   private final State oldState;
   private final Symbol oldSymbol;
-  private final Direction newDirection;
+  private final MachineAction newDirection;
   private final State newState;
   private final Symbol newSymbol;
 
   public Transition(
     State oldState,
     Symbol oldSymbol,
-    Direction newDirection,
+    MachineAction newDirection,
     State newState,
     Symbol newSymbol
   ) {
@@ -29,7 +29,7 @@ public class Transition {
     return oldSymbol;
   }
 
-  public Direction getNewDirection() {
+  public MachineAction getNewDirection() {
     return newDirection;
   }
 

@@ -1,4 +1,4 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 import java.util.HashMap;
 
@@ -11,47 +11,47 @@ import org.noopi.utils.exceptions.DatabaseMissingEntryException;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-public class StateDatabase implements IDatabase<String, State> {
-  private HashMap<String, State> states;
+public class SymbolDatabase implements IDatabase<String, Symbol> {
+  private HashMap<String, Symbol> symbols;
 
   private EventListenerList listenerList;
-  private DatabaseRegisterEvent<State> registerEvent;
-  private DatabaseUnregisterEvent<State> unregisterEvent;
+  private DatabaseRegisterEvent<Symbol> registerEvent;
+  private DatabaseUnregisterEvent<Symbol> unregisterEvent;
 
-  public StateDatabase() {
-    states = new HashMap<>();
+  public SymbolDatabase() {
+    symbols = new HashMap<>();
     listenerList = new EventListenerList();
   }
 
   public boolean contains(String name) {
-    return states.containsKey(name);
+    return symbols.containsKey(name);
   }
 
   @Override
-  public State registerEntry(String name) throws DatabaseDuplicateException {
-    if (states.containsKey(name)) {
+  public Symbol registerEntry(String name) throws DatabaseDuplicateException {
+    if (symbols.containsKey(name)) {
       throw new DatabaseDuplicateException();
     }
-    State s = new State(name);
-    states.put(name, s);
-    fireStateRegisteredEvent(s);
+    Symbol s = new Symbol(name);
+    symbols.put(name, s);
+    fireSymbolRegisteredEvent(s);
     return s;
   }
 
   @Override
   public void unregisterEntry(String name) throws DatabaseMissingEntryException
   {
-    if (!states.containsKey(name)) {
+    if (!symbols.containsKey(name)) {
       throw new DatabaseMissingEntryException();
     }
-    State s = states.get(name);
-    states.remove(name);
-    fireStateUnRegisteredEvent(s);
+    Symbol s = symbols.get(name);
+    symbols.remove(name);
+    fireSymbolUnRegisteredEvent(s);
   }
 
   @Override
   public void addDatabaseRegisterEventListener(
-    DatabaseRegisterEventListener<State> l
+    DatabaseRegisterEventListener<Symbol> l
   ) {
     assert l != null;
     listenerList.add(DatabaseRegisterEventListener.class, l);
@@ -59,13 +59,13 @@ public class StateDatabase implements IDatabase<String, State> {
 
   @Override
   public void addDatabaseUnregisterEventListener(
-    DatabaseUnregisterEventListener<State> l
+    DatabaseUnregisterEventListener<Symbol> l
   ) {
     assert l != null;
     listenerList.add(DatabaseUnregisterEventListener.class, l);
   }
 
-  protected void fireStateRegisteredEvent(State s) {
+  protected void fireSymbolRegisteredEvent(Symbol s) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -76,12 +76,12 @@ public class StateDatabase implements IDatabase<String, State> {
         registerEvent = new DatabaseRegisterEvent<>(s);
         b = true;
       }
-      ((DatabaseRegisterEventListener<State>) listeners[i + 1])
+      ((DatabaseRegisterEventListener<Symbol>) listeners[i + 1])
         .onRegisterEvent(registerEvent);
     }
   }
 
-  protected void fireStateUnRegisteredEvent(State s) {
+  protected void fireSymbolUnRegisteredEvent(Symbol s) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -89,11 +89,25 @@ public class StateDatabase implements IDatabase<String, State> {
         continue;
       }
       if (unregisterEvent == null || b) {
-        unregisterEvent = new DatabaseUnregisterEvent<State>(s);
+        unregisterEvent = new DatabaseUnregisterEvent<Symbol>(s);
         b = true;
       }
-      ((DatabaseUnregisterEventListener<State>) listeners[i + 1])
+      ((DatabaseUnregisterEventListener<Symbol>) listeners[i + 1])
         .onUnregisterEvent(unregisterEvent);
     }
+  }
+
+  @Override
+  public Symbol[] values() {
+    return symbols.values().toArray(new Symbol[0]);
+  }
+
+  @Override
+  public String[] entries() {
+    return symbols.entrySet().toArray(new String[0]);
+  }
+
+  public IReadableDatabase<String, Symbol> toReadable() {
+    return (IReadableDatabase<String, Symbol>) this;
   }
 }

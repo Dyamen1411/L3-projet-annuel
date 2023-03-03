@@ -1,7 +1,7 @@
 package org.noopi.model.tape;
 
-import org.noopi.utils.machine.Direction;
-import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 
 public final class Tape extends AbstractTape {
 
@@ -29,18 +29,19 @@ public final class Tape extends AbstractTape {
     currentCell = orig;
     for (Symbol s : symbols) {
       currentCell.symbol = s;
-      shift(Direction.RIGHT);
+      shift(MachineAction.TAPE_RIGHT);
     }
     currentCell = orig;
     fireResetEvent();
   }
 
   @Override
-  public void shift(Direction d) {
+  public void shift(MachineAction d) {
     assert d != null;
     switch (d) {
-      case LEFT: currentCell = currentCell.getPrev(); break;
-      case RIGHT: currentCell = currentCell.getNext(); break;
+      case TAPE_LEFT: currentCell = currentCell.getPrev(); break;
+      case TAPE_RIGHT: currentCell = currentCell.getNext(); break;
+      case MACHINE_STOP: return; // TODO: throw exception maybe ?
     }
     fireTapeMovedEvent(d);
   }
