@@ -2,14 +2,11 @@ package org.noopi.gui;
 
 import javax.swing.JFrame;
 
-import org.noopi.controller.IController;
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
-import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
 import org.noopi.view.FrameLayout;
@@ -25,9 +22,6 @@ public final class Window {
   // View
   private JFrame frame;
   private IFrameLayout layout;
-
-  // Controler
-  private IController controller;
 
   public Window() {
     createModel();
