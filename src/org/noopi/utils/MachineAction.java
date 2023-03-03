@@ -1,8 +1,8 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 public enum MachineAction {
-  TAPE_RIGHT("right"),
-  TAPE_LEFT("left"),
+  TAPE_RIGHT("left"),
+  TAPE_LEFT("right"),
   MACHINE_STOP("stop");
 
   private final String r;

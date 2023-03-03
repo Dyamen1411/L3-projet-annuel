@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 import org.noopi.utils.exceptions.MachineDecidabilityExecption;
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 
 public final class TuringMachine extends AbstractTuringMachine {
 

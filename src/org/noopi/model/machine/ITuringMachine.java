@@ -1,11 +1,11 @@
 package org.noopi.model.machine;
 
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 import org.noopi.utils.exceptions.MachineDecidabilityExecption;
 import org.noopi.utils.listeners.machine.MachineResetEventListener;
 import org.noopi.utils.listeners.machine.MachineStepEventListener;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
 
 public interface ITuringMachine {
 

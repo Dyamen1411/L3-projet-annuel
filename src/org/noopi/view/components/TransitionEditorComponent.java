@@ -8,10 +8,10 @@ import javax.swing.event.EventListenerList;
 
 import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -111,12 +111,13 @@ public class TransitionEditorComponent extends JPanel {
   }
 
   private Transition getTransition() {
-    State ost = new State((String) oldStateList.getSelectedItem());
-    Symbol osy = new Symbol((String) oldSymbolList.getSelectedItem());
-    MachineAction d = (MachineAction) direction.getSelectedItem();
-    State nst = new State((String) newStateList.getSelectedItem());
-    Symbol nsy = new Symbol((String) newSymbolList.getSelectedItem());
-    return new Transition(ost, osy, d, nst, nsy);
+    // State ost = new State(oldStateTextField.getText());
+    // Symbol osy = new Symbol(oldSymbolTextField.getText());
+    // MachineAction d = (MachineAction) direction.getSelectedItem();
+    // State nst = new State(newStateTextField.getText());
+    // Symbol nsy = new Symbol(newSymbolTextField.getText());
+    // return new Transition(ost, osy, d, nst, nsy);
+    throw new UnsupportedOperationException("not implemented yet");
   }
 
   protected void fireTransitionModifiedEvent(Transition t) {

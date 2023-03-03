@@ -1,6 +1,6 @@
 package org.noopi.utils.events.view;
 
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.Transition;
 
 public class TransitionModifiedEvent {
   private final Transition t;

@@ -1,10 +1,12 @@
 package org.noopi.model.tape;
 
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 
 public interface ITape {
 
@@ -38,6 +40,12 @@ public interface ITape {
    * @param symbol the symbol to be written.
    */
   void writeSymbol(Symbol symbol);
+
+  /**
+   * Gets a slice of <code>2 * spanWidth + 1</code> cells of the tape under the
+   * head. <code>spanWidth</code> must be greater or equal than 0.
+   */
+  Symbol[] getSlice(int spanWidth);
 
   /**
    * When the <code>reset</code> method is called, it will send a
