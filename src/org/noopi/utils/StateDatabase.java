@@ -106,4 +106,8 @@ public class StateDatabase implements IDatabase<String, State> {
   public String[] entries() {
     return states.entrySet().toArray(new String[0]);
   }
+
+  public IReadableDatabase<String, State> toReadable() {
+    return (IReadableDatabase<String, State>) this;
+  }
 }

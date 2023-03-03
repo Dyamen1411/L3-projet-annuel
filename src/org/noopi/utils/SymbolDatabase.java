@@ -106,4 +106,8 @@ public class SymbolDatabase implements IDatabase<String, Symbol> {
   public String[] entries() {
     return symbols.entrySet().toArray(new String[0]);
   }
+
+  public IReadableDatabase<String, Symbol> toReadable() {
+    return (IReadableDatabase<String, Symbol>) this;
+  }
 }
