@@ -9,6 +9,8 @@ public interface IReadableDatabase<R, T> {
   T[] values();
   R[] entries();
 
+  int size();
+
   void addDatabaseRegisterEventListener(DatabaseRegisterEventListener<T> l);
   void addDatabaseUnregisterEventListener(DatabaseUnregisterEventListener<T> l);
 }

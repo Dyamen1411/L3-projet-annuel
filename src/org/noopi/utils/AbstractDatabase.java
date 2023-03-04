@@ -116,5 +116,9 @@ public abstract class AbstractDatabase<R, T> implements IDatabase<R, T> {
     }
   }
 
+  public int size() {
+    return database.size();
+  }
+
   protected abstract T createEntry(R name);
 }
