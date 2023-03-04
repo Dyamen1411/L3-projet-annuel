@@ -44,7 +44,7 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.IReadableDatabase;
+import org.noopi.utils.IDatabase;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
@@ -65,8 +65,8 @@ public class FrameLayout implements IFrameLayout {
 
   //ATTRIBUTS
 
-  private IReadableDatabase<String, Symbol> symbols;
-  private IReadableDatabase<String, State> states;
+  private IDatabase<String, Symbol> symbols;
+  private IDatabase<String, State> states;
 
   private EventListenerList listenerList;
 
@@ -101,8 +101,8 @@ public class FrameLayout implements IFrameLayout {
   //CONSTRUCTEURS
 
   public FrameLayout(
-    IReadableDatabase<String, Symbol> symbols,
-    IReadableDatabase<String, State> states
+    IDatabase<String, Symbol> symbols,
+    IDatabase<String, State> states
   ) {
     assert symbols != null;
     assert states != null;

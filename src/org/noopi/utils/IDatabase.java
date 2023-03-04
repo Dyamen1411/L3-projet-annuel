@@ -1,13 +1,18 @@
 package org.noopi.utils;
 
-import org.noopi.utils.exceptions.DatabaseDuplicateException;
-import org.noopi.utils.exceptions.DatabaseMissingEntryException;
+import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
+import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-public interface IDatabase<R, T> extends IReadableDatabase<R, T> {
+public interface IDatabase<R, T> {
+  boolean contains(R name);
 
-  T registerEntry(R name) throws DatabaseDuplicateException;
+  T get(R name);
 
-  void unregisterEntry(R name) throws DatabaseMissingEntryException;
+  T[] values();
+  R[] entries();
 
-  IReadableDatabase<R, T> toReadable();
+  int size();
+
+  void addDatabaseRegisterEventListener(DatabaseRegisterEventListener<T> l);
+  void addDatabaseUnregisterEventListener(DatabaseUnregisterEventListener<T> l);
 }

@@ -3,7 +3,7 @@ package org.noopi.view.components.model;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
-import org.noopi.utils.IReadableDatabase;
+import org.noopi.utils.IDatabase;
 import org.noopi.utils.events.database.DatabaseRegisterEvent;
 import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
@@ -17,11 +17,11 @@ public class DatabaseComboboxModel<T>
   implements ComboBoxModel<T>
 {
 
-  private final IReadableDatabase<T, ?> d;
+  private final IDatabase<T, ?> d;
 
   private Object selectedObject;
 
-  public <E> DatabaseComboboxModel(IReadableDatabase<T, E> d) {
+  public <E> DatabaseComboboxModel(IDatabase<T, E> d) {
     assert d != null;
     this.d = d;
     d.addDatabaseRegisterEventListener(new DatabaseRegisterEventListener<E>() {

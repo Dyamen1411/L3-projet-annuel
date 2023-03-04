@@ -9,7 +9,7 @@ import javax.swing.event.EventListenerList;
 import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.view.components.model.DatabaseComboboxModel;
-import org.noopi.utils.IReadableDatabase;
+import org.noopi.utils.IDatabase;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
@@ -23,8 +23,8 @@ public class TransitionEditorComponent extends JPanel {
 
   // ATTRIBUTS
 
-  private IReadableDatabase<String, Symbol> symbols;
-  private IReadableDatabase<String, State> states;
+  private IDatabase<String, Symbol> symbols;
+  private IDatabase<String, State> states;
 
   private JButton confirmButton;
   private JComboBox<String> oldSymbolList;
@@ -40,8 +40,8 @@ public class TransitionEditorComponent extends JPanel {
 
   public TransitionEditorComponent(
     String actionName,
-    IReadableDatabase<String, Symbol> symbols,
-    IReadableDatabase<String, State> states
+    IDatabase<String, Symbol> symbols,
+    IDatabase<String, State> states
   ) {
     assert symbols != null;
     assert states != null;
