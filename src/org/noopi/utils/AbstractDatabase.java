@@ -82,7 +82,7 @@ public abstract class AbstractDatabase<R, T>
   @Override
   @SuppressWarnings("unchecked")
   public R[] entries() {
-    return (R[]) database.entrySet().toArray();
+    return (R[]) database.keySet().toArray();
   }
 
   public IDatabase<R, T> toReadable() {
