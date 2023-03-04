@@ -8,6 +8,8 @@ import javax.swing.event.EventListenerList;
 
 import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
+import org.noopi.view.components.model.DatabaseComboboxModel;
+import org.noopi.utils.IReadableDatabase;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
@@ -21,6 +23,9 @@ public class TransitionEditorComponent extends JPanel {
 
   // ATTRIBUTS
 
+  private IReadableDatabase<String, Symbol> symbols;
+  private IReadableDatabase<String, State> states;
+
   private JButton confirmButton;
   private JComboBox<String> oldSymbolList;
   private JComboBox<String> oldStateList;
@@ -33,9 +38,17 @@ public class TransitionEditorComponent extends JPanel {
 
   // Constructeurs
 
-  public TransitionEditorComponent(String actionName) {
+  public TransitionEditorComponent(
+    String actionName,
+    IReadableDatabase<String, Symbol> symbols,
+    IReadableDatabase<String, State> states
+  ) {
+    assert symbols != null;
+    assert states != null;
     assert actionName != null;
     assert !actionName.equals("");
+    this.symbols = symbols;
+    this.states = states;
     initialize(actionName);
     createController();
     placeComponents();
@@ -62,11 +75,10 @@ public class TransitionEditorComponent extends JPanel {
 
   private void initialize(String actionName) {
     confirmButton = new JButton(actionName);
-    oldSymbolList = new JComboBox<>();
-    oldStateList = new JComboBox<>();
-    newSymbolList = new JComboBox<>();
-    newStateList = new JComboBox<>();
-
+    oldSymbolList = new JComboBox<>(new DatabaseComboboxModel<>(symbols));
+    oldStateList = new JComboBox<>(new DatabaseComboboxModel<>(states));
+    newSymbolList = new JComboBox<>(new DatabaseComboboxModel<>(symbols));
+    newStateList = new JComboBox<>(new DatabaseComboboxModel<>(states));
     direction = new JComboBox<MachineAction>(MachineAction.values());
   }
 
@@ -79,29 +91,29 @@ public class TransitionEditorComponent extends JPanel {
     });
   }
 
-  public void registerSymbol(String s) {
-    assert s != null;
-    oldSymbolList.addItem(s);
-    newSymbolList.addItem(s);
-  }
+  // public void registerSymbol(String s) {
+  //   assert s != null;
+  //   oldSymbolList.addItem(s);
+  //   newSymbolList.addItem(s);
+  // }
 
-  public void unregisterSymbol(String s) {
-    assert s != null;
-    oldSymbolList.removeItem(s);
-    newSymbolList.removeItem(s);
-  }
+  // public void unregisterSymbol(String s) {
+  //   assert s != null;
+  //   oldSymbolList.removeItem(s);
+  //   newSymbolList.removeItem(s);
+  // }
 
-  public void registerState(String s) {
-    assert s != null;
-    oldStateList.addItem(s);
-    newStateList.addItem(s);
-  }
+  // public void registerState(String s) {
+  //   assert s != null;
+  //   oldStateList.addItem(s);
+  //   newStateList.addItem(s);
+  // }
 
-  public void unregisterState(String s) {
-    assert s != null;
-    oldStateList.removeItem(s);
-    newStateList.removeItem(s);
-  }
+  // public void unregisterState(String s) {
+  //   assert s != null;
+  //   oldStateList.removeItem(s);
+  //   newStateList.removeItem(s);
+  // }
 
   public void addTransitionModifiedEventListener(
     TransitionModifiedEventListener l

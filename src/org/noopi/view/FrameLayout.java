@@ -44,6 +44,7 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
+import org.noopi.utils.IReadableDatabase;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
@@ -63,6 +64,9 @@ import java.awt.GridLayout;
 public class FrameLayout implements IFrameLayout {
 
   //ATTRIBUTS
+
+  private IReadableDatabase<String, Symbol> symbols;
+  private IReadableDatabase<String, State> states;
 
   private EventListenerList listenerList;
 
@@ -96,7 +100,14 @@ public class FrameLayout implements IFrameLayout {
 
   //CONSTRUCTEURS
 
-  public FrameLayout() {
+  public FrameLayout(
+    IReadableDatabase<String, Symbol> symbols,
+    IReadableDatabase<String, State> states
+  ) {
+    assert symbols != null;
+    assert states != null;
+    this.symbols = symbols;
+    this.states = states;
     createView();
     placeComponent();
     createController();
@@ -319,8 +330,8 @@ public class FrameLayout implements IFrameLayout {
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
     initButton = new JButton("Initialiser");
-    addTransition = new TransitionEditorComponent("Ajouter");
-    removeTransition = new TransitionEditorComponent("Retirer");
+    addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
+    removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
     initialRubanTextField = new JTextField();
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");

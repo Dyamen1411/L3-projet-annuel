@@ -104,10 +104,15 @@ public class StateDatabase implements IDatabase<String, State> {
 
   @Override
   public String[] entries() {
-    return states.entrySet().toArray(new String[0]);
+    return states.keySet().toArray(new String[0]);
   }
 
   public IReadableDatabase<String, State> toReadable() {
     return (IReadableDatabase<String, State>) this;
+  }
+
+  @Override
+  public int size() {
+    return states.size();
   }
 }

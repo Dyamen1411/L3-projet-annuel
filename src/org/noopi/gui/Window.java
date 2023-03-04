@@ -3,8 +3,15 @@ package org.noopi.gui;
 import javax.swing.JFrame;
 
 import org.noopi.model.tape.ITape;
+import org.noopi.utils.IDatabase;
+import org.noopi.utils.State;
+import org.noopi.utils.StateDatabase;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.SymbolDatabase;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
+import org.noopi.utils.exceptions.DatabaseDuplicateException;
+import org.noopi.utils.exceptions.DatabaseMissingEntryException;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.model.history.ITransitionHistory;
@@ -18,6 +25,9 @@ public final class Window {
   private ITuringMachine machine;
   private ITape tape;
   private ITransitionHistory history;
+  private SymbolDatabase symbols;
+  private StateDatabase states;
+
 
   // View
   private JFrame frame;
@@ -39,13 +49,16 @@ public final class Window {
   }
 
   private void createModel() {
-
+    symbols = new SymbolDatabase();
+    states = new StateDatabase();
   }
 
   private void createView() {
     frame = new JFrame();
-    layout = new FrameLayout();
-    
+    layout = new FrameLayout(
+      symbols.toReadable(),
+      states.toReadable()
+    );
   }
 
   private void placeComponents() {
@@ -57,13 +70,23 @@ public final class Window {
     layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
       @Override
       public void onElementAdded(ElementAddedEvent e) {
-        System.out.println("added " + e.getElement());
+        try {
+          symbols.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen
+          e1.printStackTrace();
+        }
       }
     });
     layout.addSymbolUnRegisteredEventListener(new ElementRemovedEventListener() {
       @Override
       public void onElementRemoved(ElementRemovedEvent e) {
-        System.out.println("removed " + e.getElement());
+        try {
+          symbols.unregisterEntry(e.getElement());
+        } catch (DatabaseMissingEntryException e1) {
+          // Should mever happen
+          e1.printStackTrace();
+        }
       }
     });
   }

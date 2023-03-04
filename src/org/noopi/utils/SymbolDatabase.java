@@ -1,6 +1,8 @@
 package org.noopi.utils;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.event.EventListenerList;
 
@@ -104,10 +106,15 @@ public class SymbolDatabase implements IDatabase<String, Symbol> {
 
   @Override
   public String[] entries() {
-    return symbols.entrySet().toArray(new String[0]);
+    return symbols.keySet().toArray(new String[0]);
   }
 
   public IReadableDatabase<String, Symbol> toReadable() {
     return (IReadableDatabase<String, Symbol>) this;
+  }
+
+  @Override
+  public int size() {
+    return symbols.size();
   }
 }
