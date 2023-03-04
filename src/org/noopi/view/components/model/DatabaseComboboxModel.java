@@ -11,7 +11,6 @@ import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
 // TODO: There is a bug. When the user deletes an entry from the database but
 // it's selected by a combobox, the combobox does not update.
-// TODO: Every list entry is in the form "entry=entry". WTF ?
 public class DatabaseComboboxModel<T>
   extends AbstractListModel<T>
   implements ComboBoxModel<T>
