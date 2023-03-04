@@ -9,12 +9,15 @@ import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
+// TODO: There is a bug. When the user deletes an entry from the database but
+// it's selected by a combobox, the combobox does not update.
+// TODO: Every list entry is in the form "entry=entry". WTF ?
 public class DatabaseComboboxModel<T>
   extends AbstractListModel<T>
   implements ComboBoxModel<T>
 {
 
-  private IReadableDatabase<T, ?> d;
+  private final IReadableDatabase<T, ?> d;
 
   private Object selectedObject;
 
@@ -31,7 +34,7 @@ public class DatabaseComboboxModel<T>
       new DatabaseUnregisterEventListener<E>() {
         @Override
         public void onUnregisterEvent(DatabaseUnregisterEvent<E> e) {
-          fireIntervalAdded(this, 0, getSize() - 1);
+          fireIntervalAdded(this, d.size() - 1, d.size() - 1);
         }
       }
     );
