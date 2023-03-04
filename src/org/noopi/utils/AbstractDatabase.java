@@ -11,7 +11,7 @@ import org.noopi.utils.exceptions.DatabaseMissingEntryException;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-public abstract class AbstractDatabase<R, T> implements IDatabase<R, T> {
+public abstract class AbstractDatabase<R, T> implements IMutableDatabase<R, T> {
   private HashMap<R, T> database;
 
   private EventListenerList listenerList;
@@ -26,6 +26,11 @@ public abstract class AbstractDatabase<R, T> implements IDatabase<R, T> {
   @Override
   public boolean contains(R name) {
     return database.containsKey(name);
+  }
+
+  @Override
+  public T get(R name) {
+    return database.get(name);
   }
 
   @Override
@@ -78,8 +83,8 @@ public abstract class AbstractDatabase<R, T> implements IDatabase<R, T> {
     return (R[]) database.entrySet().toArray();
   }
 
-  public IReadableDatabase<R, T> toReadable() {
-    return (IReadableDatabase<R, T>) this;
+  public IDatabase<R, T> toReadable() {
+    return (IDatabase<R, T>) this;
   }
 
   @SuppressWarnings("unchecked")
