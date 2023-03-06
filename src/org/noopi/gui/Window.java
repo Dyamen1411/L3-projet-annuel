@@ -89,6 +89,28 @@ public final class Window {
         }
       }
     });
+    layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        try {
+          states.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen
+          e1.printStackTrace();
+        }
+      }
+    });
+    layout.addStateUnRegisteredEventListener(new ElementRemovedEventListener() {
+      @Override
+      public void onElementRemoved(ElementRemovedEvent e) {
+        try {
+          states.unregisterEntry(e.getElement());
+        } catch (DatabaseMissingEntryException e1) {
+          // Should mever happen
+          e1.printStackTrace();
+        }
+      }
+    });
   }
 
   private void refreshView() {

@@ -175,7 +175,7 @@ public class ModifiableList extends JPanel {
       if (list[i] != ElementAddedEventListener.class) {
         continue;
       }
-      if (addEvent == null || b) {
+      if (addEvent == null || !b) {
         addEvent = new ElementAddedEvent(s);
       }
       ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
@@ -189,7 +189,7 @@ public class ModifiableList extends JPanel {
       if (list[i] != ElementRemovedEventListener.class) {
         continue;
       }
-      if (removeEvent == null || b) {
+      if (removeEvent == null || !b) {
         removeEvent = new ElementRemovedEvent(s);
       }
       ((ElementRemovedEventListener) list[i + 1]).onElementRemoved(removeEvent);

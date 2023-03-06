@@ -51,6 +51,7 @@ import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionEditorComponent;
+import org.noopi.view.components.TransitionTable;
 
 import java.awt.BorderLayout;
 
@@ -370,10 +371,14 @@ public class FrameLayout implements IFrameLayout {
     ));
     transitions.add(transitionPane);
 
-    JPanel transitionEditor = new JPanel(new GridLayout(2, 1));
-    transitionEditor.add(addTransition);
-    transitionEditor.add(removeTransition);
-    transitions.add(transitionEditor);
+    // JPanel transitionEditor = new JPanel(new GridLayout(2, 1));
+    // transitionEditor.add(addTransition);
+    // transitionEditor.add(removeTransition);
+    // transitions.add(transitionEditor);
+
+    JPanel test = new JPanel();
+    test.add(new TransitionTable(symbols, states));
+    transitions.add(test);
 
     return transitions;
   }

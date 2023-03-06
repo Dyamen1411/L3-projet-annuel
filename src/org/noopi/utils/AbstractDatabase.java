@@ -74,15 +74,13 @@ public abstract class AbstractDatabase<R, T>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public T[] values() {
-    return (T[]) database.values().toArray();
+    return database.values().toArray(assocListTypeInstance());
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public R[] entries() {
-    return (R[]) database.keySet().toArray();
+    return database.keySet().toArray(entryListTypeInstance());
   }
 
   public IDatabase<R, T> toReadable() {
@@ -128,4 +126,7 @@ public abstract class AbstractDatabase<R, T>
   }
 
   protected abstract T createEntry(R name);
+
+  protected abstract R[] entryListTypeInstance();
+  protected abstract T[] assocListTypeInstance();
 }
