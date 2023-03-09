@@ -8,6 +8,7 @@ import javax.swing.JMenuBar;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
+import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -15,6 +16,7 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
@@ -37,21 +39,6 @@ public interface IFrameLayout {
   //------------------------//
   //--- GUI  interaction ---//
   //------------------------//
-
-  /**
-   * Shifts the representation of the tape to the right.
-   */
-  void shiftTapeRight();
-
-  /**
-   * Shifts the representation of the tape to the left.
-   */
-  void shiftTapeLeft();
-
-  /**
-   * Sets a new symbol on the tape under the head.
-   */
-  void setSymbolOnTape(Symbol s);
 
   /**
    * Sets the machine state.
@@ -129,6 +116,20 @@ public interface IFrameLayout {
    * @param l the listener.
    */
   void addTapeInitializationEventListener(TapeInitializationEventListener l);
+
+  /**
+   * TODO: describe
+   * @param l
+   */
+  void addInitialTapeShiftEventListener(TapeShiftEventListener l);
+
+  /**
+   * TODO: describe
+   * @param l
+   */
+  void addInitialTapeSymbolWrittenEventListener(
+    InitialTapeSymbolWrittenEventListener l
+  );
 
   /**
    * Adds a listener to an event <code>StepEvent</code>.
@@ -222,12 +223,12 @@ public interface IFrameLayout {
    * TODO: decribe
    * @param l
    */
-  void addSymbolUnRegisteredVetoableChangeListener(VetoableChangeListener l);
+  void addSymbolUnregisteredVetoableChangeListener(VetoableChangeListener l);
 
   /**
    * TODO: decribe
    * @param l
    */
-  void addStateRUnegisteredVetoableChangeListener(VetoableChangeListener l);
+  void addStateUnregisteredVetoableChangeListener(VetoableChangeListener l);
 
 }

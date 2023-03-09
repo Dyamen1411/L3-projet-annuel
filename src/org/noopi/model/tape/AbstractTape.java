@@ -10,6 +10,7 @@ import org.noopi.utils.events.tape.TapeWriteEvent;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
+import org.noopi.utils.listeners.view.TapeUpdatedEventListener;
 
 /**
  * Manages all the listener mechanics of a ITape.
@@ -78,6 +79,16 @@ public abstract class AbstractTape implements ITape {
     }
   }
 
+  protected void fireTapeUpdatedEvent() {
+    Object[] list = listenerList.getListenerList();
+    for (int i = list.length - 2; i >= 0; i -= 2) {
+      if (list[i] != TapeUpdatedEventListener.class) {
+        continue;
+      }
+      ((TapeUpdatedEventListener) list[i + 1]).onUpdate();
+    }
+  }
+
   @Override
   public void addTapeResetEventListener(TapeResetEventListener l) {
     assert l != null;
@@ -94,6 +105,12 @@ public abstract class AbstractTape implements ITape {
   public void addTapeWriteEventListener(TapeWriteEventListener l) {
     assert l != null;
     listenerList.add(TapeWriteEventListener.class, l);
+  }
+
+  @Override
+  public void addTapeUpdatedEventListener(TapeUpdatedEventListener l) {
+    assert l != null;
+    listenerList.add(TapeUpdatedEventListener.class, l);
   }
 
   @Override

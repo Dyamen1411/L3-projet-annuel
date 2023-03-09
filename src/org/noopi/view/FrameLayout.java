@@ -2,6 +2,7 @@ package org.noopi.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,11 +22,14 @@ import javax.swing.event.EventListenerList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
+import org.noopi.utils.events.tape.TapeMovedEvent;
 import org.noopi.utils.events.view.NewFileEvent;
 import org.noopi.utils.events.view.OpenFileEvent;
 import org.noopi.utils.events.view.RunEvent;
@@ -34,8 +38,10 @@ import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
+import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -43,9 +49,12 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.TransitionTableModel;
+import org.noopi.model.tape.ITape;
 import org.noopi.utils.IDatabase;
+import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
@@ -53,6 +62,7 @@ import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionEditorComponent;
 import org.noopi.view.components.TransitionTable;
+import org.noopi.view.components.model.DatabaseComboboxModel;
 
 import java.awt.BorderLayout;
 
@@ -69,6 +79,8 @@ public class FrameLayout implements IFrameLayout {
 
   private IDatabase<String, Symbol> symbols;
   private IDatabase<String, State> states;
+  private ITape tapeModel;
+  private ITape initialTapeModel;
 
   private EventListenerList listenerList;
 
@@ -93,6 +105,7 @@ public class FrameLayout implements IFrameLayout {
   private JList<JLabel> transitionsJList;
   private JList<JLabel> paneTransitionsTextArea;
   private GraphicTape tape;
+  private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
   private JFrame transitionsFrame;
   private TransitionEditorComponent addTransition;
@@ -101,20 +114,29 @@ public class FrameLayout implements IFrameLayout {
   private TransitionTable transitionTable;
   private ModifiableList symbolList;
   private ModifiableList stateList;
+  private JButton initialTapeLeft;
+  private JButton initialTapeRight;
+  private JComboBox<String> initialTapeSymbolSelector;
 
   //CONSTRUCTEURS
 
   public FrameLayout(
     IDatabase<String, Symbol> symbols,
     IDatabase<String, State> states,
-    TransitionTableModel transitions
+    TransitionTableModel transitions,
+    ITape tapeModel,
+    ITape initialTapeModel
   ) {
     assert transitions != null;
     assert symbols != null;
     assert states != null;
+    assert tapeModel != null;
+    assert initialTapeModel != null;
     this.transitions = transitions;
     this.symbols = symbols;
     this.states = states;
+    this.tapeModel = tapeModel;
+    this.initialTapeModel = initialTapeModel;
     createView();
     placeComponent();
     createController();
@@ -144,23 +166,8 @@ public class FrameLayout implements IFrameLayout {
   // COMMANDES
 
   @Override
-  public void shiftTapeRight() {
-    tape.shiftTapeRight();
-  }
-
-  @Override
-  public void shiftTapeLeft() {
-    tape.shiftTapeLeft();
-  }
-
-  @Override
   public void resetTransitions() {
     transitionsJList.removeAll();
-  }
-
-  @Override
-  public void setSymbolOnTape(Symbol s) {
-    tape.setSymbol(s);
   }
 
   @Override
@@ -234,6 +241,37 @@ public class FrameLayout implements IFrameLayout {
   ) {
     assert l != null;
     listenerList.add(TapeInitializationEventListener.class, l);
+  }
+
+  @Override
+  public void addInitialTapeShiftEventListener(TapeShiftEventListener l) {
+    assert l != null;
+    initialTapeLeft.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        l.onTapeShifted(MachineAction.TAPE_LEFT);
+      }
+    });
+    initialTapeRight.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        l.onTapeShifted(MachineAction.TAPE_RIGHT);
+      }
+    });
+  }
+
+  public void addInitialTapeSymbolWrittenEventListener(
+    InitialTapeSymbolWrittenEventListener l
+  ) {
+    initialTapeSymbolSelector.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        Symbol s = e.getItem() == null
+          ? Symbol.DEFAULT
+          : symbols.get((String) e.getItem());
+        l.onTapeWritten(s);
+      }
+    });
   }
 
   @Override
@@ -312,14 +350,14 @@ public class FrameLayout implements IFrameLayout {
     stateList.addElementAddedVetoableChangeListener(l);
   }
 
-  public void addSymbolUnRegisteredVetoableChangeListener(
+  public void addSymbolUnregisteredVetoableChangeListener(
     VetoableChangeListener l
   ) {
     assert l != null;
     symbolList.addElementRemovedVetoableChangeListener(l);
   }
 
-  public void addStateRUnegisteredVetoableChangeListener(
+  public void addStateUnregisteredVetoableChangeListener(
     VetoableChangeListener l
   ) {
     assert l != null;
@@ -351,7 +389,13 @@ public class FrameLayout implements IFrameLayout {
     transitionsJList = new JList<JLabel>();
     paneTransitionsTextArea = new JList<JLabel>();
 
-    tape = new GraphicTape(Symbol.DEFAULT);
+    tape = new GraphicTape(tapeModel, false);
+    initialTape = new GraphicTape(initialTapeModel, true);
+    initialTapeLeft = new JButton("Gauche");
+    initialTapeRight = new JButton("Droite");
+    initialTapeSymbolSelector = new JComboBox<>(
+      new DatabaseComboboxModel<>(symbols)
+    );
   }
 
   private void placeComponent() {
@@ -386,7 +430,7 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private JPanel createMachineGUI(Border border) {
-    JPanel machine = new JPanel();
+    JPanel machine = new JPanel(new GridLayout(0, 1));
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTTION GRAPHIQUE"));
     machine.add(tape);
     return machine;
@@ -396,10 +440,19 @@ public class FrameLayout implements IFrameLayout {
     JPanel controls = new JPanel(new GridLayout(0, 1));
     controls.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
 
-    JPanel tapeControls = new JPanel();
-    tapeControls.add(new JLabel("Ruban initial :"));
-    tapeControls.add(initialRubanTextField);
+    JPanel q = new JPanel();
+    q.add(new JLabel("Ruban initial :"));
+    controls.add(q);
+
+    JPanel tapeControls = new JPanel(new GridLayout(1, 0));
+    tapeControls.add(initialTapeLeft);
+    tapeControls.add(initialTapeSymbolSelector);
+    tapeControls.add(initialTapeRight);
     controls.add(tapeControls);
+
+    controls.add(initialTape);
+
+    controls.add(new JLabel());
 
     JPanel stateControls = new JPanel();
     stateControls.add(initButton);
@@ -490,6 +543,27 @@ public class FrameLayout implements IFrameLayout {
       @Override
       public void actionPerformed(ActionEvent e) {
         fireSaveEvent();
+      }
+    });
+
+    initButton.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        fireTapeInitializationEvent();
+      }
+      
+    });
+
+    initialTapeModel.addTapeMovedEventListener(new TapeMovedEventListener() {
+      @Override
+      public void onTapeMoved(TapeMovedEvent e) {
+        Symbol read = initialTapeModel.readSymbol();
+        initialTapeSymbolSelector.setSelectedItem(
+          read == Symbol.DEFAULT ? null : read.toString()
+        );
+        // hack :/
+        initialTapeModel.writeSymbol(read);
       }
     });
   }

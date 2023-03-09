@@ -1,7 +1,7 @@
 package org.noopi.utils;
 
 public final class Symbol {
-  public static final Symbol DEFAULT = new Symbol("");
+  public static final Symbol DEFAULT = new Symbol("S");
 
   private final String name;
 
