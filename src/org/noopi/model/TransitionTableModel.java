@@ -18,8 +18,6 @@ import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 public class TransitionTableModel {
   
   private HashMap<Transition.Left, Transition.Right> table;
-  private IDatabase<String, Symbol> symbols;
-  private IDatabase<String, State> states;
 
   private EventListenerList listenerList;
 
@@ -37,10 +35,6 @@ public class TransitionTableModel {
         @Override
         public void onRegisterEvent(DatabaseRegisterEvent<Symbol> e) {
           Symbol s = e.getValue();
-          if (symbols.contains(s.toString())) {
-            // TODO: register error ?
-            return;
-          }
           for (State state : states.values()) {
             Transition t = new Transition(
               state,
@@ -61,10 +55,6 @@ public class TransitionTableModel {
         @Override
         public void onUnregisterEvent(DatabaseUnregisterEvent<Symbol> e) {
           Symbol s = e.getValue();
-          if (!symbols.contains(s.toString())) {
-            // TODO: register error ?
-            return;
-          }
           for (State state : states.values()) {
             table.remove(new Transition.Left(s, state));
           }
@@ -78,10 +68,6 @@ public class TransitionTableModel {
         @Override
         public void onRegisterEvent(DatabaseRegisterEvent<State> e) {
           State s = e.getValue();
-          if (states.contains(s.toString())) {
-            // TODO: register error ?
-            return;
-          }
           for (Symbol symbol : symbols.values()) {
             Transition t = new Transition(
               s,
@@ -102,10 +88,6 @@ public class TransitionTableModel {
         @Override
         public void onUnregisterEvent(DatabaseUnregisterEvent<State> e) {
           State s = e.getValue();
-          if (!states.contains(s.toString())) {
-            // TODO: register error ?
-            return;
-          }
           for (Symbol symbol : symbols.values()) {
             table.remove(new Transition.Left(symbol, s));
           }
@@ -139,5 +121,4 @@ public class TransitionTableModel {
       ((TransitionTableUpdatedEventListener) listeners[i + 1]).onTableUpdated();
     }
   }
-
 }

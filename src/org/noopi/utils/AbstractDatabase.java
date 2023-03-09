@@ -95,7 +95,7 @@ public abstract class AbstractDatabase<R, T>
       if (listeners[i] != DatabaseRegisterEventListener.class) {
         continue;
       }
-      if (registerEvent == null || b) {
+      if (registerEvent == null || !b) {
         registerEvent = new DatabaseRegisterEvent<>(s);
         b = true;
       }
@@ -112,7 +112,7 @@ public abstract class AbstractDatabase<R, T>
       if (listeners[i] != DatabaseUnregisterEventListener.class) {
         continue;
       }
-      if (unregisterEvent == null || b) {
+      if (unregisterEvent == null || !b) {
         unregisterEvent = new DatabaseUnregisterEvent<T>(s);
         b = true;
       }

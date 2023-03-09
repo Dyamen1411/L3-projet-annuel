@@ -44,6 +44,7 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
+import org.noopi.model.TransitionTableModel;
 import org.noopi.utils.IDatabase;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
@@ -96,6 +97,8 @@ public class FrameLayout implements IFrameLayout {
   private JFrame transitionsFrame;
   private TransitionEditorComponent addTransition;
   private TransitionEditorComponent removeTransition;
+  private TransitionTableModel transitions;
+  private TransitionTable transitionTable;
   private ModifiableList symbolList;
   private ModifiableList stateList;
 
@@ -103,10 +106,13 @@ public class FrameLayout implements IFrameLayout {
 
   public FrameLayout(
     IDatabase<String, Symbol> symbols,
-    IDatabase<String, State> states
+    IDatabase<String, State> states,
+    TransitionTableModel transitions
   ) {
+    assert transitions != null;
     assert symbols != null;
     assert states != null;
+    this.transitions = transitions;
     this.symbols = symbols;
     this.states = states;
     createView();
@@ -337,6 +343,7 @@ public class FrameLayout implements IFrameLayout {
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
+    transitionTable = new TransitionTable(symbols, states, transitions);
 
     speedSlider = new JSlider(0, 100, 20);
 
@@ -371,13 +378,8 @@ public class FrameLayout implements IFrameLayout {
     ));
     transitions.add(transitionPane);
 
-    // JPanel transitionEditor = new JPanel(new GridLayout(2, 1));
-    // transitionEditor.add(addTransition);
-    // transitionEditor.add(removeTransition);
-    // transitions.add(transitionEditor);
-
     JPanel test = new JPanel();
-    test.add(new TransitionTable(symbols, states));
+    test.add(transitionTable);
     transitions.add(test);
 
     return transitions;

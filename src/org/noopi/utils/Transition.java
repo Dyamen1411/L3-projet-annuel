@@ -49,13 +49,18 @@ public class Transition {
     ;
   }
 
-
   public Transition.Left toLeft() {
     return new Transition.Left(oldSymbol, oldState);
   }
 
   public Transition.Right toRight() {
     return new Transition.Right(newSymbol, newDirection, newState);
+  }
+
+  public static Transition from(Left l, Right r) {
+    assert l != null;
+    assert r != null;
+    return new Transition(l.state, l.symbol, r.action, r.state, r.symbol);
   }
 
   public static class Left {
@@ -67,7 +72,25 @@ public class Transition {
       assert state != null;
       this.symbol = symbol;
       this.state = state;
-    } 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      Left oo = (Left) o;
+      return o instanceof Left
+        && symbol.equals(oo.symbol)
+        && state.equals(oo.state);
+    }
+
+    @Override
+    public int hashCode() {
+      return (symbol + "#" + state).hashCode();
+    }
+
+    @Override
+    public String toString() {
+      return symbol + ", " + state;
+    }
   }
 
   public static class Right {
@@ -113,6 +136,20 @@ public class Transition {
     public void setState(State state) {
       assert state != null;
       this.state = state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      Right oo = (Right) o;
+      return o instanceof Right
+        && symbol.equals(oo.symbol)
+        && action.equals(oo.action)
+        && state.equals(oo.state);
+    }
+
+    @Override
+    public String toString() {
+      return symbol + ", " + action + ", " + state;
     }
   }
   

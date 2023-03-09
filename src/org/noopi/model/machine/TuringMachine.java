@@ -9,10 +9,6 @@ import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 import org.noopi.utils.exceptions.MachineDecidabilityExecption;
-import org.noopi.utils.MachineAction;
-import org.noopi.utils.State;
-import org.noopi.utils.Symbol;
-import org.noopi.utils.Transition;
 
 public final class TuringMachine extends AbstractTuringMachine {
 

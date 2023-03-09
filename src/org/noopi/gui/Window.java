@@ -3,10 +3,7 @@ package org.noopi.gui;
 import javax.swing.JFrame;
 
 import org.noopi.model.tape.ITape;
-import org.noopi.utils.IDatabase;
-import org.noopi.utils.State;
 import org.noopi.utils.StateDatabase;
-import org.noopi.utils.Symbol;
 import org.noopi.utils.SymbolDatabase;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
@@ -14,6 +11,7 @@ import org.noopi.utils.exceptions.DatabaseDuplicateException;
 import org.noopi.utils.exceptions.DatabaseMissingEntryException;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
+import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
 import org.noopi.view.FrameLayout;
@@ -27,7 +25,7 @@ public final class Window {
   private ITransitionHistory history;
   private SymbolDatabase symbols;
   private StateDatabase states;
-
+  private TransitionTableModel transitions;
 
   // View
   private JFrame frame;
@@ -51,13 +49,15 @@ public final class Window {
   private void createModel() {
     symbols = new SymbolDatabase();
     states = new StateDatabase();
+    transitions = new TransitionTableModel(symbols, states);
   }
 
   private void createView() {
     frame = new JFrame();
     layout = new FrameLayout(
       symbols.toReadable(),
-      states.toReadable()
+      states.toReadable(),
+      transitions
     );
   }
 
