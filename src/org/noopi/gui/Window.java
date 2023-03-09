@@ -60,6 +60,10 @@ import org.noopi.view.IFrameLayout;
 
 public final class Window {
 
+  // ATTRIBUTES
+
+  private final int SECOND_CONV = 100;
+
   // Model
   private ITuringMachine machine;
   private ITape tape;
@@ -98,7 +102,8 @@ public final class Window {
     states = new StateDatabase();
     transitions = new TransitionTableModel(symbols, states);
     tape = new Tape();
-    initialTape = new Tape();    timer = new Timer(0, new ActionListener(){
+    initialTape = new Tape();    
+    timer = new Timer(0, new ActionListener(){
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -280,7 +285,9 @@ public final class Window {
         // TODO: fix
         try {
           machine.step(null);
-        } catch(MachineDecidabilityExecption ex) {}
+        } catch(MachineDecidabilityExecption ex) {
+
+        }
       }
     });
 
@@ -297,7 +304,7 @@ public final class Window {
 
       @Override
       public void onSpeedChanged(SpeedChangeEvent e) {
-        // TODO: Ajouter un Timer a la machine pour pouvoir regler sa vitesse
+        timer.setDelay((((int)(-e.getSpeed() * 100)) + 100) * SECOND_CONV);
       }
       
     });
