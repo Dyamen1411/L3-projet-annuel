@@ -19,7 +19,6 @@ import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.State;
-import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 
 public interface IFrameLayout {

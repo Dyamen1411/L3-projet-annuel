@@ -7,12 +7,7 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
 import org.noopi.model.tape.ITape;
-import org.noopi.utils.MachineAction;
 import org.noopi.utils.Symbol;
-import org.noopi.utils.events.tape.TapeMovedEvent;
-import org.noopi.utils.events.tape.TapeWriteEvent;
-import org.noopi.utils.listeners.tape.TapeMovedEventListener;
-import org.noopi.utils.listeners.tape.TapeWriteEventListener;
 import org.noopi.utils.listeners.view.TapeUpdatedEventListener;
 
 public class GraphicTape extends JList<String> {
@@ -22,7 +17,6 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final int HEAD_INDEX = END_INDEX / 2;
 
   private ITape model;
 
@@ -46,42 +40,6 @@ public class GraphicTape extends JList<String> {
     setSelectedIndex(CELL_COUNT / 2);
     setVisibleRowCount(1);
     setLayoutOrientation(JList.HORIZONTAL_WRAP);
-
-    // tape.addTapeMovedEventListener(new TapeMovedEventListener() {
-    //   @Override
-    //   public void onTapeMoved(TapeMovedEvent e) {
-    //     MachineAction a = e.getDirection();
-    //     if (a == MachineAction.MACHINE_STOP) {
-    //       // error : should never happen.
-    //       return;
-    //     }
-
-    //     Symbol[] slice = tape.getSlice(CELL_COUNT);
-
-    //     switch (e.getDirection()) {
-    //       case TAPE_LEFT: 
-    //         list.remove(START_INDEX);
-    //         list.add(END_INDEX, slice[END_INDEX].toString());
-    //       break;
-    //       case TAPE_RIGHT: 
-    //         list.remove(END_INDEX);
-    //         list.add(START_INDEX, slice[START_INDEX].toString());
-    //       break;
-
-    //       default: return;
-    //     }
-
-    //     repaint();
-    //   }
-    // });
-
-    // tape.addTapeWriteEventListener(new TapeWriteEventListener() {
-    //   @Override
-    //   public void onTapeWritten(TapeWriteEvent e) {
-    //     list.remove(HEAD_INDEX);
-    //     list.add(HEAD_INDEX, e.getSymbol().toString());
-    //   }
-    // });
 
     tape.addTapeUpdatedEventListener(new TapeUpdatedEventListener() {
       @Override
