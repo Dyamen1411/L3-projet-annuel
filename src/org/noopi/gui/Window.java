@@ -17,6 +17,7 @@ import org.noopi.utils.exceptions.MachineDecidabilityExecption;
 import org.noopi.utils.events.history.HistoryPopEvent;
 import org.noopi.utils.events.history.HistoryPushEvent;
 import org.noopi.utils.events.history.HistoryResetEvent;
+import org.noopi.utils.events.machine.MachineStepEvent;
 import org.noopi.utils.events.tape.TapeResetEvent;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
@@ -39,6 +40,7 @@ import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
+import org.noopi.utils.listeners.machine.MachineStepEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
@@ -109,7 +111,7 @@ public final class Window {
       public void actionPerformed(ActionEvent e) {
         // TODO: fix
         try {
-          machine.step(null);
+          machine.step(tape.readSymbol());
         } catch (MachineDecidabilityExecption ex) {
 
         }
@@ -196,6 +198,7 @@ public final class Window {
         }
       }
     });
+
     layout.addSymbolUnRegisteredEventListener(new ElementRemovedEventListener() {
       @Override
       public void onElementRemoved(ElementRemovedEvent e) {
@@ -207,6 +210,7 @@ public final class Window {
         }
       }
     });
+
     layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
       @Override
       public void onElementAdded(ElementAddedEvent e) {
@@ -218,6 +222,7 @@ public final class Window {
         }
       }
     });
+    
     layout.addStateUnRegisteredEventListener(new ElementRemovedEventListener() {
       @Override
       public void onElementRemoved(ElementRemovedEvent e) {
@@ -437,6 +442,20 @@ public final class Window {
         }
       }
     );
+
+    // LISTENERS ON MACHINE
+
+    machine.addStepEventListener(new MachineStepEventListener() {
+
+      @Override
+      public void onMachineStepped(MachineStepEvent e) {
+        // TODO : FIX
+        // USE HISTORY / REMOVE USELESS LISTENERS
+        // tape.shift();
+        // tape.writeSymbol(null);
+      }
+      
+    });
   }
 
   private void refreshView() {
