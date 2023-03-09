@@ -2,6 +2,7 @@ package org.noopi.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,15 +22,14 @@ import javax.swing.event.EventListenerList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
-import org.noopi.utils.events.view.ElementAddedEvent;
-import org.noopi.utils.events.view.ElementRemovedEvent;
+import org.noopi.utils.events.tape.TapeMovedEvent;
 import org.noopi.utils.events.view.NewFileEvent;
 import org.noopi.utils.events.view.OpenFileEvent;
 import org.noopi.utils.events.view.RunEvent;
@@ -38,8 +38,10 @@ import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
+import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -47,13 +49,20 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.model.TransitionTableModel;
+import org.noopi.model.tape.ITape;
+import org.noopi.utils.IDatabase;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionEditorComponent;
+import org.noopi.view.components.TransitionTable;
+import org.noopi.view.components.model.DatabaseComboboxModel;
 
 import java.awt.BorderLayout;
 
@@ -67,6 +76,11 @@ import java.awt.GridLayout;
 public class FrameLayout implements IFrameLayout {
 
   //ATTRIBUTS
+
+  private IDatabase<String, Symbol> symbols;
+  private IDatabase<String, State> states;
+  private ITape tapeModel;
+  private ITape initialTapeModel;
 
   private EventListenerList listenerList;
 
@@ -88,19 +102,41 @@ public class FrameLayout implements IFrameLayout {
   private JTextField initialRubanTextField;
   private JSlider speedSlider;
   private JList<JLabel> historyJList;
-  private JList<JLabel> rulesJList;
-  private JList<JLabel> paneRulesTextArea;
+  private JList<JLabel> transitionsJList;
+  private JList<JLabel> paneTransitionsTextArea;
   private GraphicTape tape;
+  private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
-  private JFrame rulesFrame;
-  private TransitionEditorComponent addRule;
-  private TransitionEditorComponent removeRule;
+  private JFrame transitionsFrame;
+  private TransitionEditorComponent addTransition;
+  private TransitionEditorComponent removeTransition;
+  private TransitionTableModel transitions;
+  private TransitionTable transitionTable;
   private ModifiableList symbolList;
   private ModifiableList stateList;
+  private JButton initialTapeLeft;
+  private JButton initialTapeRight;
+  private JComboBox<String> initialTapeSymbolSelector;
 
   //CONSTRUCTEURS
 
-  public FrameLayout() {
+  public FrameLayout(
+    IDatabase<String, Symbol> symbols,
+    IDatabase<String, State> states,
+    TransitionTableModel transitions,
+    ITape tapeModel,
+    ITape initialTapeModel
+  ) {
+    assert transitions != null;
+    assert symbols != null;
+    assert states != null;
+    assert tapeModel != null;
+    assert initialTapeModel != null;
+    this.transitions = transitions;
+    this.symbols = symbols;
+    this.states = states;
+    this.tapeModel = tapeModel;
+    this.initialTapeModel = initialTapeModel;
     createView();
     placeComponent();
     createController();
@@ -130,23 +166,8 @@ public class FrameLayout implements IFrameLayout {
   // COMMANDES
 
   @Override
-  public void shiftTapeRight() {
-    tape.shiftTapeRight();
-  }
-
-  @Override
-  public void shiftTapeLeft() {
-    tape.shiftTapeLeft();
-  }
-
-  @Override
-  public void resetRules() {
-    rulesJList.removeAll();
-  }
-
-  @Override
-  public void setSymbolOnTape(Symbol s) {
-    tape.setSymbol(s);
+  public void resetTransitions() {
+    transitionsJList.removeAll();
   }
 
   @Override
@@ -155,15 +176,15 @@ public class FrameLayout implements IFrameLayout {
   }
 
   @Override
-  public void addRule(Transition t) {
+  public void addTransition(Transition t) {
     assert t != null;
-    rulesJList.add(createJLabel(t));
+    transitionsJList.add(createJLabel(t));
   }
 
   @Override
-  public void removeRule(Transition t) {
+  public void removeTransition(Transition t) {
     assert t != null;
-    rulesJList.remove(createJLabel(t));
+    transitionsJList.remove(createJLabel(t));
   }
 
   @Override
@@ -203,7 +224,7 @@ public class FrameLayout implements IFrameLayout {
     TransitionModifiedEventListener l
   ) {
     assert l != null;
-    addRule.addTransitionModifiedEventListener(l);
+    addTransition.addTransitionModifiedEventListener(l);
   }
 
   @Override
@@ -211,7 +232,7 @@ public class FrameLayout implements IFrameLayout {
     TransitionModifiedEventListener l
   ) {
     assert l != null;
-    removeRule.addTransitionModifiedEventListener(l);
+    removeTransition.addTransitionModifiedEventListener(l);
   }
 
   @Override
@@ -220,6 +241,37 @@ public class FrameLayout implements IFrameLayout {
   ) {
     assert l != null;
     listenerList.add(TapeInitializationEventListener.class, l);
+  }
+
+  @Override
+  public void addInitialTapeShiftEventListener(TapeShiftEventListener l) {
+    assert l != null;
+    initialTapeLeft.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        l.onTapeShifted(MachineAction.TAPE_LEFT);
+      }
+    });
+    initialTapeRight.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        l.onTapeShifted(MachineAction.TAPE_RIGHT);
+      }
+    });
+  }
+
+  public void addInitialTapeSymbolWrittenEventListener(
+    InitialTapeSymbolWrittenEventListener l
+  ) {
+    initialTapeSymbolSelector.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        Symbol s = e.getItem() == null
+          ? Symbol.DEFAULT
+          : symbols.get((String) e.getItem());
+        l.onTapeWritten(s);
+      }
+    });
   }
 
   @Override
@@ -298,14 +350,14 @@ public class FrameLayout implements IFrameLayout {
     stateList.addElementAddedVetoableChangeListener(l);
   }
 
-  public void addSymbolUnRegisteredVetoableChangeListener(
+  public void addSymbolUnregisteredVetoableChangeListener(
     VetoableChangeListener l
   ) {
     assert l != null;
     symbolList.addElementRemovedVetoableChangeListener(l);
   }
 
-  public void addStateRUnegisteredVetoableChangeListener(
+  public void addStateUnregisteredVetoableChangeListener(
     VetoableChangeListener l
   ) {
     assert l != null;
@@ -323,20 +375,27 @@ public class FrameLayout implements IFrameLayout {
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
     initButton = new JButton("Initialiser");
-    addRule = new TransitionEditorComponent("Ajouter");
-    removeRule = new TransitionEditorComponent("Retirer");
+    addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
+    removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
     initialRubanTextField = new JTextField();
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
+    transitionTable = new TransitionTable(symbols, states, transitions);
 
     speedSlider = new JSlider(0, 100, 20);
 
     historyJList = new JList<JLabel>();
-    rulesJList = new JList<JLabel>();
-    paneRulesTextArea = new JList<JLabel>();
+    transitionsJList = new JList<JLabel>();
+    paneTransitionsTextArea = new JList<JLabel>();
 
-    tape = new GraphicTape(new Symbol(""));
+    tape = new GraphicTape(tapeModel, false);
+    initialTape = new GraphicTape(initialTapeModel, true);
+    initialTapeLeft = new JButton("Gauche");
+    initialTapeRight = new JButton("Droite");
+    initialTapeSymbolSelector = new JComboBox<>(
+      new DatabaseComboboxModel<>(symbols)
+    );
   }
 
   private void placeComponent() {
@@ -346,34 +405,33 @@ public class FrameLayout implements IFrameLayout {
     mainPanel.add(createHistoryGUI(border), BorderLayout.EAST);
   }
 
-  private JPanel createRulesGUI(Border border) {
-    JPanel rules = new JPanel();
-    rules.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
+  private JPanel createTransitionsGUI(Border border) {
+    JPanel transitions = new JPanel();
+    transitions.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
 
     JPanel symbolStateEditor = new JPanel();
     symbolStateEditor.add(symbolList);
     symbolStateEditor.add(stateList);
-    rules.add(symbolStateEditor);
+    transitions.add(symbolStateEditor);
 
-    JScrollPane rulePane = new JScrollPane(rulesJList);
-    rulePane.setPreferredSize(new Dimension(300, 175));
-    Border rulesBorderPane = BorderFactory.createLineBorder(Color.GRAY);
-    rulePane.setBorder(BorderFactory.createTitledBorder(
-      rulesBorderPane, "Cliquez pour aggrandir"
+    JScrollPane transitionPane = new JScrollPane(transitionsJList);
+    transitionPane.setPreferredSize(new Dimension(300, 175));
+    Border transitionsBorderPane = BorderFactory.createLineBorder(Color.GRAY);
+    transitionPane.setBorder(BorderFactory.createTitledBorder(
+      transitionsBorderPane, "Cliquez pour aggrandir"
     ));
-    rules.add(rulePane);
+    transitions.add(transitionPane);
 
-    JPanel transitionEditor = new JPanel(new GridLayout(2, 1));
-    transitionEditor.add(addRule);
-    transitionEditor.add(removeRule);
-    rules.add(transitionEditor);
+    JPanel test = new JPanel();
+    test.add(transitionTable);
+    transitions.add(test);
 
-    return rules;
+    return transitions;
   }
 
   private JPanel createMachineGUI(Border border) {
-    JPanel machine = new JPanel();
-    machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
+    JPanel machine = new JPanel(new GridLayout(0, 1));
+    machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTTION GRAPHIQUE"));
     machine.add(tape);
     return machine;
   }
@@ -382,10 +440,19 @@ public class FrameLayout implements IFrameLayout {
     JPanel controls = new JPanel(new GridLayout(0, 1));
     controls.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
 
-    JPanel tapeControls = new JPanel();
-    tapeControls.add(new JLabel("Ruban initial :"));
-    tapeControls.add(initialRubanTextField);
+    JPanel q = new JPanel();
+    q.add(new JLabel("Ruban initial :"));
+    controls.add(q);
+
+    JPanel tapeControls = new JPanel(new GridLayout(1, 0));
+    tapeControls.add(initialTapeLeft);
+    tapeControls.add(initialTapeSymbolSelector);
+    tapeControls.add(initialTapeRight);
     controls.add(tapeControls);
+
+    controls.add(initialTape);
+
+    controls.add(new JLabel());
 
     JPanel stateControls = new JPanel();
     stateControls.add(initButton);
@@ -404,7 +471,7 @@ public class FrameLayout implements IFrameLayout {
 
   private JPanel createGUI(Border border) {
     JPanel gui = new JPanel(new GridLayout(0, 1));
-    gui.add(createRulesGUI(border), BorderLayout.CENTER);
+    gui.add(createTransitionsGUI(border), BorderLayout.CENTER);
     gui.add(createMachineGUI(border));
     gui.add(createControlsGUI(border));
     return gui;
@@ -420,10 +487,10 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private void createController() {
-    rulesJList.addMouseListener(new MouseAdapter() {
+    transitionsJList.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        createNewRulesFrame();
+        createNewTransitionsFrame();
       }
     });
     
@@ -479,41 +546,26 @@ public class FrameLayout implements IFrameLayout {
       }
     });
 
-    symbolList.addElementAddedEventListener(new ElementAddedEventListener() {
+    initButton.addActionListener(new ActionListener() {
+
       @Override
-      public void onElementAdded(ElementAddedEvent e) {
-        addRule.registerSymbol(e.getElement());
-        removeRule.registerSymbol(e.getElement());
+      public void actionPerformed(ActionEvent e) {
+        fireTapeInitializationEvent();
       }
+      
     });
 
-    symbolList.addElementRemovedEventListener(
-      new ElementRemovedEventListener() {
-        @Override
-        public void onElementRemoved(ElementRemovedEvent e) {
-          addRule.unregisterSymbol(e.getElement());
-          removeRule.unregisterSymbol(e.getElement());
-        }
-      }
-    );
-
-    stateList.addElementAddedEventListener(new ElementAddedEventListener() {
+    initialTapeModel.addTapeMovedEventListener(new TapeMovedEventListener() {
       @Override
-      public void onElementAdded(ElementAddedEvent e) {
-        addRule.registerState(e.getElement());
-        removeRule.registerState(e.getElement());
+      public void onTapeMoved(TapeMovedEvent e) {
+        Symbol read = initialTapeModel.readSymbol();
+        initialTapeSymbolSelector.setSelectedItem(
+          read == Symbol.DEFAULT ? null : read.toString()
+        );
+        // hack :/
+        initialTapeModel.writeSymbol(read);
       }
     });
-
-    stateList.addElementRemovedEventListener(
-      new ElementRemovedEventListener() {
-        @Override
-        public void onElementRemoved(ElementRemovedEvent e) {
-          addRule.unregisterState(e.getElement());
-          removeRule.unregisterState(e.getElement());
-        }
-      }
-    );
   }
 
   private void setMenuBar() {
@@ -537,21 +589,22 @@ public class FrameLayout implements IFrameLayout {
     speedSlider.setMinorTickSpacing(5); 
   }
 
-  private void createNewRulesFrame() {
-    // TODO: add listener on dispose to set <code>rulesFrame</code> to null !
+  private void createNewTransitionsFrame() {
+    // TODO: add listener on dispose to set <code>transitionsFrame</code> to null !
     // Else cannot recreate frame
-    if (rulesFrame != null) {
-      rulesFrame.dispose();
+    if (transitionsFrame != null) {
+      transitionsFrame.dispose();
     }
-    rulesFrame = new JFrame("Liste des règles");
-    rulesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    rulesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    paneRulesTextArea = new JList<JLabel>(rulesJList.getModel());
-    JScrollPane newFrameRulesPane = new JScrollPane(paneRulesTextArea);
-    rulesFrame.add(newFrameRulesPane);
-    rulesFrame.pack();
-    rulesFrame.setLocationRelativeTo(null);
-    rulesFrame.setVisible(true);
+    transitionsFrame = new JFrame("Liste des règles");
+    transitionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    transitionsFrame.setPreferredSize(new Dimension(200, 400));
+    transitionsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+    paneTransitionsTextArea = transitionsJList;
+    JScrollPane newFrameTransitionsPane = new JScrollPane(paneTransitionsTextArea);
+    transitionsFrame.add(newFrameTransitionsPane);
+    transitionsFrame.pack();
+    transitionsFrame.setLocationRelativeTo(null);
+    transitionsFrame.setVisible(true);
   }
 
   private JLabel createJLabel(Transition t) {

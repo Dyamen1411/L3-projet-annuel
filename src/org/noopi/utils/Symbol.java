@@ -1,12 +1,11 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 public final class Symbol {
-
-  public static final Symbol EMPTY_SYMBOL = new Symbol("");
+  public static final Symbol DEFAULT = new Symbol("S");
 
   private final String name;
 
-  public Symbol(String name) {
+  protected Symbol(String name) {
     assert name != null;
     this.name = name;
   }

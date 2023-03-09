@@ -1,11 +1,12 @@
-package org.noopi.utils.machine;
+package org.noopi.utils;
 
 public final class State {
-  public static final State EMPTY_STATE = new State("");
+
+  public static final State DEFAULT = new State("");
 
   private final String name;
 
-  public State(String name) {
+  protected State(String name) {
     assert name != null;
     this.name = name;
   }

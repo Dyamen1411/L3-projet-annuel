@@ -1,17 +1,18 @@
 package org.noopi.model.tape;
 
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.Symbol;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
-import org.noopi.utils.machine.MachineAction;
-import org.noopi.utils.machine.Symbol;
+import org.noopi.utils.listeners.view.TapeUpdatedEventListener;
 
 public interface ITape {
 
   /**
    * Every cell of the tape are now <code>defaultSymbol</code>.
    */
-  void reset(Symbol defaultSymbol);
+  void reset();
 
   /**
    * The tape cells are now of [..., <code>defaultSymbols</code>,
@@ -20,7 +21,7 @@ public interface ITape {
    * @param defaultSymbol the default symbol on the tape.
    * @param symbols the sequence of symbol under the pointer.
    */
-  void reset(Symbol defaultSymbol, Symbol[] symbols);
+  void reset(Symbol[] symbols);
 
   /**
    * Moves the tape on a given direction
@@ -46,6 +47,11 @@ public interface ITape {
   Symbol[] getSlice(int spanWidth);
 
   /**
+   * TODO: describe
+   */
+  void from(ITape o);
+
+  /**
    * When the <code>reset</code> method is called, it will send a
    * <code>TapeResetEvent</code> event to this listener.
    */
@@ -62,6 +68,11 @@ public interface ITape {
    * <code>TapeWriteEvent</code> event to this listener.
    */
   void addTapeWriteEventListener(TapeWriteEventListener l);
+
+  /**
+   * TODO: describe
+   */
+  void addTapeUpdatedEventListener(TapeUpdatedEventListener l);
 
   void removeTapeResetEventListener(TapeResetEventListener l);
   void removeTapeMovedEventListener(TapeMovedEventListener l);

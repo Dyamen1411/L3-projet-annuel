@@ -30,14 +30,20 @@ import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.events.view.TransitionModifiedEvent;
+import org.noopi.utils.MachineAction;
+import org.noopi.utils.StateDatabase;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.SymbolDatabase;
+import org.noopi.utils.events.tape.TapeInitializationEvent;
+import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.ElementAddedEventListener;
+import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.tape.TapeWriteEventListener;
-import org.noopi.utils.listeners.view.ElementAddedEventListener;
-import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -45,10 +51,10 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.StateDatabase;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.SymbolDatabase;
+import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.history.TransitionHistory;
 import org.noopi.model.machine.ITuringMachine;
@@ -61,7 +67,12 @@ public final class Window {
   // Model
   private ITuringMachine machine;
   private ITape tape;
+  private ITape initialTape;
   private ITransitionHistory history;
+
+  private SymbolDatabase symbols;
+  private StateDatabase states;
+  private TransitionTableModel transitions;
   private Timer timer;
 
   private SymbolDatabase symbolDatabase;
@@ -87,7 +98,11 @@ public final class Window {
   }
 
   private void createModel() {
-    timer = new Timer(0, new ActionListener(){
+    symbols = new SymbolDatabase();
+    states = new StateDatabase();
+    transitions = new TransitionTableModel(symbols, states);
+    tape = new Tape();
+    initialTape = new Tape();    timer = new Timer(0, new ActionListener(){
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -101,7 +116,7 @@ public final class Window {
 
     });
 
-    tape = new Tape(Symbol.EMPTY_SYMBOL);
+    tape = new Tape();
     machine = new TuringMachine();
     history = new TransitionHistory();
 
@@ -111,8 +126,13 @@ public final class Window {
 
   private void createView() {
     frame = new JFrame();
-    layout = new FrameLayout();
-    
+    layout = new FrameLayout(
+      symbols.toReadable(),
+      states.toReadable(),
+      transitions,
+      tape,
+      initialTape
+    );
   }
 
   private void placeComponents() {
@@ -124,38 +144,12 @@ public final class Window {
 
     // TAPE
 
-    tape.addTapeMovedEventListener(new TapeMovedEventListener() {
-      @Override
-      public void onTapeMoved(TapeMovedEvent e) {
-        switch(e.getDirection()) {
-          case TAPE_LEFT:
-            layout.shiftTapeLeft();
-            break;
-          case TAPE_RIGHT:
-            layout.shiftTapeRight();
-            break;
-          case MACHINE_STOP:
-            // What does it do ?
-            break;
-        }
-      }
-    });
-
     tape.addTapeResetEventListener(new TapeResetEventListener() {
       @Override
       public void onTapeReset(TapeResetEvent e) {
         // TODO: fix
         tape.reset(null);
       }
-    });
-
-    tape.addTapeWriteEventListener(new TapeWriteEventListener() {
-
-      @Override
-      public void onTapeWritten(TapeWriteEvent e) {
-        layout.setSymbolOnTape(e.getSymbol());
-      }
-      
     });
 
     // HISTORY
@@ -165,7 +159,7 @@ public final class Window {
       @Override
       public void onHistoryPush(HistoryPushEvent e) {
         // TODO: fix
-        layout.addRule(null);
+        // layout.addRule(null);
       }
     });
 
@@ -174,7 +168,7 @@ public final class Window {
       @Override
       public void onHistoryPop(HistoryPopEvent e) {
         // TODO: fix
-        layout.removeRule(null);
+        // layout.removeRule(null);
       }
       
     });
@@ -183,22 +177,88 @@ public final class Window {
 
       @Override
       public void onHistoryReset(HistoryResetEvent e) {
-        layout.resetRules();
+        // layout.resetRules();
       }
       
     });
 
     // LISTENERS ON VIEW
 
-    layout.addTransitionAddedEventListener(
-      new TransitionModifiedEventListener() {
+    layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        try {
+          symbols.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen
+          e1.printStackTrace();
+        }
+      }
+    });
+    layout.addSymbolUnRegisteredEventListener(new ElementRemovedEventListener() {
+      @Override
+      public void onElementRemoved(ElementRemovedEvent e) {
+        try {
+          symbols.unregisterEntry(e.getElement());
+        } catch (DatabaseMissingEntryException e1) {
+          // Should mever happen
+          e1.printStackTrace();
+        }
+      }
+    });
+    layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        try {
+          states.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen
+          e1.printStackTrace();
+        }
+      }
+    });
+    layout.addStateUnRegisteredEventListener(new ElementRemovedEventListener() {
+      @Override
+      public void onElementRemoved(ElementRemovedEvent e) {
+        try {
+          states.unregisterEntry(e.getElement());
+        } catch (DatabaseMissingEntryException e1) {
+          // Should mever happen
+          e1.printStackTrace();
+        }
+      }
+    });
+
+    layout.addInitialTapeShiftEventListener(new TapeShiftEventListener() {
+      @Override
+      public void onTapeShifted(MachineAction a) {
+        initialTape.shift(a);
+        // initialTape.getSlice(9);
+        // switch (a) {
+        //   case TAPE_LEFT: layout.shiftInitialTapeLeft(); break;
+        //   case TAPE_RIGHT: layout.shiftInitialTapeRight(); break;
+        //   default: /* error, should never happen */ break;
+        // }
+      }
+    });
+
+    layout.addInitialTapeSymbolWrittenEventListener(
+      new InitialTapeSymbolWrittenEventListener() {
         @Override
-        public void onTransitionModified(TransitionModifiedEvent e) {
-          machine.addTransition(e.getTransition());
-          System.out.println("New transition : " + e.getTransition());
+        public void onTapeWritten(Symbol s) {
+          initialTape.writeSymbol(s);
+          // layout.setSymbolOnInitialTape(s);
         }
       }
     );
+
+    layout.addTapeInitializationEventListener(
+      new TapeInitializationEventListener() {
+        @Override
+        public void onTapeInitialized(TapeInitializationEvent e) {
+          tape.from(initialTape);
+        }
+    });
 
     layout.addTransitionRemovedEventListener(
       new TransitionModifiedEventListener() {
@@ -298,7 +358,7 @@ public final class Window {
       }
     });
 
-    layout.addSymbolUnRegisteredVetoableChangeListener(
+    layout.addSymbolUnregisteredVetoableChangeListener(
       new VetoableChangeListener() {
         @Override
         public void vetoableChange(PropertyChangeEvent evt)
@@ -349,7 +409,7 @@ public final class Window {
       }
     });
 
-    layout.addStateRUnegisteredVetoableChangeListener(
+    layout.addStateUnregisteredVetoableChangeListener(
       new VetoableChangeListener() {
         @Override
         public void vetoableChange(PropertyChangeEvent evt)

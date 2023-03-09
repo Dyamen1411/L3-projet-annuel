@@ -8,6 +8,7 @@ import javax.swing.JMenuBar;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
+import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -15,10 +16,11 @@ import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
+import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
-import org.noopi.utils.machine.State;
-import org.noopi.utils.machine.Symbol;
-import org.noopi.utils.machine.Transition;
+import org.noopi.utils.State;
+import org.noopi.utils.Symbol;
+import org.noopi.utils.Transition;
 
 public interface IFrameLayout {
 
@@ -39,39 +41,24 @@ public interface IFrameLayout {
   //------------------------//
 
   /**
-   * Shifts the representation of the tape to the right.
-   */
-  void shiftTapeRight();
-
-  /**
-   * Shifts the representation of the tape to the left.
-   */
-  void shiftTapeLeft();
-
-  /**
-   * Sets a new symbol on the tape under the head.
-   */
-  void setSymbolOnTape(Symbol s);
-
-  /**
    * Sets the machine state.
    */
   void setMachineState(State s);
 
   /**
-   * Adds a new rule on the rule board.
+   * Adds a new transition on the transition board.
    */
-  void addRule(Transition t);
+  void addTransition(Transition t);
 
   /**
-   * Removes a rule from the rule board.
+   * Removes a transition from the transition board.
    */
-  void removeRule(Transition t);
+  void removeTransition(Transition t);
 
   /**
-   * Removes all the rules from the rule board.
+   * Removes all the transitions from the transition board.
    */
-  void resetRules();
+  void resetTransitions();
 
   /**
    * Adds an action to the top of the history.
@@ -108,14 +95,16 @@ public interface IFrameLayout {
 
   /**
    * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to add a new rule from the GUI.
+   * This event is fired when the user wants to add a new transition from the
+   * GUI.
    * @param l the listener.
    */
   void addTransitionAddedEventListener(TransitionModifiedEventListener l);
 
   /**
    * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to remove a rule from the GUI.
+   * This event is fired when the user wants to remove a transition from the
+   * GUI.
    * @param l the listener.
    */
   void addTransitionRemovedEventListener(TransitionModifiedEventListener l);
@@ -127,6 +116,20 @@ public interface IFrameLayout {
    * @param l the listener.
    */
   void addTapeInitializationEventListener(TapeInitializationEventListener l);
+
+  /**
+   * TODO: describe
+   * @param l
+   */
+  void addInitialTapeShiftEventListener(TapeShiftEventListener l);
+
+  /**
+   * TODO: describe
+   * @param l
+   */
+  void addInitialTapeSymbolWrittenEventListener(
+    InitialTapeSymbolWrittenEventListener l
+  );
 
   /**
    * Adds a listener to an event <code>StepEvent</code>.
@@ -220,12 +223,12 @@ public interface IFrameLayout {
    * TODO: decribe
    * @param l
    */
-  void addSymbolUnRegisteredVetoableChangeListener(VetoableChangeListener l);
+  void addSymbolUnregisteredVetoableChangeListener(VetoableChangeListener l);
 
   /**
    * TODO: decribe
    * @param l
    */
-  void addStateRUnegisteredVetoableChangeListener(VetoableChangeListener l);
+  void addStateUnregisteredVetoableChangeListener(VetoableChangeListener l);
 
 }

@@ -2,11 +2,11 @@ package org.noopi.model.machine;
 
 import javax.swing.event.EventListenerList;
 
+import org.noopi.utils.Transition;
 import org.noopi.utils.events.machine.MachineResetEvent;
 import org.noopi.utils.events.machine.MachineStepEvent;
 import org.noopi.utils.listeners.machine.MachineResetEventListener;
 import org.noopi.utils.listeners.machine.MachineStepEventListener;
-import org.noopi.utils.machine.Transition;
 
 /**
  * Manages all the listener mechanics of a IAbstractTuringMachine.
