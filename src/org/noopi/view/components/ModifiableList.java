@@ -214,7 +214,7 @@ public class ModifiableList extends JPanel {
 
   private void addRule(){
     String element = field.getText();
-          if (model.contains(element) || element == "") {
+          if (model.contains(element) || element.equals("")) {
             return;
           }
           model.add(0, element);
