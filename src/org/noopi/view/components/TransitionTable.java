@@ -1,12 +1,14 @@
 package org.noopi.view.components;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -57,10 +59,10 @@ public class TransitionTable extends JPanel {
     editor.add(actionEditor);
     add(editor, BorderLayout.NORTH);
 
-    JPanel center = new JPanel(new BorderLayout());
-    center.add(table.getTableHeader(), BorderLayout.NORTH);
-    center.add(table, BorderLayout.CENTER);
-    add(center, BorderLayout.CENTER);
+    JScrollPane scroll = new JScrollPane(table);
+    scroll.setPreferredSize(new Dimension(500, 200));
+    add(scroll, BorderLayout.CENTER);
+
 
     table.setRowHeight(40);
 

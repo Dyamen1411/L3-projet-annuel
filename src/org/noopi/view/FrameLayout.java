@@ -416,13 +416,7 @@ public class FrameLayout implements IFrameLayout {
     symbolStateEditor.add(stateList);
     transitions.add(symbolStateEditor);
 
-    JScrollPane transitionPane = new JScrollPane(transitionTable);
-    transitionPane.setPreferredSize(new Dimension(300, 175));
-    Border transitionsBorderPane = BorderFactory.createLineBorder(Color.GRAY);
-    transitionPane.setBorder(BorderFactory.createTitledBorder(
-      transitionsBorderPane, "Editez vos transitions ici"
-    ));
-    transitions.add(transitionPane);
+    transitions.add(transitionTable);
 
     return transitions;
   }
