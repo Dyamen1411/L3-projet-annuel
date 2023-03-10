@@ -289,7 +289,7 @@ public final class Window {
       public void onStep(StepEvent e) {
         // TODO: fix
         try {
-          machine.step(null);
+          machine.step(tape.readSymbol());
         } catch(MachineDecidabilityExecption ex) {
 
         }
