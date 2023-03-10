@@ -3,48 +3,16 @@ package org.noopi.model.machine;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
-import org.noopi.utils.exceptions.MachineDecidabilityExecption;
-import org.noopi.utils.listeners.machine.MachineResetEventListener;
-import org.noopi.utils.listeners.machine.MachineStepEventListener;
 
 public interface ITuringMachine {
 
   /**
-   * <p>Resets all the rules and the final states of this machine then
-   * sets the current state of this machine to <code>state</code>.</p>
-   * <p>Will send a <code>MachineResetEvent</code> to every subsribed
-   * listener.</p>
-   * @param state the new current state.
-   */
-  void reset(State state);
-
-  /**
-   * Adds the transition <code>t</code> to the machine.
-   */
-  void addTransition(Transition t);
-
-  /**
-   * Removes the transition <code>t</code> if the machine has that transition.
-   */
-  void removeTransition(Transition t);
-
-  /**
-   * <p>
-   *  Given a symbol <code>s</code>, changes it's state then fires a
-   *  <code>MachineStepEvent</code> to every subscribed listener.
-   * </p>
-   * <p>
-   *  If there is no registered transition for
-   *  <p>
-   *    <code>(getState(), s)</code>
-   *  </p>
-   *  then will fire a
-   *  <code>MachineDecidabilityExecption</code> exception.
-   * </p>
+   * Given a symbol <code>s</code>, changes it's state and returns the outcome
+   * (new state, new symbol and the action done).
    * @param s the symbol.
-   * @throws MachineDecidabilityExecption
+   * @return The outcome of the step.
    */
-  void step(Symbol s) throws MachineDecidabilityExecption;
+  Transition.Right step(Symbol s);
 
   /**
    * Sets the current state of the machine to <code>s</code>.
@@ -57,32 +25,13 @@ public interface ITuringMachine {
   State getState();
 
   /**
-   * Adds a new final state to the machine.
-   */
-  void addFinalState(State finalState);
-
-  /**
-   * Tells wether the machine has a current state or not.
-   */
-  boolean isOperationnal();
-
-  /**
-   * Tells wether the current state is a final state or not.
+   * Tells wether the machine has finished it's calculations or not.
    */
   boolean isDone();
 
   /**
-   * When the <code>reset</code> method is called, it will send an
-   * <code>MachineResetEvent</code> event to this listener.
+   * Sets the machine state to <code>s</code> and <code>isDone()</code> returns
+   * false.
    */
-  void addResetEventListener(MachineResetEventListener l);
-
-  /**
-   * When the <code>step</code> method is called, it will send an
-   * <code>MachineStepEvent</code> event to this listener.
-   */
-  void addStepEventListener(MachineStepEventListener l);
-
-  void removeResetEventListener(MachineResetEventListener l);
-  void removeStepEventListener(MachineStepEventListener l);
+  void reset(State s);
 }

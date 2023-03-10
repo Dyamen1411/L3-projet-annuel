@@ -13,11 +13,9 @@ import org.noopi.model.tape.ITape;
 import org.noopi.model.tape.Tape;
 import org.noopi.utils.exceptions.DatabaseDuplicateException;
 import org.noopi.utils.exceptions.DatabaseMissingEntryException;
-import org.noopi.utils.exceptions.MachineDecidabilityExecption;
 import org.noopi.utils.events.history.HistoryPopEvent;
 import org.noopi.utils.events.history.HistoryPushEvent;
 import org.noopi.utils.events.history.HistoryResetEvent;
-import org.noopi.utils.events.machine.MachineStepEvent;
 import org.noopi.utils.events.tape.TapeResetEvent;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
@@ -28,7 +26,6 @@ import org.noopi.utils.events.view.SaveEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
-import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
@@ -40,7 +37,6 @@ import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
-import org.noopi.utils.listeners.machine.MachineStepEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
@@ -51,7 +47,6 @@ import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
 import org.noopi.model.history.TransitionHistory;
@@ -76,9 +71,6 @@ public final class Window {
   private StateDatabase states;
   private TransitionTableModel transitions;
   private Timer timer;
-
-  private SymbolDatabase symbolDatabase;
-  private StateDatabase stateDatabase;
 
   // View
   private JFrame frame;
@@ -110,21 +102,14 @@ public final class Window {
       @Override
       public void actionPerformed(ActionEvent e) {
         // TODO: fix
-        try {
-          machine.step(tape.readSymbol());
-        } catch (MachineDecidabilityExecption ex) {
-
-        }
+        machine.step(tape.readSymbol());
       }
 
     });
 
     tape = new Tape();
-    machine = new TuringMachine();
+    machine = new TuringMachine(transitions);
     history = new TransitionHistory();
-
-    symbolDatabase = new SymbolDatabase();
-    stateDatabase = new StateDatabase();
   }
 
   private void createView() {
@@ -266,15 +251,6 @@ public final class Window {
         }
     });
 
-    layout.addTransitionRemovedEventListener(
-      new TransitionModifiedEventListener() {
-        @Override
-        public void onTransitionModified(TransitionModifiedEvent e) {
-          machine.removeTransition(e.getTransition());
-        }
-      }
-    );
-
     layout.addRunEventListener(new RunEventListener() {
 
       @Override
@@ -288,11 +264,7 @@ public final class Window {
       @Override
       public void onStep(StepEvent e) {
         // TODO: fix
-        try {
-          machine.step(tape.readSymbol());
-        } catch(MachineDecidabilityExecption ex) {
-
-        }
+        machine.step(tape.readSymbol());
       }
     });
 
@@ -348,23 +320,12 @@ public final class Window {
           throws PropertyVetoException
         {
           String newValue = (String) e.getNewValue();
-          if (symbolDatabase.contains(newValue)) {
+          if (symbols.contains(newValue)) {
             throw new PropertyVetoException("Symbol already contained", e);
           }
         }
       }
     );
-
-    layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
-      @Override
-      public void onElementAdded(ElementAddedEvent e) {
-        try {
-          symbolDatabase.registerEntry(e.getElement());
-        } catch (DatabaseDuplicateException e1) {
-          // Should never happen.
-        }
-      }
-    });
 
     layout.addSymbolUnregisteredVetoableChangeListener(
       new VetoableChangeListener() {
@@ -372,21 +333,8 @@ public final class Window {
         public void vetoableChange(PropertyChangeEvent evt)
           throws PropertyVetoException
         {
-          if (!symbolDatabase.contains((String) evt.getOldValue())) {
+          if (!symbols.contains((String) evt.getOldValue())) {
             throw new PropertyVetoException("Unknown symbol", evt);
-          }
-        }
-      }
-    );
-
-    layout.addSymbolUnRegisteredEventListener(
-      new ElementRemovedEventListener() {
-        @Override
-        public void onElementRemoved(ElementRemovedEvent e) {
-          try {
-            symbolDatabase.unregisterEntry(e.getElement());
-          } catch (DatabaseMissingEntryException ex) {
-            // Should never happen.
           }
         }
       }
@@ -399,23 +347,12 @@ public final class Window {
           throws PropertyVetoException
         {
           String newValue = (String) e.getNewValue();
-          if (stateDatabase.contains(newValue)) {
+          if (states.contains(newValue)) {
             throw new PropertyVetoException("State already contained", e);
           }
         }
       }
     );
-
-    layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
-      @Override
-      public void onElementAdded(ElementAddedEvent e) {
-        try {
-          stateDatabase.registerEntry(e.getElement());
-        } catch (DatabaseDuplicateException e1) {
-          // Should never happen.
-        }
-      }
-    });
 
     layout.addStateUnregisteredVetoableChangeListener(
       new VetoableChangeListener() {
@@ -423,39 +360,14 @@ public final class Window {
         public void vetoableChange(PropertyChangeEvent evt)
           throws PropertyVetoException
         {
-          if (!stateDatabase.contains((String) evt.getOldValue())) {
+          if (!states.contains((String) evt.getOldValue())) {
             throw new PropertyVetoException("Unknown State", evt);
           }
         }
       }
     );
 
-    layout.addStateUnRegisteredEventListener(
-      new ElementRemovedEventListener() {
-        @Override
-        public void onElementRemoved(ElementRemovedEvent e) {
-          try {
-            stateDatabase.unregisterEntry(e.getElement());
-          } catch (DatabaseMissingEntryException ex) {
-            // Should never happen.
-          }
-        }
-      }
-    );
-
     // LISTENERS ON MACHINE
-
-    machine.addStepEventListener(new MachineStepEventListener() {
-
-      @Override
-      public void onMachineStepped(MachineStepEvent e) {
-        // TODO : FIX
-        // USE HISTORY / REMOVE USELESS LISTENERS
-        // tape.shift();
-        // tape.writeSymbol(null);
-      }
-      
-    });
   }
 
   private void refreshView() {

@@ -151,6 +151,10 @@ public class Transition {
     public String toString() {
       return symbol + ", " + action + ", " + state;
     }
+
+    public Transition.Right copy() {
+      return new Transition.Right(symbol, action, state);
+    }
   }
   
 

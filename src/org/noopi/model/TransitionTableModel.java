@@ -106,6 +106,10 @@ public class TransitionTableModel {
     return table.get(k);
   }
 
+  public Transition.Right getTransition(Symbol symbol, State state) {
+    return table.get(new Transition.Left(symbol, state));
+  }
+
   public void update(Transition t) {
     table.put(t.toLeft(), t.toRight());
   }
