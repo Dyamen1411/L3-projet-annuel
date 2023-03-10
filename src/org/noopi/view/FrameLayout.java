@@ -462,8 +462,6 @@ public class FrameLayout implements IFrameLayout {
     } //--
     controls.add(p);    
 
-    controls.add(new JLabel());
-
     JPanel stateControls = new JPanel();
     stateControls.add(initButton);
     stateControls.add(stepButton);

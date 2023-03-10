@@ -106,7 +106,7 @@ public class ModifiableList extends JPanel {
 
       @Override
       public void keyTyped(KeyEvent e) {
-        if(e.getKeyChar() == '\n' && field.getText() != ""){
+        if(e.getKeyChar() == '\n'){
           addRule();
         }
       }
@@ -214,7 +214,7 @@ public class ModifiableList extends JPanel {
 
   private void addRule(){
     String element = field.getText();
-          if (model.contains(element)) {
+          if (model.contains(element) || element == "") {
             return;
           }
           model.add(0, element);
