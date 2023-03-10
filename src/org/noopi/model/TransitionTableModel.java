@@ -21,12 +21,17 @@ public class TransitionTableModel {
 
   private EventListenerList listenerList;
 
+  private final IDatabase<String, Symbol> symbols;
+  private final IDatabase<String, State> states;
+
   public TransitionTableModel(
     IDatabase<String, Symbol> symbols,
     IDatabase<String, State> states
   ) {
     assert symbols != null;
     assert states != null;
+    this.symbols = symbols;
+    this.states = states;
     table = new HashMap<>();
     listenerList = new EventListenerList();
 
@@ -110,6 +115,14 @@ public class TransitionTableModel {
   ) {
     assert l != null;
     listenerList.add(TransitionTableUpdatedEventListener.class, l);
+  }
+
+  public IDatabase<String, Symbol> getSymbolDatabase() {
+    return symbols;
+  }
+
+  public IDatabase<String, State> getStatesDatabase() {
+    return states;
   }
 
   protected void fireTableUpdated() {
