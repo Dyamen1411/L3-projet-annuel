@@ -84,7 +84,6 @@ public final class Window {
   }
 
   public void display() {
-    refreshView();
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
@@ -118,50 +117,8 @@ public final class Window {
     frame.setJMenuBar(layout.getMenuBar());
   }
 
-  private void createController() {
 
-    // TAPE
-
-    tape.addTapeResetEventListener(new TapeResetEventListener() {
-      @Override
-      public void onTapeReset(TapeResetEvent e) {
-        // TODO: fix
-        tape.reset(null);
-      }
-    });
-
-    // HISTORY
-
-    history.addHistoryPushEventListener(new HistoryPushEventListener() {
-
-      @Override
-      public void onHistoryPush(HistoryPushEvent e) {
-        // TODO: fix
-        // layout.addRule(null);
-      }
-    });
-
-    history.addHistoryPopEventListener(new HistoryPopEventListener() {
-
-      @Override
-      public void onHistoryPop(HistoryPopEvent e) {
-        // TODO: fix
-        // layout.removeRule(null);
-      }
-      
-    });
-
-    history.addHistoryResetEventListener(new HistoryResetEventListener() {
-
-      @Override
-      public void onHistoryReset(HistoryResetEvent e) {
-        // layout.resetRules();
-      }
-      
-    });
-
-    // LISTENERS ON VIEW
-
+  private void createSymbolController() {
     layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
       @Override
       public void onElementAdded(ElementAddedEvent e) {
@@ -184,123 +141,6 @@ public final class Window {
           e1.printStackTrace();
         }
       }
-    });
-
-    layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
-      @Override
-      public void onElementAdded(ElementAddedEvent e) {
-        try {
-          states.registerEntry(e.getElement());
-        } catch (DatabaseDuplicateException e1) {
-          // Should never happen
-          e1.printStackTrace();
-        }
-      }
-    });
-    
-    layout.addStateUnRegisteredEventListener(new ElementRemovedEventListener() {
-      @Override
-      public void onElementRemoved(ElementRemovedEvent e) {
-        try {
-          states.unregisterEntry(e.getElement());
-        } catch (DatabaseMissingEntryException e1) {
-          // Should mever happen
-          e1.printStackTrace();
-        }
-      }
-    });
-
-    layout.addInitialTapeShiftEventListener(new TapeShiftEventListener() {
-      @Override
-      public void onTapeShifted(MachineAction a) {
-        initialTape.shift(a);
-        // initialTape.getSlice(9);
-        // switch (a) {
-        //   case TAPE_LEFT: layout.shiftInitialTapeLeft(); break;
-        //   case TAPE_RIGHT: layout.shiftInitialTapeRight(); break;
-        //   default: /* error, should never happen */ break;
-        // }
-      }
-    });
-
-    layout.addInitialTapeSymbolWrittenEventListener(
-      new InitialTapeSymbolWrittenEventListener() {
-        @Override
-        public void onTapeWritten(Symbol s) {
-          initialTape.writeSymbol(s);
-          // layout.setSymbolOnInitialTape(s);
-        }
-      }
-    );
-
-    layout.addTapeInitializationEventListener(
-      new TapeInitializationEventListener() {
-        @Override
-        public void onTapeInitialized(TapeInitializationEvent e) {
-          tape.from(initialTape);
-        }
-    });
-
-    layout.addRunEventListener(new RunEventListener() {
-
-      @Override
-      public void onRun(RunEvent e) {
-        machineTimer.start();
-      }
-      
-    });
-
-    layout.addStepEventListener(new StepEventListener() {
-      @Override
-      public void onStep(StepEvent e) {
-        // TODO: fix
-        machine.step(tape.readSymbol());
-      }
-    });
-
-    layout.addStopEventListener(new StopEventListener() {
-
-      @Override
-      public void onStop(StopEvent e) {
-        machineTimer.stop();
-      }
-      
-    });
-
-    layout.addSpeedChangeEventListener(new SpeedChangeEventListener() {
-
-      @Override
-      public void onSpeedChanged(SpeedChangeEvent e) {
-        machineTimer.setDelay((((int)(-e.getSpeed() * 100)) + 100) * SECOND_CONV);
-      }
-      
-    });
-
-    layout.addNewFileEventListener(new NewFileEventListener() {
-
-      @Override
-      public void onNewFile(NewFileEvent e) {
-        // TODO: A voir comment on s'organise
-      }
-      
-    });
-
-    layout.addOpenFileEventListener(new OpenFileEventListener() {
-
-      @Override
-      public void onFileOpened(OpenFileEvent e) {
-        // TODO: A voir comment on s'organise
-      }
-      
-    });
-
-    layout.addSaveEventListener(new SaveEventListener() {
-
-      @Override
-      public void onSave(SaveEvent e) {
-        // TODO: A voir comment on sauvegarde
-      }
-      
     });
 
     layout.addSymbolRegisteredVetoableChangeListener(
@@ -329,6 +169,32 @@ public final class Window {
         }
       }
     );
+  }
+
+  private void createStateController() {
+    layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
+      @Override
+      public void onElementAdded(ElementAddedEvent e) {
+        try {
+          states.registerEntry(e.getElement());
+        } catch (DatabaseDuplicateException e1) {
+          // Should never happen
+          e1.printStackTrace();
+        }
+      }
+    });
+    
+    layout.addStateUnRegisteredEventListener(new ElementRemovedEventListener() {
+      @Override
+      public void onElementRemoved(ElementRemovedEvent e) {
+        try {
+          states.unregisterEntry(e.getElement());
+        } catch (DatabaseMissingEntryException e1) {
+          // Should mever happen
+          e1.printStackTrace();
+        }
+      }
+    });
 
     layout.addStateRegisteredVetoableChangeListener(
       new VetoableChangeListener() {
@@ -356,11 +222,104 @@ public final class Window {
         }
       }
     );
-
-    // LISTENERS ON MACHINE
   }
 
-  private void refreshView() {
+  private void createInitialTapeController() {
+    layout.addInitialTapeShiftEventListener(new TapeShiftEventListener() {
+      @Override
+      public void onTapeShifted(MachineAction a) {
+        initialTape.shift(a);
+        // initialTape.getSlice(9);
+        // switch (a) {
+        //   case TAPE_LEFT: layout.shiftInitialTapeLeft(); break;
+        //   case TAPE_RIGHT: layout.shiftInitialTapeRight(); break;
+        //   default: /* error, should never happen */ break;
+        // }
+      }
+    });
+
+    layout.addInitialTapeSymbolWrittenEventListener(
+      new InitialTapeSymbolWrittenEventListener() {
+        @Override
+        public void onTapeWritten(Symbol s) {
+          initialTape.writeSymbol(s);
+          // layout.setSymbolOnInitialTape(s);
+        }
+      }
+    );
 
   }
+
+  private void createTapeController() {
+    tape.addTapeResetEventListener(new TapeResetEventListener() {
+      @Override
+      public void onTapeReset(TapeResetEvent e) {
+        // TODO: fix
+        tape.reset(null);
+      }
+    });
+
+    layout.addTapeInitializationEventListener(
+      new TapeInitializationEventListener() {
+        @Override
+        public void onTapeInitialized(TapeInitializationEvent e) {
+          tape.from(initialTape);
+        }
+    });
+
+  }
+
+  private void createMachineController() {
+    layout.addSpeedChangeEventListener(new SpeedChangeEventListener() {
+
+      @Override
+      public void onSpeedChanged(SpeedChangeEvent e) {
+        machineTimer.setDelay((((int)(-e.getSpeed() * 100)) + 100) * SECOND_CONV);
+      }
+      
+    });
+
+  }
+
+  private void createHistoryController() {
+    history.addHistoryPushEventListener(new HistoryPushEventListener() {
+
+      @Override
+      public void onHistoryPush(HistoryPushEvent e) {
+        // TODO: fix
+        // layout.addRule(null);
+      }
+    });
+
+    history.addHistoryPopEventListener(new HistoryPopEventListener() {
+
+      @Override
+      public void onHistoryPop(HistoryPopEvent e) {
+        // TODO: fix
+        // layout.removeRule(null);
+      }
+      
+    });
+
+    history.addHistoryResetEventListener(new HistoryResetEventListener() {
+
+      @Override
+      public void onHistoryReset(HistoryResetEvent e) {
+        // layout.resetRules();
+      }
+      
+    });
+
+  }
+
+  private void createController() {
+    createSymbolController();
+    createStateController();
+    createInitialTapeController();
+    createTapeController();
+    createMachineController();
+    createHistoryController();
+  }
+
 }
+
