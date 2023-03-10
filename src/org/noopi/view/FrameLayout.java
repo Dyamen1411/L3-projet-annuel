@@ -114,6 +114,7 @@ public class FrameLayout implements IFrameLayout {
   private JButton initialTapeRight;
   private JComboBox<String> initialTapeSymbolSelector;
   private JComboBox<String> initialStateSelector;
+  private JLabel currentState;
 
   //CONSTRUCTEURS
 
@@ -169,7 +170,7 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public void setMachineState(State s) {
-    //TODO
+    currentState.setText(s.toString());
   }
 
   @Override
@@ -395,6 +396,8 @@ public class FrameLayout implements IFrameLayout {
     initialStateSelector = new JComboBox<>(
       new DatabaseComboboxModel<>(states)
     );
+    currentState = new JLabel("");
+    currentState.setForeground(Color.RED);
   }
 
   private void placeComponent() {
@@ -428,6 +431,15 @@ public class FrameLayout implements IFrameLayout {
     JPanel machine = new JPanel(new GridLayout(0, 1));
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
     machine.add(tape);
+
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    { //--
+      JLabel l = new JLabel("Etat courant de la machine : ");
+      l.setForeground(Color.RED);
+      p.add(l);
+      p.add(currentState);
+    } //--
+    machine.add(p);
     return machine;
   }
 
@@ -452,15 +464,7 @@ public class FrameLayout implements IFrameLayout {
       p.add(new JLabel("Entrez l'état initial de la machine -->"));
       p.add(initialStateSelector);
     } //--
-    controls.add(p);
-
-    p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    { //--
-      JLabel l = new JLabel("Etat courant de la machine : ");
-      l.setForeground(Color.RED);
-      p.add(l);
-    } //--
-    controls.add(p);    
+    controls.add(p);  
 
     JPanel stateControls = new JPanel();
     stateControls.add(initButton);
