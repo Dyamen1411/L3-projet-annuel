@@ -9,6 +9,7 @@ import javax.swing.event.EventListenerList;
 import org.noopi.utils.events.view.TransitionModifiedEvent;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.view.components.model.DatabaseComboboxModel;
+import org.noopi.model.TransitionTableModel;
 import org.noopi.utils.IDatabase;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
@@ -40,15 +41,14 @@ public class TransitionEditorComponent extends JPanel {
 
   public TransitionEditorComponent(
     String actionName,
-    IDatabase<String, Symbol> symbols,
-    IDatabase<String, State> states
+    TransitionTableModel transitions
   ) {
     assert symbols != null;
     assert states != null;
     assert actionName != null;
     assert !actionName.equals("");
-    this.symbols = symbols;
-    this.states = states;
+    this.symbols = transitions.getSymbolDatabase();
+    this.states = transitions.getStatesDatabase();
     initialize(actionName);
     createController();
     placeComponents();

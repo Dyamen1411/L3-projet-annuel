@@ -32,17 +32,11 @@ public class TransitionTable extends JPanel {
   private JComboBox<String> stateEditor;
   private JComboBox<MachineAction> actionEditor;
 
-  public TransitionTable(
-    IDatabase<String, Symbol> symbols,
-    IDatabase<String, State> states,
-    org.noopi.model.TransitionTableModel transitions
-  ) {
+  public TransitionTable(org.noopi.model.TransitionTableModel transitions) {
     assert transitions != null;
-    assert symbols != null;
-    assert states != null;
     this.transitions = transitions;
-    this.symbols = symbols;
-    this.states = states;
+    this.symbols = transitions.getSymbolDatabase();
+    this.states = transitions.getStatesDatabase();
     model = new TransitionTableModel(symbols, states, transitions);
     table = new JTable(model);
     symbolEditor = new JComboBox<>(new DatabaseComboboxModel<>(symbols));

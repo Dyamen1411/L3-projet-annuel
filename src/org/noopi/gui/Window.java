@@ -98,15 +98,11 @@ public final class Window {
     tape = new Tape();
     initialTape = new Tape();    
     machineTimer = new Timer(0, new ActionListener(){
-
       @Override
       public void actionPerformed(ActionEvent e) {
-        // TODO: fix
         machine.step(tape.readSymbol());
       }
-
     });
-
     tape = new Tape();
     machine = new TuringMachine(transitions);
     history = new TransitionHistory();
@@ -114,13 +110,7 @@ public final class Window {
 
   private void createView() {
     frame = new JFrame();
-    layout = new FrameLayout(
-      symbols.toReadable(),
-      states.toReadable(),
-      transitions,
-      tape,
-      initialTape
-    );
+    layout = new FrameLayout(transitions, tape, initialTape);
   }
 
   private void placeComponents() {

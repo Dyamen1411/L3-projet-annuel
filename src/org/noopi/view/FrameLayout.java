@@ -53,7 +53,6 @@ import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.tape.ITape;
-import org.noopi.utils.IDatabase;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
@@ -77,8 +76,6 @@ public class FrameLayout implements IFrameLayout {
 
   //ATTRIBUTS
 
-  private IDatabase<String, Symbol> symbols;
-  private IDatabase<String, State> states;
   private ITape tapeModel;
   private ITape initialTapeModel;
 
@@ -121,26 +118,20 @@ public class FrameLayout implements IFrameLayout {
   //CONSTRUCTEURS
 
   public FrameLayout(
-    IDatabase<String, Symbol> symbols,
-    IDatabase<String, State> states,
     TransitionTableModel transitions,
     ITape tapeModel,
     ITape initialTapeModel
   ) {
     assert transitions != null;
-    assert symbols != null;
-    assert states != null;
     assert tapeModel != null;
     assert initialTapeModel != null;
     this.transitions = transitions;
-    this.symbols = symbols;
-    this.states = states;
     this.tapeModel = tapeModel;
     this.initialTapeModel = initialTapeModel;
+    this.listenerList = new EventListenerList();
     createView();
     placeComponent();
     createController();
-    listenerList = new EventListenerList();
   }
 
   //REQUETES
@@ -268,7 +259,7 @@ public class FrameLayout implements IFrameLayout {
       public void itemStateChanged(ItemEvent e) {
         Symbol s = e.getItem() == null
           ? Symbol.DEFAULT
-          : symbols.get((String) e.getItem());
+          : transitions.getSymbolDatabase().get((String) e.getItem());
         l.onTapeWritten(s);
       }
     });
@@ -368,33 +359,28 @@ public class FrameLayout implements IFrameLayout {
 
   private void createView() {
     mainPanel = new JPanel(new BorderLayout());
-
     menuBar = new JMenuBar();
-
     stopButton = new JButton("Stopper");
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
     initButton = new JButton("Initialiser");
-    addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
-    removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
+    addTransition = new TransitionEditorComponent("Ajouter", transitions);
+    removeTransition = new TransitionEditorComponent("Retirer", transitions);
     initialRubanTextField = new JTextField();
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
-    transitionTable = new TransitionTable(symbols, states, transitions);
-
+    transitionTable = new TransitionTable(transitions);
     speedSlider = new JSlider(0, 100, 20);
-
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
     paneTransitionsTextArea = new JList<JLabel>();
-
     tape = new GraphicTape(tapeModel, false);
     initialTape = new GraphicTape(initialTapeModel, true);
     initialTapeLeft = new JButton("Gauche");
     initialTapeRight = new JButton("Droite");
     initialTapeSymbolSelector = new JComboBox<>(
-      new DatabaseComboboxModel<>(symbols)
+      new DatabaseComboboxModel<>(transitions.getSymbolDatabase())
     );
   }
 
