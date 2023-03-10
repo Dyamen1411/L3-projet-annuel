@@ -70,7 +70,7 @@ public final class Window {
   private SymbolDatabase symbols;
   private StateDatabase states;
   private TransitionTableModel transitions;
-  private Timer timer;
+  private Timer machineTimer;
 
   // View
   private JFrame frame;
@@ -97,7 +97,7 @@ public final class Window {
     transitions = new TransitionTableModel(symbols, states);
     tape = new Tape();
     initialTape = new Tape();    
-    timer = new Timer(0, new ActionListener(){
+    machineTimer = new Timer(0, new ActionListener(){
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -255,7 +255,7 @@ public final class Window {
 
       @Override
       public void onRun(RunEvent e) {
-        timer.start();
+        machineTimer.start();
       }
       
     });
@@ -272,7 +272,7 @@ public final class Window {
 
       @Override
       public void onStop(StopEvent e) {
-        timer.stop();
+        machineTimer.stop();
       }
       
     });
@@ -281,7 +281,7 @@ public final class Window {
 
       @Override
       public void onSpeedChanged(SpeedChangeEvent e) {
-        timer.setDelay((((int)(-e.getSpeed() * 100)) + 100) * SECOND_CONV);
+        machineTimer.setDelay((((int)(-e.getSpeed() * 100)) + 100) * SECOND_CONV);
       }
       
     });
