@@ -4,7 +4,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -24,8 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
@@ -103,11 +100,9 @@ public class FrameLayout implements IFrameLayout {
   private JSlider speedSlider;
   private JList<JLabel> historyJList;
   private JList<JLabel> transitionsJList;
-  private JList<JLabel> paneTransitionsTextArea;
   private GraphicTape tape;
   private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
-  private JFrame transitionsFrame;
   private TransitionEditorComponent addTransition;
   private TransitionEditorComponent removeTransition;
   private TransitionTableModel transitions;
@@ -387,7 +382,6 @@ public class FrameLayout implements IFrameLayout {
 
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
-    paneTransitionsTextArea = new JList<JLabel>();
 
     tape = new GraphicTape(tapeModel, false);
     initialTape = new GraphicTape(initialTapeModel, true);
@@ -414,17 +408,13 @@ public class FrameLayout implements IFrameLayout {
     symbolStateEditor.add(stateList);
     transitions.add(symbolStateEditor);
 
-    JScrollPane transitionPane = new JScrollPane(transitionsJList);
+    JScrollPane transitionPane = new JScrollPane(transitionTable);
     transitionPane.setPreferredSize(new Dimension(300, 175));
     Border transitionsBorderPane = BorderFactory.createLineBorder(Color.GRAY);
     transitionPane.setBorder(BorderFactory.createTitledBorder(
-      transitionsBorderPane, "Cliquez pour aggrandir"
+      transitionsBorderPane, "Editez vos transitions ici"
     ));
     transitions.add(transitionPane);
-
-    JPanel test = new JPanel();
-    test.add(transitionTable);
-    transitions.add(test);
 
     return transitions;
   }
@@ -486,14 +476,7 @@ public class FrameLayout implements IFrameLayout {
     return historyScrollPane;
   }
 
-  private void createController() {
-    transitionsJList.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        createNewTransitionsFrame();
-      }
-    });
-    
+  private void createController() {    
     speedSlider.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
@@ -587,24 +570,6 @@ public class FrameLayout implements IFrameLayout {
     speedSlider.setPaintLabels(true); 
     speedSlider.setMajorTickSpacing(20); 
     speedSlider.setMinorTickSpacing(5); 
-  }
-
-  private void createNewTransitionsFrame() {
-    // TODO: add listener on dispose to set <code>transitionsFrame</code> to null !
-    // Else cannot recreate frame
-    if (transitionsFrame != null) {
-      transitionsFrame.dispose();
-    }
-    transitionsFrame = new JFrame("Liste des règles");
-    transitionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    transitionsFrame.setPreferredSize(new Dimension(200, 400));
-    transitionsFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-    paneTransitionsTextArea = transitionsJList;
-    JScrollPane newFrameTransitionsPane = new JScrollPane(paneTransitionsTextArea);
-    transitionsFrame.add(newFrameTransitionsPane);
-    transitionsFrame.pack();
-    transitionsFrame.setLocationRelativeTo(null);
-    transitionsFrame.setVisible(true);
   }
 
   private JLabel createJLabel(Transition t) {

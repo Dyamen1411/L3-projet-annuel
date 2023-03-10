@@ -2,6 +2,8 @@ package org.noopi.view.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
@@ -92,20 +94,29 @@ public class ModifiableList extends JPanel {
       }
     });
 
+    field.addKeyListener(new KeyListener() {
+
+      @Override
+      public void keyPressed(KeyEvent e) {
+      }
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+      }
+
+      @Override
+      public void keyTyped(KeyEvent e) {
+        if(e.getKeyChar() == '\n' && field.getText() != ""){
+          addRule();
+        }
+      }
+      
+    });
+
     addButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String element = field.getText();
-        if (model.contains(element)) {
-          return;
-        }
-        model.add(0, element);
-        try {
-          vcs.fireVetoableChange(
-            new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
-          );
-          fireElementAddedEvent(field.getText());
-        } catch (Exception ex) {}
+        addRule();
       }
     });
 
@@ -199,5 +210,21 @@ public class ModifiableList extends JPanel {
   private void setButtonsEnabled(boolean enabled) {
     addButton.setEnabled(enabled);
     removeButton.setEnabled(enabled);
+  }
+
+  private void addRule(){
+    String element = field.getText();
+          if (model.contains(element)) {
+            return;
+          }
+          model.add(0, element);
+          try {
+            vcs.fireVetoableChange(
+              new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
+            );
+            fireElementAddedEvent(field.getText());
+          } catch (Exception ex) {
+            
+          }
   }
 }
