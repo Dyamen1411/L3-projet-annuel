@@ -19,13 +19,8 @@ import org.noopi.utils.events.history.HistoryResetEvent;
 import org.noopi.utils.events.tape.TapeResetEvent;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
-import org.noopi.utils.events.view.NewFileEvent;
-import org.noopi.utils.events.view.OpenFileEvent;
-import org.noopi.utils.events.view.RunEvent;
-import org.noopi.utils.events.view.SaveEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
-import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
@@ -38,13 +33,8 @@ import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
 import org.noopi.utils.listeners.tape.TapeResetEventListener;
-import org.noopi.utils.listeners.view.NewFileEventListener;
-import org.noopi.utils.listeners.view.OpenFileEventListener;
-import org.noopi.utils.listeners.view.RunEventListener;
-import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
-import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.TransitionTableModel;
@@ -116,7 +106,6 @@ public final class Window {
     frame.setContentPane(layout.getView());
     frame.setJMenuBar(layout.getMenuBar());
   }
-
 
   private void createSymbolController() {
     layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
@@ -271,14 +260,20 @@ public final class Window {
 
   private void createMachineController() {
     layout.addSpeedChangeEventListener(new SpeedChangeEventListener() {
-
       @Override
       public void onSpeedChanged(SpeedChangeEvent e) {
-        machineTimer.setDelay((((int)(-e.getSpeed() * 100)) + 100) * SECOND_CONV);
+        final double ratio = e.getSpeed();
+        final int integerRatio = (int) (ratio * 100);
+        final int delay = (100 - integerRatio) * SECOND_CONV;
+        machineTimer.setDelay(delay);
       }
-      
     });
 
+    layout.addStepEventListener(new StepEventListener() {
+      @Override
+      public void onStep(StepEvent e) {
+      }
+    });
   }
 
   private void createHistoryController() {
