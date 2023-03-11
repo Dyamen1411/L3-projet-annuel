@@ -97,15 +97,6 @@ public final class Window {
     tape = new Tape();
     machine = new TuringMachine(transitions);
     history = new TransitionHistory();
-    { // DEBUG
-      try {
-        symbols.registerEntry("sym0");
-        State s0 = states.registerEntry("sta0");
-        machine.reset(s0);
-      } catch (DatabaseDuplicateException e1) {
-        System.exit(-1);
-      }
-    }
   }
 
   private void createView() {
