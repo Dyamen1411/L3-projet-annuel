@@ -22,7 +22,6 @@ import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.MachineAction;
-import org.noopi.utils.State;
 import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.SymbolDatabase;
@@ -286,6 +285,8 @@ public final class Window {
         }
       }
     });
+
+    
   }
 
   private void createHistoryController() {
