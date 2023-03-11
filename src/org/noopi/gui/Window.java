@@ -96,7 +96,7 @@ public final class Window {
         try {
           symbols.unregisterEntry(e.getElement());
         } catch (DatabaseMissingEntryException e1) {
-          // Should mever happen
+          // Should never happen
           e1.printStackTrace();
         }
       }
@@ -118,7 +118,7 @@ public final class Window {
         try {
           states.unregisterEntry(e.getElement());
         } catch (DatabaseMissingEntryException e1) {
-          // Should mever happen
+          // Should never happen
           e1.printStackTrace();
         }
       }
