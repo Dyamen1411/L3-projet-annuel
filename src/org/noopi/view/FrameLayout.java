@@ -9,6 +9,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -205,8 +206,12 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public void showInformation(String message) {
-    throw new UnsupportedOperationException(
-      "showInformation is not implemented yet."
+    assert message != null;
+    JOptionPane.showMessageDialog(
+      mainPanel,
+      message,
+      "Information",
+      JOptionPane.INFORMATION_MESSAGE
     );
   }
 
