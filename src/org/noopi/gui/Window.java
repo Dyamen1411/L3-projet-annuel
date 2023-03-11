@@ -325,7 +325,6 @@ public final class Window {
       }
       
     });
-
   }
 
   private void createController() {

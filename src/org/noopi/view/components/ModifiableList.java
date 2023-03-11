@@ -2,6 +2,8 @@ package org.noopi.view.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -14,8 +16,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -44,7 +44,11 @@ public class ModifiableList extends JPanel {
   private ElementAddedEvent addEvent;
   private ElementRemovedEvent removeEvent;
 
-  public ModifiableList(String hint, String addButtonText, String removeButtonText) {
+  public ModifiableList(
+    String hint,
+    String addButtonText,
+    String removeButtonText
+  ) {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
     field = new HintableTextField("", hint, FIELD_DISPLAYABLE_WIDTH);
@@ -66,7 +70,7 @@ public class ModifiableList extends JPanel {
     add(header);
     add(new JScrollPane(list));
 
-    // TODO: bug. if too quick, text field does not update
+    // FIX: if too quick, text field does not update
     list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
@@ -77,29 +81,29 @@ public class ModifiableList extends JPanel {
       }
     });
 
-    field.getDocument().addDocumentListener(new DocumentListener() {
+    field.addKeyListener(new KeyListener() {
+
       @Override
-      public void changedUpdate(DocumentEvent e) {
+      public void keyPressed(KeyEvent e) {
       }
+
       @Override
-      public void insertUpdate(DocumentEvent e) {
+      public void keyReleased(KeyEvent e) {
       }
+
       @Override
-      public void removeUpdate(DocumentEvent e) {
+      public void keyTyped(KeyEvent e) {
+        if(e.getKeyChar() == '\n'){
+          addRule();
+        }
       }
+      
     });
 
     addButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String element = field.getText();
-        try {
-          vcs.fireVetoableChange(
-            new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
-          );
-          model.add(0, element);
-          fireElementAddedEvent(field.getText());
-        } catch (PropertyVetoException ex) {}
+        addRule();
       }
     });
 
@@ -173,6 +177,22 @@ public class ModifiableList extends JPanel {
         b = true;
       }
       ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
+    }
+  }
+
+  private void addRule(){
+    String element = field.getText();
+    if (model.contains(element) || element.equals("")) {
+      return;
+    }
+    model.add(0, element);
+    try {
+      vcs.fireVetoableChange(
+        new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
+      );
+      fireElementAddedEvent(field.getText());
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 
