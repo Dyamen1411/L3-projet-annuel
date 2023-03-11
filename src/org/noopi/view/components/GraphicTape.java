@@ -7,12 +7,7 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
 import org.noopi.model.tape.ITape;
-import org.noopi.utils.MachineAction;
 import org.noopi.utils.Symbol;
-import org.noopi.utils.events.tape.TapeMovedEvent;
-import org.noopi.utils.events.tape.TapeWriteEvent;
-import org.noopi.utils.listeners.tape.TapeMovedEventListener;
-import org.noopi.utils.listeners.tape.TapeWriteEventListener;
 import org.noopi.utils.listeners.view.TapeUpdatedEventListener;
 
 public class GraphicTape extends JList<String> {
