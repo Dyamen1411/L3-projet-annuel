@@ -15,8 +15,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -45,7 +43,11 @@ public class ModifiableList extends JPanel {
   private ElementAddedEvent addEvent;
   private ElementRemovedEvent removeEvent;
 
-  public ModifiableList(String hint, String addButtonText, String removeButtonText) {
+  public ModifiableList(
+    String hint,
+    String addButtonText,
+    String removeButtonText
+  ) {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
     field = new HintableTextField("", hint, FIELD_DISPLAYABLE_WIDTH);
@@ -58,7 +60,6 @@ public class ModifiableList extends JPanel {
     vcs = new VetoableChangeSupport(this);
 
     list.setModel(model);
-    setButtonsEnabled(false);
 
     JPanel header = new JPanel();
     header.add(field);
@@ -68,7 +69,7 @@ public class ModifiableList extends JPanel {
     add(header);
     add(new JScrollPane(list));
 
-    // TODO: bug. if too quick, text field does not update
+    // FIX: if too quick, text field does not update
     list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
@@ -76,21 +77,6 @@ public class ModifiableList extends JPanel {
           return;
         }
         field.setText(model.get(e.getFirstIndex()));
-        setButtonsEnabled(true);
-      }
-    });
-
-    field.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-      }
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        setButtonsEnabled(true);
-      }
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        setButtonsEnabled(e.getLength() != 0);
       }
     });
 
@@ -193,6 +179,22 @@ public class ModifiableList extends JPanel {
     }
   }
 
+  private void addRule(){
+    String element = field.getText();
+    if (model.contains(element) || element.equals("")) {
+      return;
+    }
+    model.add(0, element);
+    try {
+      vcs.fireVetoableChange(
+        new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
+      );
+      fireElementAddedEvent(field.getText());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
   protected void fireElementRemovedEvent(String s) {
     Object[] list = listenerList.getListenerList();
     boolean b = false;
@@ -205,26 +207,5 @@ public class ModifiableList extends JPanel {
       }
       ((ElementRemovedEventListener) list[i + 1]).onElementRemoved(removeEvent);
     }
-  }
-
-  private void setButtonsEnabled(boolean enabled) {
-    addButton.setEnabled(enabled);
-    removeButton.setEnabled(enabled);
-  }
-
-  private void addRule(){
-    String element = field.getText();
-          if (model.contains(element) || element.equals("")) {
-            return;
-          }
-          model.add(0, element);
-          try {
-            vcs.fireVetoableChange(
-              new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
-            );
-            fireElementAddedEvent(field.getText());
-          } catch (Exception ex) {
-            
-          }
   }
 }
