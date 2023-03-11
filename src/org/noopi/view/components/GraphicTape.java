@@ -17,7 +17,6 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final int HEAD_INDEX = END_INDEX / 2;
 
   private ITape model;
 
