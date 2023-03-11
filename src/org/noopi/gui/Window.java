@@ -22,9 +22,11 @@ import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
 import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.SymbolDatabase;
+import org.noopi.utils.Transition;
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
@@ -95,6 +97,15 @@ public final class Window {
     tape = new Tape();
     machine = new TuringMachine(transitions);
     history = new TransitionHistory();
+    { // DEBUG
+      try {
+        symbols.registerEntry("sym0");
+        State s0 = states.registerEntry("sta0");
+        machine.reset(s0);
+      } catch (DatabaseDuplicateException e1) {
+        System.exit(-1);
+      }
+    }
   }
 
   private void createView() {
@@ -272,6 +283,16 @@ public final class Window {
     layout.addStepEventListener(new StepEventListener() {
       @Override
       public void onStep(StepEvent e) {
+        Symbol s = tape.readSymbol();
+        Transition.Right result = machine.step(s);
+        machine.setState(result.getState());
+        tape.writeSymbol(result.getSymbol());
+        MachineAction a = result.getMachineAction();
+        switch (a) {
+          case MACHINE_STOP: layout.showInformation("La machine s'est arretee"); break;
+          case TAPE_LEFT: tape.shift(MachineAction.TAPE_RIGHT); break;
+          case TAPE_RIGHT: tape.shift(MachineAction.TAPE_LEFT); break;
+        }
       }
     });
   }
@@ -317,4 +338,3 @@ public final class Window {
   }
 
 }
-

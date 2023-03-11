@@ -132,6 +132,10 @@ public class FrameLayout implements IFrameLayout {
     createView();
     placeComponent();
     createController();
+    { // DEBUG
+      symbolList.pushElement("sym0");
+      stateList.pushElement("sta0");
+    }
   }
 
   //REQUETES
