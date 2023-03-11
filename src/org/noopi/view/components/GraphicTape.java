@@ -42,42 +42,6 @@ public class GraphicTape extends JList<String> {
     setVisibleRowCount(1);
     setLayoutOrientation(JList.HORIZONTAL_WRAP);
 
-    // tape.addTapeMovedEventListener(new TapeMovedEventListener() {
-    //   @Override
-    //   public void onTapeMoved(TapeMovedEvent e) {
-    //     MachineAction a = e.getDirection();
-    //     if (a == MachineAction.MACHINE_STOP) {
-    //       // error : should never happen.
-    //       return;
-    //     }
-
-    //     Symbol[] slice = tape.getSlice(CELL_COUNT);
-
-    //     switch (e.getDirection()) {
-    //       case TAPE_LEFT: 
-    //         list.remove(START_INDEX);
-    //         list.add(END_INDEX, slice[END_INDEX].toString());
-    //       break;
-    //       case TAPE_RIGHT: 
-    //         list.remove(END_INDEX);
-    //         list.add(START_INDEX, slice[START_INDEX].toString());
-    //       break;
-
-    //       default: return;
-    //     }
-
-    //     repaint();
-    //   }
-    // });
-
-    // tape.addTapeWriteEventListener(new TapeWriteEventListener() {
-    //   @Override
-    //   public void onTapeWritten(TapeWriteEvent e) {
-    //     list.remove(HEAD_INDEX);
-    //     list.add(HEAD_INDEX, e.getSymbol().toString());
-    //   }
-    // });
-
     tape.addTapeUpdatedEventListener(new TapeUpdatedEventListener() {
       @Override
       public void onUpdate() {
