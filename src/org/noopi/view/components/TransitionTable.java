@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -60,11 +61,15 @@ public class TransitionTable extends JPanel {
     add(editor, BorderLayout.NORTH);
 
     JScrollPane scroll = new JScrollPane(table);
-    scroll.setPreferredSize(new Dimension(500, 200));
+    scroll.setPreferredSize(new Dimension(300, 140));
     add(scroll, BorderLayout.CENTER);
 
 
     table.setRowHeight(40);
+
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+    table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     table.getColumnModel().getSelectionModel().addListSelectionListener(
         new ListSelectionListener() {

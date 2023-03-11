@@ -164,21 +164,7 @@ public class ModifiableList extends JPanel {
     assert l != null;
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
-
-  protected void fireElementAddedEvent(String s) {
-    Object[] list = listenerList.getListenerList();
-    boolean b = false;
-    for (int i = list.length - 2; i >= 0; i -= 2) {
-      if (list[i] != ElementAddedEventListener.class) {
-        continue;
-      }
-      if (addEvent == null || !b) {
-        addEvent = new ElementAddedEvent(s);
-      }
-      ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
-    }
-  }
-
+  
   private void addRule(){
     String element = field.getText();
     if (model.contains(element) || element.equals("")) {
@@ -194,6 +180,21 @@ public class ModifiableList extends JPanel {
       ex.printStackTrace();
     }
   }
+
+  protected void fireElementAddedEvent(String s) {
+    Object[] list = listenerList.getListenerList();
+    boolean b = false;
+    for (int i = list.length - 2; i >= 0; i -= 2) {
+      if (list[i] != ElementAddedEventListener.class) {
+        continue;
+      }
+      if (addEvent == null || !b) {
+        addEvent = new ElementAddedEvent(s);
+      }
+      ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
+    }
+  }
+
 
   protected void fireElementRemovedEvent(String s) {
     Object[] list = listenerList.getListenerList();
