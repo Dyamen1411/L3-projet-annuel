@@ -48,7 +48,6 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.MachineAction;
@@ -57,7 +56,6 @@ import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
-import org.noopi.view.components.TransitionEditorComponent;
 import org.noopi.view.components.TransitionTable;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 
@@ -102,8 +100,6 @@ public class FrameLayout implements IFrameLayout {
   private GraphicTape tape;
   private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
-  private TransitionEditorComponent addTransition;
-  private TransitionEditorComponent removeTransition;
   private TransitionTableModel transitions;
   private TransitionTable transitionTable;
   private ModifiableList symbolList;
@@ -211,22 +207,6 @@ public class FrameLayout implements IFrameLayout {
     throw new UnsupportedOperationException(
       "showError is not implemented yet."
     );
-  }
-
-  @Override
-  public void addTransitionAddedEventListener(
-    TransitionModifiedEventListener l
-  ) {
-    assert l != null;
-    addTransition.addTransitionModifiedEventListener(l);
-  }
-
-  @Override
-  public void addTransitionRemovedEventListener(
-    TransitionModifiedEventListener l
-  ) {
-    assert l != null;
-    removeTransition.addTransitionModifiedEventListener(l);
   }
 
   @Override
@@ -367,8 +347,6 @@ public class FrameLayout implements IFrameLayout {
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
     initButton = new JButton("Initialiser");
-    addTransition = new TransitionEditorComponent("Ajouter", transitions);
-    removeTransition = new TransitionEditorComponent("Retirer", transitions);
     initialRubanTextField = new JTextField();
     initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
