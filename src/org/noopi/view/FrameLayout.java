@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -98,7 +97,6 @@ public class FrameLayout implements IFrameLayout {
   private JButton startButton;
   private JButton stepButton;
   private JButton initButton;
-  private JTextField initialRubanTextField;
   private JSlider speedSlider;
   private JList<JLabel> historyJList;
   private JList<JLabel> transitionsJList;
@@ -385,7 +383,6 @@ public class FrameLayout implements IFrameLayout {
     initButton = new JButton("Initialiser");
     addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
     removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
-    initialRubanTextField = new JTextField();
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
     transitionTable = new TransitionTable(symbols, states, transitions);

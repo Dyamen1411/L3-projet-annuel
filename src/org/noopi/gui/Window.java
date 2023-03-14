@@ -63,7 +63,7 @@ public final class Window {
   }
 
   private void createView() {
-    frame = new JFrame();
+    frame = new JFrame("Machine de Turing");
     layout = new FrameLayout(
       symbols.toReadable(),
       states.toReadable(),
