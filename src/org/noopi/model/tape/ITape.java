@@ -52,6 +52,12 @@ public interface ITape {
   void from(ITape o);
 
   /**
+   * TODO: describe
+   * @param s
+   */
+  void removeAllOccurencesOfSymbol(Symbol s);
+
+  /**
    * When the <code>reset</code> method is called, it will send a
    * <code>TapeResetEvent</code> event to this listener.
    */

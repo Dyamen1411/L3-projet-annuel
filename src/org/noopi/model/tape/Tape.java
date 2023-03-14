@@ -16,13 +16,14 @@ public final class Tape extends AbstractTape {
 
   @Override
   public void reset() {
-    reset(new Symbol[]{});
+    reset(new Symbol[]{Symbol.DEFAULT});
   }
 
   @Override
   public void reset(Symbol[] symbols) {
     assert symbols != null;
-    cellsToTheRight = cellsToTheLeft = 0;
+    cellsToTheLeft = 0;
+    cellsToTheRight = symbols.length - 1;
     for (Symbol s : symbols) {
       assert s != null;
     }
@@ -30,7 +31,9 @@ public final class Tape extends AbstractTape {
     currentCell = orig;
     for (Symbol s : symbols) {
       currentCell.symbol = s;
-      shift(MachineAction.TAPE_RIGHT);
+      currentCell.next = new Cell();
+      currentCell.next.prev = currentCell;
+      currentCell = currentCell.next;
     }
     currentCell = orig;
     fireTapeUpdatedEvent();
@@ -102,6 +105,7 @@ public final class Tape extends AbstractTape {
   }
 
   public void from(ITape o) {
+    assert o != null : "Use reset() instead.";
     Tape oo = (Tape) o;
 
     currentCell = new Cell(oo.currentCell.symbol);
@@ -127,6 +131,36 @@ public final class Tape extends AbstractTape {
     }
 
     fireTapeUpdatedEvent();
+  }
+
+  @Override
+  public void removeAllOccurencesOfSymbol(Symbol s) {
+    assert s != null;
+    boolean update = false;
+    if (currentCell.symbol.equals(s)) {
+      currentCell.symbol = Symbol.DEFAULT;
+      update = true;
+    }
+    Cell c = currentCell;
+    for (int i = 1; i < cellsToTheLeft; ++i) {
+      c = c.prev;
+      System.out.println(i);
+      if (c.symbol.equals(s)) {
+        c.symbol = Symbol.DEFAULT;
+        update = true;
+      }
+    }
+    c = currentCell;
+    for (int i = 1; i < cellsToTheRight; ++i) {
+      c = c.next;
+      if (c.symbol.equals(s)) {
+        c.symbol = Symbol.DEFAULT;
+        update = true;
+      }
+    }
+    if (update) {
+      fireTapeUpdatedEvent();
+    }
   }
 
   private class Cell {
