@@ -26,7 +26,7 @@ public class DatabaseComboboxModel<T>
     d.addDatabaseRegisterEventListener(new DatabaseRegisterEventListener<E>() {
       @Override
       public void onRegisterEvent(DatabaseRegisterEvent<E> e) {
-        fireIntervalAdded(this, d.size() - 1, d.size() - 1);
+        fireIntervalAdded(this, d.size() - 1, d.size());
       }
     });
     d.addDatabaseUnregisterEventListener(
@@ -36,7 +36,7 @@ public class DatabaseComboboxModel<T>
           if (e.getValue().toString().equals(selectedObject)) {
             selectedObject = null;
           }
-          fireIntervalAdded(this, d.size() - 1, d.size() - 1);
+          fireIntervalAdded(this, d.size() + 1, d.size());
         }
       }
     );
