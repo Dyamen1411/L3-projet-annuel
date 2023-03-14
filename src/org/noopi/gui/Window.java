@@ -13,10 +13,10 @@ import org.noopi.model.tape.ITape;
 import org.noopi.model.tape.Tape;
 import org.noopi.utils.exceptions.DatabaseDuplicateException;
 import org.noopi.utils.exceptions.DatabaseMissingEntryException;
+import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.events.history.HistoryPopEvent;
 import org.noopi.utils.events.history.HistoryPushEvent;
 import org.noopi.utils.events.history.HistoryResetEvent;
-import org.noopi.utils.events.tape.TapeResetEvent;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
@@ -30,10 +30,10 @@ import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
+import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
-import org.noopi.utils.listeners.tape.TapeResetEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
@@ -232,6 +232,9 @@ public final class Window {
       new InitialTapeSymbolWrittenEventListener() {
         @Override
         public void onTapeWritten(Symbol s) {
+          if (s == null) {
+            return;
+          }
           initialTape.writeSymbol(s);
           // layout.setSymbolOnInitialTape(s);
         }
@@ -241,14 +244,6 @@ public final class Window {
   }
 
   private void createTapeController() {
-    tape.addTapeResetEventListener(new TapeResetEventListener() {
-      @Override
-      public void onTapeReset(TapeResetEvent e) {
-        // TODO: fix
-        tape.reset(null);
-      }
-    });
-
     layout.addTapeInitializationEventListener(
       new TapeInitializationEventListener() {
         @Override
@@ -256,6 +251,16 @@ public final class Window {
           tape.from(initialTape);
         }
     });
+
+    symbols.addDatabaseUnregisterEventListener(
+      new DatabaseUnregisterEventListener<Symbol>() {
+        @Override
+        public void onUnregisterEvent(DatabaseUnregisterEvent<Symbol> e) {
+          initialTape.removeAllOccurencesOfSymbol(e.getValue());
+          tape.removeAllOccurencesOfSymbol(e.getValue());
+        }
+      }
+    );
 
   }
 

@@ -93,22 +93,6 @@ public interface IFrameLayout {
   //------------------------//
 
   /**
-   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to add a new transition from the
-   * GUI.
-   * @param l the listener.
-   */
-  void addTransitionAddedEventListener(TransitionModifiedEventListener l);
-
-  /**
-   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to remove a transition from the
-   * GUI.
-   * @param l the listener.
-   */
-  void addTransitionRemovedEventListener(TransitionModifiedEventListener l);
-
-  /**
    * Adds a listener to an event <code>TapeInitializationEvent</code>.
    * This event is fired when the tape has been initialized.
    * The listener is used to set the initial state of the tape once it's ready.
