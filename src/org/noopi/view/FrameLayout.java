@@ -412,13 +412,23 @@ public class FrameLayout implements IFrameLayout {
     mainPanel.add(createHistoryGUI(border), BorderLayout.EAST);
   }
 
+  private JPanel createGUI(Border border) {
+    JPanel gui = new JPanel(new GridLayout(0, 1));
+    gui.add(createTransitionsGUI(border));
+    gui.add(createMachineGUI(border));
+    gui.add(createControlsGUI(border));
+    return gui;
+  }
+
   private JPanel createTransitionsGUI(Border border) {
     JPanel transitions = new JPanel();
     transitions.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
 
     JPanel symbolStateEditor = new JPanel();
-    symbolStateEditor.add(symbolList);
-    symbolStateEditor.add(stateList);
+    { //--
+      symbolStateEditor.add(symbolList);
+      symbolStateEditor.add(stateList);
+    } //--
     transitions.add(symbolStateEditor);
 
     transitions.add(transitionTable);
@@ -429,9 +439,15 @@ public class FrameLayout implements IFrameLayout {
   private JPanel createMachineGUI(Border border) {
     JPanel machine = new JPanel(new GridLayout(0, 1));
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
-    machine.add(tape);
+    
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    p.setBorder(BorderFactory.createTitledBorder(border, "TEST"));
+    { //--
+      p.add(tape);
+    } //--
+    machine.add(p);
 
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    p = new JPanel(new FlowLayout(FlowLayout.LEFT));
     { //--
       JLabel l = new JLabel("Etat courant de la machine : ");
       l.setForeground(Color.RED);
@@ -478,14 +494,6 @@ public class FrameLayout implements IFrameLayout {
     controls.add(machineControls);
 
     return controls;
-  }
-
-  private JPanel createGUI(Border border) {
-    JPanel gui = new JPanel(new GridLayout(0, 1));
-    gui.add(createTransitionsGUI(border), BorderLayout.CENTER);
-    gui.add(createMachineGUI(border));
-    gui.add(createControlsGUI(border));
-    return gui;
   }
 
   private JScrollPane createHistoryGUI(Border border) {
