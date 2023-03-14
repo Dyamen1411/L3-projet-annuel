@@ -93,7 +93,7 @@ public class ModifiableList extends JPanel {
       @Override
       public void keyTyped(KeyEvent e) {
         if(e.getKeyChar() == '\n'){
-          addRule();
+          addElement();
         }
       }
       
@@ -102,21 +102,14 @@ public class ModifiableList extends JPanel {
     addButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        addRule();
+        addElement();
       }
     });
 
     removeButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String element = field.getText();
-        try {
-          vcs.fireVetoableChange(
-            new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
-          );
-          model.removeElement(element);
-          fireElementRemovedEvent(element);
-        } catch (Exception ex) {}
+        removeElement();
       }
     });
   }
@@ -164,22 +157,7 @@ public class ModifiableList extends JPanel {
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
 
-  protected void fireElementAddedEvent(String s) {
-    Object[] list = listenerList.getListenerList();
-    boolean b = false;
-    for (int i = list.length - 2; i >= 0; i -= 2) {
-      if (list[i] != ElementAddedEventListener.class) {
-        continue;
-      }
-      if (addEvent == null || !b) {
-        addEvent = new ElementAddedEvent(s);
-        b = true;
-      }
-      ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
-    }
-  }
-
-  private void addRule(){
+  private void addElement(){
     String element = field.getText();
     if (model.contains(element) || element.equals("")) {
       return;
@@ -192,6 +170,34 @@ public class ModifiableList extends JPanel {
       fireElementAddedEvent(field.getText());
     } catch (Exception ex) {
       ex.printStackTrace();
+    }
+  }
+
+  private void removeElement() {
+    String element = field.getText();
+    try {
+      vcs.fireVetoableChange(
+        new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
+      );
+      model.removeElement(element);
+      fireElementRemovedEvent(element);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  protected void fireElementAddedEvent(String s) {
+    Object[] list = listenerList.getListenerList();
+    boolean b = false;
+    for (int i = list.length - 2; i >= 0; i -= 2) {
+      if (list[i] != ElementAddedEventListener.class) {
+        continue;
+      }
+      if (addEvent == null || !b) {
+        addEvent = new ElementAddedEvent(s);
+        b = true;
+      }
+      ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
     }
   }
 
