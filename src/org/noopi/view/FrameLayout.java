@@ -116,6 +116,7 @@ public class FrameLayout implements IFrameLayout {
   private JComboBox<String> initialTapeSymbolSelector;
   private JComboBox<String> initialStateSelector;
   private JLabel currentState;
+  private State initialState;
 
   //CONSTRUCTEURS
 
@@ -160,6 +161,10 @@ public class FrameLayout implements IFrameLayout {
       menuItems.put(i, new JMenuItem(i.label()));
     }
     return menuItems;
+  }
+
+  public State getInitialState(){
+    return initialState;
   }
 
   // COMMANDES
@@ -381,7 +386,6 @@ public class FrameLayout implements IFrameLayout {
     addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
     removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
     initialRubanTextField = new JTextField();
-    initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
     transitionTable = new TransitionTable(symbols, states, transitions);
@@ -505,7 +509,17 @@ public class FrameLayout implements IFrameLayout {
     return historyScrollPane;
   }
 
-  private void createController() {    
+  private void createController() {
+
+    initialStateSelector.addItemListener(new ItemListener() {
+
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        setInitialState((State)e.getItem());
+      }
+      
+    });
+
     speedSlider.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
@@ -578,6 +592,10 @@ public class FrameLayout implements IFrameLayout {
         initialTapeModel.writeSymbol(read);
       }
     });
+  }
+
+  private void setInitialState(State s){
+    initialState = s;
   }
 
   private void setMenuBar() {
