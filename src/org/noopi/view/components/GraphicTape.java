@@ -34,6 +34,10 @@ public class GraphicTape extends JList<String> {
 
   // CONSTRUCTEUR
 
+  public GraphicTape(ITape tape, boolean selectable, int cellSize){
+    this(tape, selectable, cellSize, cellSize);
+  }
+
   public GraphicTape(ITape tape, boolean selectable, int cellWidth, int cellHeight) {
     assert tape != null;
     this.model = tape;
