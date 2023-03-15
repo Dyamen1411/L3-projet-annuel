@@ -54,12 +54,11 @@ public class ModifiableList extends JPanel {
     addButton = new JButton(addButtonText);
     removeButton = new JButton(removeButtonText);
     model = new DefaultListModel<>();
-    list = new JList<>();
+    list = new JList<>(model);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     listenerList = new EventListenerList();
     vcs = new VetoableChangeSupport(this);
 
-    list.setModel(model);
 
     JPanel header = new JPanel();
     header.add(field);
