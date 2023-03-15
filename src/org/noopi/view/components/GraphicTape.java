@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -102,7 +103,7 @@ public class GraphicTape extends JList<String> {
         
         setText(value);
 
-
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setBackground(COLOR_TAB[index % COLOR_TAB.length]);
         if(selectable && isSelected){
           setBackground(SELECTED_COLOR);
