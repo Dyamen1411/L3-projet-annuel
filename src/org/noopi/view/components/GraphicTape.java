@@ -2,6 +2,7 @@ package org.noopi.view.components;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.DefaultListModel;
@@ -21,7 +22,8 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final Color colorTab[] = {Color.LIGHT_GRAY, Color.DARK_GRAY};
+  private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.DARK_GRAY};
+  private static final Color SELECTED_COLOR = Color.BLUE;
 
   private ITape model;
 
@@ -70,6 +72,7 @@ public class GraphicTape extends JList<String> {
     w = h = Math.min(w, h);
     setFixedCellWidth(w);
     setFixedCellHeight(h);
+    setPreferredSize(new Dimension(CELL_COUNT * w, h));
     setSize(CELL_COUNT * w, h);
     super.paint(g);
   }
@@ -81,6 +84,7 @@ public class GraphicTape extends JList<String> {
 
     public CellRenderer() {
         setOpaque(true);
+        setPreferredSize(new Dimension(30, 30));
     }
 
     public Component getListCellRendererComponent(JList<?> list,
@@ -92,9 +96,9 @@ public class GraphicTape extends JList<String> {
         setText(value.toString());
 
 
-        setBackground(colorTab[index % colorTab.length]);
+        setBackground(COLOR_TAB[index % COLOR_TAB.length]);
         if(selectable && isSelected){
-          setBackground(Color.BLUE);
+          setBackground(SELECTED_COLOR);
         }
 
         return this;
