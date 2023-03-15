@@ -21,7 +21,7 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final Color colorTab[] = {Color.GRAY, Color.LIGHT_GRAY};
+  private static final Color colorTab[] = {Color.BLUE, Color.WHITE, Color.RED};
 
   private ITape model;
 
@@ -90,7 +90,7 @@ public class GraphicTape extends JList<String> {
         setText(value.toString());
 
 
-        setBackground(colorTab[index % 2]);
+        setBackground(colorTab[index % colorTab.length]);
 
         return this;
     }
