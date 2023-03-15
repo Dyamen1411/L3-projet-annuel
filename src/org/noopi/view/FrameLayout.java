@@ -463,19 +463,29 @@ public class FrameLayout implements IFrameLayout {
     JPanel controls = new JPanel(new GridLayout(0, 1));
     controls.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
 
-    JPanel q = new JPanel();
-    q.add(new JLabel("Ruban initial :"));
+    JPanel q = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    q.add(new JLabel("Edition du ruban initial :"));
     controls.add(q);
 
     JPanel tapeControls = new JPanel(new GridLayout(1, 0));
-    tapeControls.add(initialTapeLeft);
-    tapeControls.add(initialTapeSymbolSelector);
-    tapeControls.add(initialTapeRight);
+    { //--
+      JPanel s = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      { //--
+        s.add(initialTapeLeft);
+        s.add(initialTapeSymbolSelector);
+        s.add(initialTapeRight);
+      } //--
+      tapeControls.add(s);
+    } //--
     controls.add(tapeControls);
+    
+    JPanel s = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    { //--
+      s.add(initialTape);
+    } //--
+    controls.add(s);
 
-    controls.add(initialTape);
-
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
     { //--
       p.add(new JLabel("Entrez l'état initial de la machine -->"));
       p.add(initialStateSelector);
