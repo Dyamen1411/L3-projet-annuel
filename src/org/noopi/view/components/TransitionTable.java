@@ -71,6 +71,8 @@ public class TransitionTable extends JPanel {
 
     table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+    table.getTableHeader().setReorderingAllowed(false);
+
     ListSelectionListener l = new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
