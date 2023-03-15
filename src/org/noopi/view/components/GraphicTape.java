@@ -34,7 +34,7 @@ public class GraphicTape extends JList<String> {
 
   // CONSTRUCTEUR
 
-  public GraphicTape(ITape tape, boolean selectable, boolean bigOne) {
+  public GraphicTape(ITape tape, boolean selectable, int cellWidth, int cellHeight) {
     assert tape != null;
     this.model = tape;
     this.selectable = selectable;
@@ -44,7 +44,7 @@ public class GraphicTape extends JList<String> {
       list.add(0, DEFAULT_SYMBOL);
     }
     setModel(list);
-    setCellRenderer(new TapeCellRenderer(bigOne));
+    setCellRenderer(new TapeCellRenderer(cellWidth, cellHeight));
 
     setEnabled(selectable);
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -83,13 +83,9 @@ public class GraphicTape extends JList<String> {
   class TapeCellRenderer extends JLabel implements ListCellRenderer<String> {
 
 
-    public TapeCellRenderer(boolean bigOne) {
+    public TapeCellRenderer(int cellW, int cellH) {
         setOpaque(true);
-        if(bigOne){
-          setPreferredSize(new Dimension(100, 100));
-        } else {
-          setPreferredSize(new Dimension(45, 45));
-        }
+        setPreferredSize(new Dimension(cellW, cellH));
         setHorizontalAlignment(CENTER);
     }
 
