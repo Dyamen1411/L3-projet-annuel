@@ -2,6 +2,7 @@ package org.noopi.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -36,6 +37,7 @@ import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
+import org.noopi.utils.listeners.view.ActiveMachineListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
@@ -115,6 +117,7 @@ public class FrameLayout implements IFrameLayout {
   private JComboBox<String> initialStateSelector;
   private JLabel currentState;
   private State initialState;
+  private JCheckBox isActiveCheckBox;
 
   //CONSTRUCTEURS
 
@@ -370,6 +373,18 @@ public class FrameLayout implements IFrameLayout {
     stateList.addElementRemovedVetoableChangeListener(l);
   }
 
+  public void addActiveMachineListener(ActiveMachineListener l){
+    assert l != null;
+    isActiveCheckBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        l.onActiveStateChange(isActiveCheckBox.isSelected());
+      }
+      
+    });
+  }
+
   // OUTILS
 
   private void createView() {
@@ -386,6 +401,7 @@ public class FrameLayout implements IFrameLayout {
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
     transitionTable = new TransitionTable(symbols, states, transitions);
+    isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
 
     speedSlider = new JSlider(0, 100, 20);
 
@@ -473,6 +489,7 @@ public class FrameLayout implements IFrameLayout {
         s.add(initialTapeLeft);
         s.add(initialTapeSymbolSelector);
         s.add(initialTapeRight);
+        s.add(isActiveCheckBox);
       } //--
       tapeControls.add(s);
     } //--
@@ -598,6 +615,7 @@ public class FrameLayout implements IFrameLayout {
         initialTapeModel.writeSymbol(read);
       }
     });
+
   }
 
   private void setInitialState(State s){
