@@ -44,7 +44,7 @@ public class GraphicTape extends JList<String> {
       list.add(0, DEFAULT_SYMBOL);
     }
     setModel(list);
-    setCellRenderer(new CellRenderer());
+    setCellRenderer(new TapeCellRenderer());
 
     setEnabled(selectable);
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -80,12 +80,13 @@ public class GraphicTape extends JList<String> {
 
   // TYPE IMBRIQUE
 
-  class CellRenderer extends JLabel implements ListCellRenderer<String> {
+  class TapeCellRenderer extends JLabel implements ListCellRenderer<String> {
 
 
-    public CellRenderer() {
+    public TapeCellRenderer() {
         setOpaque(true);
         setPreferredSize(new Dimension(40, 40));
+        setHorizontalAlignment(CENTER);
     }
 
     public Component getListCellRendererComponent(JList<? extends String> list,
