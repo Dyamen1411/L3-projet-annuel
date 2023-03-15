@@ -433,14 +433,8 @@ public class FrameLayout implements IFrameLayout {
   private JPanel createMachineGUI(Border border) {
     JPanel machine = new JPanel(new GridLayout(0, 1));
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
-    
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    { //--
-      p.add(tape);
-    } //--
-    machine.add(p);
 
-    p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
     { //--
       JLabel l = new JLabel("Etat courant de la machine : ");
       l.setForeground(Color.RED);
@@ -448,6 +442,14 @@ public class FrameLayout implements IFrameLayout {
       p.add(currentState);
     } //--
     machine.add(p);
+    
+    p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    { //--
+      p.add(tape);
+    } //--
+    machine.add(p);
+
+    
     return machine;
   }
 
