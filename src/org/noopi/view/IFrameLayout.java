@@ -17,7 +17,6 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.State;
 import org.noopi.utils.Transition;
 
@@ -91,22 +90,6 @@ public interface IFrameLayout {
   //------------------------//
   //--- Listener binding ---//
   //------------------------//
-
-  /**
-   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to add a new transition from the
-   * GUI.
-   * @param l the listener.
-   */
-  void addTransitionAddedEventListener(TransitionModifiedEventListener l);
-
-  /**
-   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to remove a transition from the
-   * GUI.
-   * @param l the listener.
-   */
-  void addTransitionRemovedEventListener(TransitionModifiedEventListener l);
 
   /**
    * Adds a listener to an event <code>TapeInitializationEvent</code>.

@@ -49,7 +49,6 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.IDatabase;
@@ -59,7 +58,6 @@ import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
-import org.noopi.view.components.TransitionEditorComponent;
 import org.noopi.view.components.TransitionTable;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 
@@ -98,15 +96,12 @@ public class FrameLayout implements IFrameLayout {
   private JButton stopButton;
   private JButton startButton;
   private JButton stepButton;
-  private JButton initButton;
   private JSlider speedSlider;
   private JList<JLabel> historyJList;
   private JList<JLabel> transitionsJList;
   private GraphicTape tape;
   private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
-  private TransitionEditorComponent addTransition;
-  private TransitionEditorComponent removeTransition;
   private TransitionTableModel transitions;
   private TransitionTable transitionTable;
   private ModifiableList symbolList;
@@ -228,21 +223,6 @@ public class FrameLayout implements IFrameLayout {
     );
   }
 
-  @Override
-  public void addTransitionAddedEventListener(
-    TransitionModifiedEventListener l
-  ) {
-    assert l != null;
-    addTransition.addTransitionModifiedEventListener(l);
-  }
-
-  @Override
-  public void addTransitionRemovedEventListener(
-    TransitionModifiedEventListener l
-  ) {
-    assert l != null;
-    removeTransition.addTransitionModifiedEventListener(l);
-  }
 
   @Override
   public void addTapeInitializationEventListener(
@@ -395,9 +375,6 @@ public class FrameLayout implements IFrameLayout {
     stopButton = new JButton("Stopper");
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
-    initButton = new JButton("Initialiser");
-    addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
-    removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
     transitionTable = new TransitionTable(symbols, states, transitions);
@@ -509,7 +486,6 @@ public class FrameLayout implements IFrameLayout {
     controls.add(p);  
 
     JPanel stateControls = new JPanel();
-    stateControls.add(initButton);
     stateControls.add(stepButton);
     controls.add(stateControls);
 
@@ -593,15 +569,6 @@ public class FrameLayout implements IFrameLayout {
       public void actionPerformed(ActionEvent e) {
         fireSaveEvent();
       }
-    });
-
-    initButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        fireTapeInitializationEvent();
-      }
-      
     });
 
     initialTapeModel.addTapeMovedEventListener(new TapeMovedEventListener() {
