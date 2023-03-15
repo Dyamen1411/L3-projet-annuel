@@ -123,6 +123,12 @@ public class TransitionTable extends JPanel {
 
     setEditorEnabled(false);
   }
+
+  public void setActive(boolean active){
+    symbolEditor.setEnabled(active);
+    stateEditor.setEnabled(active);
+    actionEditor.setEnabled(active);
+  }
   
   private void setEditorEnabled(boolean enabled) {
     symbolEditor.setEnabled(enabled);

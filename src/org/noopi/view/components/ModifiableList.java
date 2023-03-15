@@ -163,6 +163,12 @@ public class ModifiableList extends JPanel {
     assert l != null;
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
+
+  public void setActive(boolean active){
+    addButton.setEnabled(active);
+    removeButton.setEnabled(active);
+    field.setEditable(active);
+  }
   
   private void addRule(){
     String element = field.getText();

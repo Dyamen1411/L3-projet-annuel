@@ -583,6 +583,25 @@ public class FrameLayout implements IFrameLayout {
       }
     });
 
+    isActiveCheckBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        boolean active = isActiveCheckBox.isSelected();
+        symbolList.setActive(!active);
+        stateList.setActive(!active);
+        transitionTable.setActive(!active);
+        initialTapeLeft.setEnabled(!active);
+        initialTapeRight.setEnabled(!active);
+        initialStateSelector.setEnabled(!active);
+        initialTapeSymbolSelector.setEnabled(!active);
+        stepButton.setEnabled(active);
+        startButton.setEnabled(active);
+        stopButton.setEnabled(active);
+      }
+      
+    });
+
   }
 
   private void setInitialState(State s){
