@@ -392,8 +392,8 @@ public class FrameLayout implements IFrameLayout {
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
 
-    tape = new GraphicTape(tapeModel, false, 100);
-    initialTape = new GraphicTape(initialTapeModel, true, 45);
+    tape = new GraphicTape(tapeModel, false, 150);
+    initialTape = new GraphicTape(initialTapeModel, true, 47);
     initialTapeLeft = new JButton("Gauche");
     initialTapeRight = new JButton("Droite");
     initialTapeSymbolSelector = new JComboBox<>(
