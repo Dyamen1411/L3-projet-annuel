@@ -22,8 +22,9 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.DARK_GRAY};
+  private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.GRAY};
   private static final Color SELECTED_COLOR = Color.BLUE;
+  private static final Color SELECTED_COLOR_FOREGROUND = Color.BLACK;
 
   private ITape model;
 
@@ -79,26 +80,28 @@ public class GraphicTape extends JList<String> {
 
   // TYPE IMBRIQUE
 
-  class CellRenderer extends JLabel implements ListCellRenderer<Object> {
+  class CellRenderer extends JLabel implements ListCellRenderer<String> {
 
 
     public CellRenderer() {
         setOpaque(true);
-        setPreferredSize(new Dimension(30, 30));
+        setPreferredSize(new Dimension(40, 40));
     }
 
-    public Component getListCellRendererComponent(JList<?> list,
-                                                  Object value,
+    public Component getListCellRendererComponent(JList<? extends String> list,
+                                                  String value,
                                                   int index,
                                                   boolean isSelected,
                                                   boolean cellHasFocus) {
 
-        setText(value.toString());
+        
+        setText(value);
 
 
         setBackground(COLOR_TAB[index % COLOR_TAB.length]);
         if(selectable && isSelected){
           setBackground(SELECTED_COLOR);
+          setForeground(SELECTED_COLOR_FOREGROUND);
         }
 
         return this;
