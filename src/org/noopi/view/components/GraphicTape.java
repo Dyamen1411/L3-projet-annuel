@@ -1,9 +1,13 @@
 package org.noopi.view.components;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import org.noopi.model.tape.ITape;
@@ -17,6 +21,7 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
+  private static final Color colorTab[] = {Color.GRAY, Color.LIGHT_GRAY};
 
   private ITape model;
 
@@ -34,6 +39,7 @@ public class GraphicTape extends JList<String> {
       list.add(0, DEFAULT_SYMBOL);
     }
     setModel(list);
+    setCellRenderer(new CellRenderer());
 
     setEnabled(selectable);
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -65,5 +71,29 @@ public class GraphicTape extends JList<String> {
     setSize(CELL_COUNT * w, h);
     super.paint(g);
   }
+
+  // TYPE IMBRIQUE
+
+  class CellRenderer extends JLabel implements ListCellRenderer<Object> {
+
+
+    public CellRenderer() {
+        setOpaque(true);
+    }
+
+    public Component getListCellRendererComponent(JList<?> list,
+                                                  Object value,
+                                                  int index,
+                                                  boolean isSelected,
+                                                  boolean cellHasFocus) {
+
+        setText(value.toString());
+
+
+        setBackground(colorTab[index % 2]);
+
+        return this;
+    }
+}
 }
 
