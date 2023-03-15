@@ -21,18 +21,20 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final Color colorTab[] = {Color.BLUE, Color.WHITE, Color.RED};
+  private static final Color colorTab[] = {Color.LIGHT_GRAY, Color.DARK_GRAY};
 
   private ITape model;
 
   // ATTRIBUTS
   private DefaultListModel<String> list;
+  private final boolean selectable;
 
   // CONSTRUCTEUR
 
   public GraphicTape(ITape tape, boolean selectable) {
     assert tape != null;
     this.model = tape;
+    this.selectable = selectable;
 
     list = new DefaultListModel<>();
     for (int i = CELL_COUNT; i > 0; --i) {
@@ -63,7 +65,7 @@ public class GraphicTape extends JList<String> {
 
   @Override
   public void paint(Graphics g) {
-    int w = getWidth() / CELL_COUNT;
+    int w = (getWidth() / CELL_COUNT);
     int h = getHeight();
     w = h = Math.min(w, h);
     setFixedCellWidth(w);
@@ -91,6 +93,9 @@ public class GraphicTape extends JList<String> {
 
 
         setBackground(colorTab[index % colorTab.length]);
+        if(selectable && isSelected){
+          setBackground(Color.BLUE);
+        }
 
         return this;
     }

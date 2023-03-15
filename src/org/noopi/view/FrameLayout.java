@@ -442,7 +442,6 @@ public class FrameLayout implements IFrameLayout {
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
     
     JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    p.setBorder(BorderFactory.createTitledBorder(border, "TEST"));
     { //--
       p.add(tape);
     } //--
