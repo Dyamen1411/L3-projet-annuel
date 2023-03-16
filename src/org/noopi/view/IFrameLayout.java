@@ -6,9 +6,11 @@ import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.ActiveMachineListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -17,7 +19,6 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.utils.State;
 import org.noopi.utils.Transition;
 
@@ -93,20 +94,18 @@ public interface IFrameLayout {
   //------------------------//
 
   /**
-   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to add a new transition from the
-   * GUI.
-   * @param l the listener.
+   * TODO: describe
+   * @param l
    */
-  void addTransitionAddedEventListener(TransitionModifiedEventListener l);
+  void addActiveMachineListener(ActiveMachineListener l);
 
   /**
-   * Adds a listener to an event <code>TransitionModifiedEvent</code>.
-   * This event is fired when the user wants to remove a transition from the
-   * GUI.
-   * @param l the listener.
+   * TODO: describe
+   * @param l
    */
-  void addTransitionRemovedEventListener(TransitionModifiedEventListener l);
+  void addMachineInitialStateChangedEventListener(
+    MachineInitialStateChangedEventListener l
+  );
 
   /**
    * Adds a listener to an event <code>TapeInitializationEvent</code>.

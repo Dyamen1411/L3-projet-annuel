@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -60,37 +61,44 @@ public class TransitionTable extends JPanel {
     add(editor, BorderLayout.NORTH);
 
     JScrollPane scroll = new JScrollPane(table);
-    scroll.setPreferredSize(new Dimension(500, 200));
+    scroll.setPreferredSize(new Dimension(300, 140));
     add(scroll, BorderLayout.CENTER);
 
 
     table.setRowHeight(40);
 
-    table.getColumnModel().getSelectionModel().addListSelectionListener(
-        new ListSelectionListener() {
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-          final int x = table.getSelectedColumn();
-          final int y = table.getSelectedRow();
-          final boolean enabled = x > 0 && y >= 0;
-          setEditorEnabled(enabled);
-          if (!enabled) {
-            symbolEditor.setSelectedItem(null);
-            stateEditor.setSelectedItem(null);
-            actionEditor.setSelectedItem(null);
-            return;
-          }
-          Symbol symbol = symbols.values()[y];
-          State state = states.values()[x - 1];
-          Transition.Left k = new Transition.Left(symbol, state);
-          Transition.Right v = transitions.getTransition(k);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-          symbolEditor.setSelectedItem(v.getSymbol().toString());
-          actionEditor.setSelectedItem(v.getMachineAction());
-          stateEditor.setSelectedItem(v.getState().toString());
+    table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+    table.getTableHeader().setReorderingAllowed(false);
+
+    ListSelectionListener l = new ListSelectionListener() {
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        final int x = table.getSelectedColumn();
+        final int y = table.getSelectedRow();
+        final boolean enabled = x > 0 && y >= 0;
+        setEditorEnabled(enabled);
+        if (!enabled) {
+          symbolEditor.setSelectedItem(null);
+          stateEditor.setSelectedItem(null);
+          actionEditor.setSelectedItem(null);
+          return;
         }
+        Symbol symbol = symbols.values()[y];
+        State state = states.values()[x - 1];
+        Transition.Left k = new Transition.Left(symbol, state);
+        Transition.Right v = transitions.getTransition(k);
+
+        symbolEditor.setSelectedItem(v.getSymbol().toString());
+        actionEditor.setSelectedItem(v.getMachineAction());
+        stateEditor.setSelectedItem(v.getState().toString());
       }
-    );
+    };
+
+    table.getColumnModel().getSelectionModel().addListSelectionListener(l);
+    table.getSelectionModel().addListSelectionListener(l);
 
     symbolEditor.addItemListener(new ItemListener() {
       @Override
@@ -114,6 +122,12 @@ public class TransitionTable extends JPanel {
     });
 
     setEditorEnabled(false);
+  }
+
+  public void setActive(boolean active){
+    symbolEditor.setEnabled(active);
+    stateEditor.setEnabled(active);
+    actionEditor.setEnabled(active);
   }
   
   private void setEditorEnabled(boolean enabled) {

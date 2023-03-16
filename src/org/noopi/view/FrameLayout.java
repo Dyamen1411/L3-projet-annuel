@@ -2,6 +2,7 @@ package org.noopi.view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -14,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -37,9 +37,11 @@ import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
+import org.noopi.utils.listeners.view.ActiveMachineListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -48,7 +50,6 @@ import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
-import org.noopi.utils.listeners.view.TransitionModifiedEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.IDatabase;
@@ -58,7 +59,6 @@ import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
-import org.noopi.view.components.TransitionEditorComponent;
 import org.noopi.view.components.TransitionTable;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 
@@ -97,16 +97,12 @@ public class FrameLayout implements IFrameLayout {
   private JButton stopButton;
   private JButton startButton;
   private JButton stepButton;
-  private JButton initButton;
-  private JTextField initialRubanTextField;
   private JSlider speedSlider;
   private JList<JLabel> historyJList;
   private JList<JLabel> transitionsJList;
   private GraphicTape tape;
   private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
-  private TransitionEditorComponent addTransition;
-  private TransitionEditorComponent removeTransition;
   private TransitionTableModel transitions;
   private TransitionTable transitionTable;
   private ModifiableList symbolList;
@@ -116,6 +112,7 @@ public class FrameLayout implements IFrameLayout {
   private JComboBox<String> initialTapeSymbolSelector;
   private JComboBox<String> initialStateSelector;
   private JLabel currentState;
+  private JCheckBox isActiveCheckBox;
 
   //CONSTRUCTEURS
 
@@ -136,10 +133,11 @@ public class FrameLayout implements IFrameLayout {
     this.states = states;
     this.tapeModel = tapeModel;
     this.initialTapeModel = initialTapeModel;
+    this.listenerList = new EventListenerList();
     createView();
     placeComponent();
     createController();
-    listenerList = new EventListenerList();
+    refreshView();
   }
 
   //REQUETES
@@ -223,19 +221,16 @@ public class FrameLayout implements IFrameLayout {
   }
 
   @Override
-  public void addTransitionAddedEventListener(
-    TransitionModifiedEventListener l
+  public void addMachineInitialStateChangedEventListener(
+    MachineInitialStateChangedEventListener l
   ) {
     assert l != null;
-    addTransition.addTransitionModifiedEventListener(l);
-  }
-
-  @Override
-  public void addTransitionRemovedEventListener(
-    TransitionModifiedEventListener l
-  ) {
-    assert l != null;
-    removeTransition.addTransitionModifiedEventListener(l);
+    initialStateSelector.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        l.onInitialStateChanged(states.get((String) e.getItem()));
+      }
+    });
   }
 
   @Override
@@ -367,7 +362,39 @@ public class FrameLayout implements IFrameLayout {
     stateList.addElementRemovedVetoableChangeListener(l);
   }
 
+  public void addActiveMachineListener(ActiveMachineListener l){
+    assert l != null;
+    isActiveCheckBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        l.onActiveStateChange(isActiveCheckBox.isSelected());
+      }
+    });
+  }
+
   // OUTILS
+
+  private void refreshMachineActivationCheckBox() {
+    isActiveCheckBox.setEnabled(
+      isActiveCheckBox.isSelected()
+      || initialStateSelector.getSelectedItem() != null
+    );
+  }
+
+  private void refreshView() {
+    refreshMachineActivationCheckBox();
+    boolean active = isActiveCheckBox.isSelected();
+    symbolList.setActive(!active);
+    stateList.setActive(!active);
+    transitionTable.setActive(!active);
+    initialTapeLeft.setEnabled(!active);
+    initialTapeRight.setEnabled(!active);
+    initialStateSelector.setEnabled(!active);
+    initialTapeSymbolSelector.setEnabled(!active);
+    stepButton.setEnabled(active);
+    startButton.setEnabled(active);
+    stopButton.setEnabled(active);
+  }
 
   private void createView() {
     mainPanel = new JPanel(new BorderLayout());
@@ -377,22 +404,18 @@ public class FrameLayout implements IFrameLayout {
     stopButton = new JButton("Stopper");
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
-    initButton = new JButton("Initialiser");
-    addTransition = new TransitionEditorComponent("Ajouter", symbols, states);
-    removeTransition = new TransitionEditorComponent("Retirer", symbols, states);
-    initialRubanTextField = new JTextField();
-    initialRubanTextField.setPreferredSize(new Dimension(100, 25));
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
     transitionTable = new TransitionTable(symbols, states, transitions);
+    isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
 
     speedSlider = new JSlider(0, 100, 20);
 
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
 
-    tape = new GraphicTape(tapeModel, false);
-    initialTape = new GraphicTape(initialTapeModel, true);
+    tape = new GraphicTape(tapeModel, false, 150);
+    initialTape = new GraphicTape(initialTapeModel, true, 47);
     initialTapeLeft = new JButton("Gauche");
     initialTapeRight = new JButton("Droite");
     initialTapeSymbolSelector = new JComboBox<>(
@@ -412,13 +435,23 @@ public class FrameLayout implements IFrameLayout {
     mainPanel.add(createHistoryGUI(border), BorderLayout.EAST);
   }
 
+  private JPanel createGUI(Border border) {
+    JPanel gui = new JPanel(new GridLayout(0, 1));
+    gui.add(createTransitionsGUI(border));
+    gui.add(createMachineGUI(border));
+    gui.add(createControlsGUI(border));
+    return gui;
+  }
+
   private JPanel createTransitionsGUI(Border border) {
     JPanel transitions = new JPanel();
     transitions.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
 
     JPanel symbolStateEditor = new JPanel();
-    symbolStateEditor.add(symbolList);
-    symbolStateEditor.add(stateList);
+    { //--
+      symbolStateEditor.add(symbolList);
+      symbolStateEditor.add(stateList);
+    } //--
     transitions.add(symbolStateEditor);
 
     transitions.add(transitionTable);
@@ -429,9 +462,8 @@ public class FrameLayout implements IFrameLayout {
   private JPanel createMachineGUI(Border border) {
     JPanel machine = new JPanel(new GridLayout(0, 1));
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
-    machine.add(tape);
 
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
     { //--
       JLabel l = new JLabel("Etat courant de la machine : ");
       l.setForeground(Color.RED);
@@ -439,6 +471,14 @@ public class FrameLayout implements IFrameLayout {
       p.add(currentState);
     } //--
     machine.add(p);
+    
+    p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    { //--
+      p.add(tape);
+    } //--
+    machine.add(p);
+
+    
     return machine;
   }
 
@@ -446,19 +486,30 @@ public class FrameLayout implements IFrameLayout {
     JPanel controls = new JPanel(new GridLayout(0, 1));
     controls.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
 
-    JPanel q = new JPanel();
-    q.add(new JLabel("Ruban initial :"));
+    JPanel q = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    q.add(new JLabel("Edition du ruban initial :"));
     controls.add(q);
 
     JPanel tapeControls = new JPanel(new GridLayout(1, 0));
-    tapeControls.add(initialTapeLeft);
-    tapeControls.add(initialTapeSymbolSelector);
-    tapeControls.add(initialTapeRight);
+    { //--
+      JPanel s = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      { //--
+        s.add(initialTapeLeft);
+        s.add(initialTapeSymbolSelector);
+        s.add(initialTapeRight);
+        s.add(isActiveCheckBox);
+      } //--
+      tapeControls.add(s);
+    } //--
     controls.add(tapeControls);
+    
+    JPanel s = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    { //--
+      s.add(initialTape);
+    } //--
+    controls.add(s);
 
-    controls.add(initialTape);
-
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
     { //--
       p.add(new JLabel("Entrez l'état initial de la machine -->"));
       p.add(initialStateSelector);
@@ -466,7 +517,6 @@ public class FrameLayout implements IFrameLayout {
     controls.add(p);  
 
     JPanel stateControls = new JPanel();
-    stateControls.add(initButton);
     stateControls.add(stepButton);
     controls.add(stateControls);
 
@@ -480,14 +530,6 @@ public class FrameLayout implements IFrameLayout {
     return controls;
   }
 
-  private JPanel createGUI(Border border) {
-    JPanel gui = new JPanel(new GridLayout(0, 1));
-    gui.add(createTransitionsGUI(border), BorderLayout.CENTER);
-    gui.add(createMachineGUI(border));
-    gui.add(createControlsGUI(border));
-    return gui;
-  }
-
   private JScrollPane createHistoryGUI(Border border) {
     JScrollPane historyScrollPane = new JScrollPane(historyJList);
     historyScrollPane.setPreferredSize(new Dimension(300, 500));
@@ -497,7 +539,15 @@ public class FrameLayout implements IFrameLayout {
     return historyScrollPane;
   }
 
-  private void createController() {    
+  private void createController() {
+
+    initialStateSelector.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        refreshMachineActivationCheckBox();
+      }
+    });
+
     speedSlider.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
@@ -550,15 +600,6 @@ public class FrameLayout implements IFrameLayout {
       }
     });
 
-    initButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        fireTapeInitializationEvent();
-      }
-      
-    });
-
     initialTapeModel.addTapeMovedEventListener(new TapeMovedEventListener() {
       @Override
       public void onTapeMoved(TapeMovedEvent e) {
@@ -570,6 +611,14 @@ public class FrameLayout implements IFrameLayout {
         initialTapeModel.writeSymbol(read);
       }
     });
+
+    isActiveCheckBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        refreshView();
+      }
+    });
+
   }
 
   private void setMenuBar() {

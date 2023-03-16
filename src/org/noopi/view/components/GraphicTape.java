@@ -1,9 +1,15 @@
 package org.noopi.view.components;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import org.noopi.model.tape.ITape;
@@ -17,23 +23,33 @@ public class GraphicTape extends JList<String> {
   private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
+  private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.GRAY};
+  private static final Color SELECTED_COLOR = Color.BLUE;
+  private static final Color SELECTED_COLOR_FOREGROUND = Color.BLACK;
 
   private ITape model;
 
   // ATTRIBUTS
   private DefaultListModel<String> list;
+  private final boolean selectable;
 
   // CONSTRUCTEUR
 
-  public GraphicTape(ITape tape, boolean selectable) {
+  public GraphicTape(ITape tape, boolean selectable, int cellSize){
+    this(tape, selectable, cellSize, cellSize);
+  }
+
+  public GraphicTape(ITape tape, boolean selectable, int cellWidth, int cellHeight) {
     assert tape != null;
     this.model = tape;
+    this.selectable = selectable;
 
     list = new DefaultListModel<>();
     for (int i = CELL_COUNT; i > 0; --i) {
       list.add(0, DEFAULT_SYMBOL);
     }
     setModel(list);
+    setCellRenderer(new TapeCellRenderer(cellWidth, cellHeight));
 
     setEnabled(selectable);
     setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -57,13 +73,45 @@ public class GraphicTape extends JList<String> {
 
   @Override
   public void paint(Graphics g) {
-    int w = getWidth() / CELL_COUNT;
+    int w = (getWidth() / CELL_COUNT);
     int h = getHeight();
     w = h = Math.min(w, h);
     setFixedCellWidth(w);
     setFixedCellHeight(h);
+    setPreferredSize(new Dimension(CELL_COUNT * w, h));
     setSize(CELL_COUNT * w, h);
     super.paint(g);
   }
+
+  // TYPE IMBRIQUE
+
+  class TapeCellRenderer extends JLabel implements ListCellRenderer<String> {
+
+
+    public TapeCellRenderer(int cellW, int cellH) {
+        setOpaque(true);
+        setPreferredSize(new Dimension(cellW, cellH));
+        setHorizontalAlignment(CENTER);
+    }
+
+    public Component getListCellRendererComponent(JList<? extends String> list,
+                                                  String value,
+                                                  int index,
+                                                  boolean isSelected,
+                                                  boolean cellHasFocus) {
+
+        
+        setText(value);
+
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        setBackground(COLOR_TAB[index % COLOR_TAB.length]);
+        if(selectable && isSelected){
+          setBackground(SELECTED_COLOR);
+          setForeground(SELECTED_COLOR_FOREGROUND);
+        }
+
+        return this;
+    }
+}
 }
 

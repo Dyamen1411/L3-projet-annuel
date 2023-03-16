@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
 
@@ -55,12 +54,11 @@ public class ModifiableList extends JPanel {
     addButton = new JButton(addButtonText);
     removeButton = new JButton(removeButtonText);
     model = new DefaultListModel<>();
-    list = new JList<>();
+    list = new JList<>(model);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     listenerList = new EventListenerList();
     vcs = new VetoableChangeSupport(this);
 
-    list.setModel(model);
 
     JPanel header = new JPanel();
     header.add(field);
@@ -165,21 +163,12 @@ public class ModifiableList extends JPanel {
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
 
-  protected void fireElementAddedEvent(String s) {
-    Object[] list = listenerList.getListenerList();
-    boolean b = false;
-    for (int i = list.length - 2; i >= 0; i -= 2) {
-      if (list[i] != ElementAddedEventListener.class) {
-        continue;
-      }
-      if (addEvent == null || !b) {
-        addEvent = new ElementAddedEvent(s);
-        b = true;
-      }
-      ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
-    }
+  public void setActive(boolean active){
+    addButton.setEnabled(active);
+    removeButton.setEnabled(active);
+    field.setEditable(active);
   }
-
+  
   private void addRule(){
     String element = field.getText();
     if (model.contains(element) || element.equals("")) {
@@ -195,6 +184,21 @@ public class ModifiableList extends JPanel {
       ex.printStackTrace();
     }
   }
+
+  protected void fireElementAddedEvent(String s) {
+    Object[] list = listenerList.getListenerList();
+    boolean b = false;
+    for (int i = list.length - 2; i >= 0; i -= 2) {
+      if (list[i] != ElementAddedEventListener.class) {
+        continue;
+      }
+      if (addEvent == null || !b) {
+        addEvent = new ElementAddedEvent(s);
+      }
+      ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
+    }
+  }
+
 
   protected void fireElementRemovedEvent(String s) {
     Object[] list = listenerList.getListenerList();
