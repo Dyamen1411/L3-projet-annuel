@@ -57,16 +57,17 @@ import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
+import org.noopi.view.components.GBC;
 import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionTable;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 
-import java.awt.BorderLayout;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.util.Map;
 import java.util.EnumMap;
 
@@ -397,7 +398,7 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private void createView() {
-    mainPanel = new JPanel(new BorderLayout());
+    mainPanel = new JPanel(new GridBagLayout());
 
     menuBar = new JMenuBar();
 
@@ -410,6 +411,8 @@ public class FrameLayout implements IFrameLayout {
     isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
 
     speedSlider = new JSlider(0, 100, 20);
+    setSpeedSlider();
+    setMenuBar();
 
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
@@ -429,18 +432,11 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private void placeComponent() {
-    setMenuBar();
     final Border border = BorderFactory.createLineBorder(Color.GRAY, 3);
-    mainPanel.add(createGUI(border), BorderLayout.CENTER);
-    mainPanel.add(createHistoryGUI(border), BorderLayout.EAST);
-  }
-
-  private JPanel createGUI(Border border) {
-    JPanel gui = new JPanel(new GridLayout(0, 1));
-    gui.add(createTransitionsGUI(border));
-    gui.add(createMachineGUI(border));
-    gui.add(createControlsGUI(border));
-    return gui;
+    mainPanel.add(createTransitionsGUI(border), new GBC(0, 0, 1, 1).fill(GBC.BOTH).weight(3, 1));
+    mainPanel.add(createMachineGUI(border), new GBC(0, 1, 1, 1).fill(GBC.BOTH).weight(0, 2));
+    mainPanel.add(createControlsGUI(border), new GBC(0, 2, 1, 1).fill(GBC.BOTH).weight(0, 2));
+    mainPanel.add(createHistoryGUI(border), new GBC(1, 0, 1, 3).fill(GBC.BOTH).weight(1, 0));
   }
 
   private JPanel createTransitionsGUI(Border border) {
@@ -483,50 +479,91 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private JPanel createControlsGUI(Border border) {
-    JPanel controls = new JPanel(new GridLayout(0, 1));
+
+    GBC[] constraintsLeft = new GBC[] {
+      // START_BUTTON
+      new GBC(0, 1, 1, 1),
+      // STOP BUTTON
+      new GBC(1, 1, 1, 1),
+      // STEP BUTTON
+      new GBC(0, 2, 2, 1),
+      // SLIDER
+      new GBC(0, 3, 2, 1).fill(GBC.HORIZONTAL)
+    };
+
+    JComponent[] componentsLeft = new JComponent[] {
+      // START BUTTON
+      startButton,
+      // STOP BUTTON
+      stopButton,
+      // STEP BUTTON
+      stepButton,
+      // SLIDER
+      speedSlider
+    };
+
+    GBC[] constraintsRight = new GBC[]{
+      // LABEL INITIAL STATE
+      new GBC(0, 0, 2, 1),
+      // INITIAL STATE SELECTOR
+      new GBC(2, 0, 1, 1),
+      // LEFT BUTTON
+      new GBC(0, 2, 1, 1),
+      // RIGHT BUTTON
+      new GBC(2, 2, 1, 1),
+      // SYMBOL SELECTOR
+      new GBC(1, 2, 1, 1),
+      // VOID LABELS
+      new GBC(1, 1, 1, 1),
+      new GBC(1, 3, 1, 1)
+    };
+
+    JComponent[] componentsRight = new JComponent[]{
+      // LABEL INITIAL STATE
+      new JLabel("Modifiez l'état initial ici -->"),
+      // INITIAL STATE SELECTOR
+      initialStateSelector,
+      // LEFT BUTTON
+      initialTapeLeft,
+      // RIGHT BUTTON
+      initialTapeRight,
+      // SYMBOL SELECTOR
+      initialTapeSymbolSelector,
+      // VOID LABELS
+      new JLabel(" "),
+      new JLabel(" ")
+    };
+
+    JPanel controls = new JPanel(new GridLayout());
     controls.setBorder(BorderFactory.createTitledBorder(border, "EXECUTION"));
 
-    JPanel q = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    q.add(new JLabel("Edition du ruban initial :"));
-    controls.add(q);
-
-    JPanel tapeControls = new JPanel(new GridLayout(1, 0));
+    JPanel p = new JPanel(new GridBagLayout());
+    p.setBorder(BorderFactory.createTitledBorder(border, "Gestion de la machine"));
     { //--
-      JPanel s = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      JPanel q = new JPanel(new GridBagLayout());
       { //--
-        s.add(initialTapeLeft);
-        s.add(initialTapeSymbolSelector);
-        s.add(initialTapeRight);
-        s.add(isActiveCheckBox);
+        for(int i = 0; i < componentsLeft.length; i+= 1){
+          q.add(componentsLeft[i], constraintsLeft[i]);
+        }
       } //--
-      tapeControls.add(s);
+      p.add(isActiveCheckBox, new GBC(0, 0, 1, 1));
+      p.add(q, new GBC(0, 1, 1, 1));
     } //--
-    controls.add(tapeControls);
-    
-    JPanel s = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    controls.add(p);
+
+    p = new JPanel(new GridBagLayout());
+    p.setBorder(BorderFactory.createTitledBorder(border, "Initialisation de la machine"));
     { //--
-      s.add(initialTape);
+      JPanel q = new JPanel(new GridBagLayout());
+      {
+        for(int i = 0; i < componentsRight.length; i+= 1){
+          q.add(componentsRight[i], constraintsRight[i]);
+        }
+      }
+      p.add(q, new GBC(0, 0, 1, 1));
+      p.add(initialTape, new GBC(0, 1, 1, 1));
     } //--
-    controls.add(s);
-
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    { //--
-      p.add(new JLabel("Entrez l'état initial de la machine -->"));
-      p.add(initialStateSelector);
-    } //--
-    controls.add(p);  
-
-    JPanel stateControls = new JPanel();
-    stateControls.add(stepButton);
-    controls.add(stateControls);
-
-    JPanel machineControls = new JPanel();
-    machineControls.add(startButton);
-    machineControls.add(stopButton);
-    setSpeedSlider();
-    machineControls.add(speedSlider);
-    controls.add(machineControls);
-
+    controls.add(p);
     return controls;
   }
 
