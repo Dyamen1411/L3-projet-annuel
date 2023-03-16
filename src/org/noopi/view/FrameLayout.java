@@ -62,7 +62,7 @@ import org.noopi.view.components.GraphicTape;
 import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionTable;
 import org.noopi.view.components.model.DatabaseComboboxModel;
-
+import org.noopi.view.components.model.GraphicArrow;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -471,6 +471,12 @@ public class FrameLayout implements IFrameLayout {
     p = new JPanel(new FlowLayout(FlowLayout.CENTER));
     { //--
       p.add(tape);
+    } //--
+    machine.add(p);
+
+    p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    { //--
+      p.add(new GraphicArrow());
     } //--
     machine.add(p);
 
