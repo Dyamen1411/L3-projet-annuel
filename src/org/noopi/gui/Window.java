@@ -22,6 +22,7 @@ import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
 import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.SymbolDatabase;
@@ -37,6 +38,7 @@ import org.noopi.utils.listeners.history.HistoryResetEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
@@ -291,7 +293,14 @@ public final class Window {
       }
     });
 
-    
+    layout.addMachineInitialStateChangedEventListener(
+      new MachineInitialStateChangedEventListener() {
+        @Override
+        public void onInitialStateChanged(State state) {
+          // TODO: set initial state to <code>state</code>
+        }
+      }
+    );
   }
 
   private void createHistoryController() {

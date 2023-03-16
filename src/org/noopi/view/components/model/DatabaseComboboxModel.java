@@ -33,10 +33,13 @@ public class DatabaseComboboxModel<T>
       new DatabaseUnregisterEventListener<E>() {
         @Override
         public void onUnregisterEvent(DatabaseUnregisterEvent<E> e) {
-          if (e.getValue().toString().equals(selectedObject)) {
-            selectedObject = null;
+          if (
+            selectedObject != null
+            && e.getValue().toString().equals(selectedObject)
+          ) {
+            setSelectedItem(null);
           }
-          fireIntervalAdded(this, d.size() + 1, d.size());
+          fireIntervalAdded(this, d.size() - 1, d.size() - 1);
         }
       }
     );

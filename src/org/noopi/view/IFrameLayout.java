@@ -6,9 +6,11 @@ import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.ActiveMachineListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -90,6 +92,20 @@ public interface IFrameLayout {
   //------------------------//
   //--- Listener binding ---//
   //------------------------//
+
+  /**
+   * TODO: describe
+   * @param l
+   */
+  void addActiveMachineListener(ActiveMachineListener l);
+
+  /**
+   * TODO: describe
+   * @param l
+   */
+  void addMachineInitialStateChangedEventListener(
+    MachineInitialStateChangedEventListener l
+  );
 
   /**
    * Adds a listener to an event <code>TapeInitializationEvent</code>.

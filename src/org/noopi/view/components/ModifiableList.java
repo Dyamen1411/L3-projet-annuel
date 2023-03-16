@@ -54,12 +54,11 @@ public class ModifiableList extends JPanel {
     addButton = new JButton(addButtonText);
     removeButton = new JButton(removeButtonText);
     model = new DefaultListModel<>();
-    list = new JList<>();
+    list = new JList<>(model);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     listenerList = new EventListenerList();
     vcs = new VetoableChangeSupport(this);
 
-    list.setModel(model);
 
     JPanel header = new JPanel();
     header.add(field);
@@ -157,7 +156,13 @@ public class ModifiableList extends JPanel {
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
 
-  private void addElement(){
+  public void setActive(boolean active){
+    addButton.setEnabled(active);
+    removeButton.setEnabled(active);
+    field.setEditable(active);
+  }
+
+  private void addElement() {
     String element = field.getText();
     if (model.contains(element) || element.equals("")) {
       return;
@@ -195,11 +200,11 @@ public class ModifiableList extends JPanel {
       }
       if (addEvent == null || !b) {
         addEvent = new ElementAddedEvent(s);
-        b = true;
       }
       ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
     }
   }
+
 
   protected void fireElementRemovedEvent(String s) {
     Object[] list = listenerList.getListenerList();
