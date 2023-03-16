@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
@@ -41,6 +43,7 @@ import org.noopi.utils.listeners.view.ActiveMachineListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
 import org.noopi.utils.listeners.view.NewFileEventListener;
 import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
@@ -54,6 +57,7 @@ import org.noopi.model.tape.ITape;
 import org.noopi.utils.IDatabase;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
+import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
@@ -111,7 +115,6 @@ public class FrameLayout implements IFrameLayout {
   private JComboBox<String> initialTapeSymbolSelector;
   private JComboBox<String> initialStateSelector;
   private JLabel currentState;
-  private State initialState;
   private JCheckBox isActiveCheckBox;
 
   //CONSTRUCTEURS
@@ -133,10 +136,11 @@ public class FrameLayout implements IFrameLayout {
     this.states = states;
     this.tapeModel = tapeModel;
     this.initialTapeModel = initialTapeModel;
+    this.listenerList = new EventListenerList();
     createView();
     placeComponent();
     createController();
-    listenerList = new EventListenerList();
+    refreshView();
   }
 
   //REQUETES
@@ -157,10 +161,6 @@ public class FrameLayout implements IFrameLayout {
       menuItems.put(i, new JMenuItem(i.label()));
     }
     return menuItems;
-  }
-
-  public State getInitialState(){
-    return initialState;
   }
 
   // COMMANDES
@@ -223,6 +223,18 @@ public class FrameLayout implements IFrameLayout {
     );
   }
 
+  @Override
+  public void addMachineInitialStateChangedEventListener(
+    MachineInitialStateChangedEventListener l
+  ) {
+    assert l != null;
+    initialStateSelector.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        l.onInitialStateChanged(states.get((String) e.getItem()));
+      }
+    });
+  }
 
   @Override
   public void addTapeInitializationEventListener(
@@ -356,16 +368,36 @@ public class FrameLayout implements IFrameLayout {
   public void addActiveMachineListener(ActiveMachineListener l){
     assert l != null;
     isActiveCheckBox.addActionListener(new ActionListener() {
-
       @Override
       public void actionPerformed(ActionEvent e) {
         l.onActiveStateChange(isActiveCheckBox.isSelected());
       }
-      
     });
   }
 
   // OUTILS
+
+  private void refreshMachineActivationCheckBox() {
+    isActiveCheckBox.setEnabled(
+      isActiveCheckBox.isSelected()
+      || initialStateSelector.getSelectedItem() != null
+    );
+  }
+
+  private void refreshView() {
+    refreshMachineActivationCheckBox();
+    boolean active = isActiveCheckBox.isSelected();
+    symbolList.setActive(!active);
+    stateList.setActive(!active);
+    transitionTable.setActive(!active);
+    initialTapeLeft.setEnabled(!active);
+    initialTapeRight.setEnabled(!active);
+    initialStateSelector.setEnabled(!active);
+    initialTapeSymbolSelector.setEnabled(!active);
+    stepButton.setEnabled(active);
+    startButton.setEnabled(active);
+    stopButton.setEnabled(active);
+  }
 
   private void createView() {
     mainPanel = new JPanel(new BorderLayout());
@@ -513,12 +545,10 @@ public class FrameLayout implements IFrameLayout {
   private void createController() {
 
     initialStateSelector.addItemListener(new ItemListener() {
-
       @Override
       public void itemStateChanged(ItemEvent e) {
-        setInitialState((State)e.getItem());
+        refreshMachineActivationCheckBox();
       }
-      
     });
 
     speedSlider.addChangeListener(new ChangeListener() {
@@ -586,28 +616,12 @@ public class FrameLayout implements IFrameLayout {
     });
 
     isActiveCheckBox.addActionListener(new ActionListener() {
-
       @Override
       public void actionPerformed(ActionEvent e) {
-        boolean active = isActiveCheckBox.isSelected();
-        symbolList.setActive(!active);
-        stateList.setActive(!active);
-        transitionTable.setActive(!active);
-        initialTapeLeft.setEnabled(!active);
-        initialTapeRight.setEnabled(!active);
-        initialStateSelector.setEnabled(!active);
-        initialTapeSymbolSelector.setEnabled(!active);
-        stepButton.setEnabled(active);
-        startButton.setEnabled(active);
-        stopButton.setEnabled(active);
+        refreshView();
       }
-      
     });
 
-  }
-
-  private void setInitialState(State s){
-    initialState = s;
   }
 
   private void setMenuBar() {

@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import org.noopi.model.tape.ITape;
 import org.noopi.model.tape.Tape;
 import org.noopi.utils.MachineAction;
+import org.noopi.utils.State;
 import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.SymbolDatabase;
@@ -17,6 +18,7 @@ import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
+import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
@@ -79,6 +81,15 @@ public final class Window {
   }
 
   private void createController() {
+    layout.addMachineInitialStateChangedEventListener(
+      new MachineInitialStateChangedEventListener() {
+        @Override
+        public void onInitialStateChanged(State state) {
+          // TODO: set initial state to <code>state</code>
+        }
+      }
+    );
+
     layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
       @Override
       public void onElementAdded(ElementAddedEvent e) {
