@@ -24,8 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
@@ -57,7 +55,6 @@ import org.noopi.model.tape.ITape;
 import org.noopi.utils.IDatabase;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
-import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
 import org.noopi.view.components.GraphicTape;
