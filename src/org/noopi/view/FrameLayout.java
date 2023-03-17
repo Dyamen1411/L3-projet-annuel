@@ -400,6 +400,8 @@ public class FrameLayout implements IFrameLayout {
     symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
     stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
     transitionTable = new TransitionTable(transitions);
+    isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
+
     speedSlider = new JSlider(0, 100, 20);
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
