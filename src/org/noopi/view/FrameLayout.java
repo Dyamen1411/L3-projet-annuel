@@ -77,6 +77,8 @@ public class FrameLayout implements IFrameLayout {
 
   //ATTRIBUTS
 
+  private boolean started;
+
   private IDatabase<String, Symbol> symbols;
   private IDatabase<String, State> states;
   private ITape tapeModel;
@@ -135,6 +137,7 @@ public class FrameLayout implements IFrameLayout {
     this.tapeModel = tapeModel;
     this.initialTapeModel = initialTapeModel;
     this.listenerList = new EventListenerList();
+    started = false;
     createView();
     placeComponent();
     createController();
@@ -392,9 +395,9 @@ public class FrameLayout implements IFrameLayout {
     initialTapeRight.setEnabled(!active);
     initialStateSelector.setEnabled(!active);
     initialTapeSymbolSelector.setEnabled(!active);
-    stepButton.setEnabled(active);
-    startButton.setEnabled(active);
-    stopButton.setEnabled(active);
+    stepButton.setEnabled(active && !started);
+    startButton.setEnabled(active && !started);
+    stopButton.setEnabled(active && started);
   }
 
   private void createView() {
@@ -611,6 +614,8 @@ public class FrameLayout implements IFrameLayout {
     startButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        started = true;
+        refreshView();
         fireRunEvent();
       }
     });
@@ -618,6 +623,8 @@ public class FrameLayout implements IFrameLayout {
     stopButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        started = false;
+        refreshView();
         fireStopEvent();
       }
     });
