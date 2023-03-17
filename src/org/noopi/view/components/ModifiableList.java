@@ -180,6 +180,7 @@ public class ModifiableList extends JPanel {
         new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
       );
       fireElementAddedEvent(field.getText());
+      field.setText("");
     } catch (Exception ex) {
       ex.printStackTrace();
     }
