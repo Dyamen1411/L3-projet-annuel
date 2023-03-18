@@ -29,6 +29,7 @@ import org.noopi.utils.SymbolDatabase;
 import org.noopi.utils.Transition;
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
+import org.noopi.utils.listeners.view.ActiveMachineListener;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
@@ -56,6 +57,7 @@ public final class Window {
 
   // Model
   private ITuringMachine machine;
+  private State initialState;
   private ITape tape;
   private ITape initialTape;
   private ITransitionHistory history;
@@ -74,6 +76,34 @@ public final class Window {
     createView();
     placeComponents();
     createController();
+    debug();
+  }
+
+  private void debug() {
+    try {
+      // Three state busy beaver
+      State state_a = states.registerEntry("a");
+      State state_b = states.registerEntry("b");
+      State state_c = states.registerEntry("c");
+      Symbol symbol_0 = symbols.registerEntry("0");
+      Symbol symbol_1 = symbols.registerEntry("1");
+      transitions.update(new Transition(state_a, symbol_0, MachineAction.TAPE_LEFT   , state_b, symbol_1));
+      transitions.update(new Transition(state_b, symbol_0, MachineAction.TAPE_LEFT   , state_c, symbol_0));
+      transitions.update(new Transition(state_c, symbol_0, MachineAction.TAPE_RIGHT  , state_c, symbol_1));
+      transitions.update(new Transition(state_a, symbol_1, MachineAction.MACHINE_STOP, state_a, symbol_1));
+      transitions.update(new Transition(state_b, symbol_1, MachineAction.TAPE_LEFT   , state_b, symbol_1));
+      transitions.update(new Transition(state_c, symbol_1, MachineAction.TAPE_RIGHT  , state_a, symbol_1));
+      for (int i = 0; i < 8; ++i) {
+        initialTape.writeSymbol(symbol_0);
+        initialTape.shift(MachineAction.TAPE_RIGHT);
+      }
+      for (int i = 0; i < 6; ++i) {
+        initialTape.shift(MachineAction.TAPE_LEFT);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(-1);
+    }
   }
 
   public void display() {
@@ -277,18 +307,38 @@ public final class Window {
       }
     });
 
+    // layout.addStepEventListener(new StepEventListener() {
+    //   @Override
+    //   public void onStep(StepEvent e) {
+    //     Symbol s = tape.readSymbol();
+    //     Transition.Right result = machine.step(s);
+    //     machine.setState(result.getState());
+    //     tape.writeSymbol(result.getSymbol());
+    //     MachineAction a = result.getMachineAction();
+    //     switch (a) {
+    //       case MACHINE_STOP: layout.showInformation("La machine s'est arretee"); break;
+    //       case TAPE_LEFT: tape.shift(MachineAction.TAPE_RIGHT); break;
+    //       case TAPE_RIGHT: tape.shift(MachineAction.TAPE_LEFT); break;
+    //     }
+    //   }
+    // });
+
     layout.addStepEventListener(new StepEventListener() {
       @Override
       public void onStep(StepEvent e) {
-        Symbol s = tape.readSymbol();
-        Transition.Right result = machine.step(s);
-        machine.setState(result.getState());
-        tape.writeSymbol(result.getSymbol());
-        MachineAction a = result.getMachineAction();
-        switch (a) {
-          case MACHINE_STOP: layout.showInformation("La machine s'est arretee"); break;
-          case TAPE_LEFT: tape.shift(MachineAction.TAPE_RIGHT); break;
-          case TAPE_RIGHT: tape.shift(MachineAction.TAPE_LEFT); break;
+        stepMachine();
+      }
+    });
+
+    layout.addActiveMachineListener(new ActiveMachineListener() {
+      @Override
+      public void onActiveStateChange(boolean active) {
+        if (active) {
+          tape.from(initialTape);
+          machine.reset(initialState);
+          layout.setMachineState(initialState);
+        } else {
+          layout.setMachineState(State.DEFAULT); // ?
         }
       }
     });
@@ -297,7 +347,7 @@ public final class Window {
       new MachineInitialStateChangedEventListener() {
         @Override
         public void onInitialStateChanged(State state) {
-          // TODO: set initial state to <code>state</code>
+          initialState = state;
         }
       }
     );
@@ -340,6 +390,18 @@ public final class Window {
     createTapeController();
     createMachineController();
     createHistoryController();
+  }
+
+  private void stepMachine() {
+    Symbol s = tape.readSymbol();
+    Transition.Right result = machine.step(s);
+    tape.writeSymbol(result.getSymbol());
+    switch (result.getMachineAction()) {
+      case MACHINE_STOP: layout.showInformation("La machine s'arrete"); break;
+      case TAPE_LEFT: tape.shift(MachineAction.TAPE_RIGHT); break;
+      case TAPE_RIGHT: tape.shift(MachineAction.TAPE_LEFT); break;
+    }
+    layout.setMachineState(result.getState());
   }
 
 }
