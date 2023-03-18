@@ -167,14 +167,16 @@ public class ModifiableList extends JPanel {
     if (model.contains(element) || element.equals("")) {
       return;
     }
-    model.add(0, element);
     try {
       vcs.fireVetoableChange(
         new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
       );
+      model.add(0, element);
       fireElementAddedEvent(field.getText());
     } catch (Exception ex) {
-      ex.printStackTrace();
+      // ex.printStackTrace();
+      // TODO: throw duplicate exception in order to catch it in frame layout or
+      //  window to show user an error message ?
     }
   }
 
