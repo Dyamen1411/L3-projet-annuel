@@ -14,6 +14,8 @@ import javax.swing.ListSelectionModel;
 
 import org.noopi.model.tape.ITape;
 import org.noopi.utils.Symbol;
+import org.noopi.utils.events.tape.TapeMovedEvent;
+import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.view.TapeUpdatedEventListener;
 
 public class GraphicTape extends JList<String> {
@@ -27,6 +29,8 @@ public class GraphicTape extends JList<String> {
   private static final Color SELECTED_COLOR_FOREGROUND = Color.BLACK;
 
   private ITape model;
+
+  private boolean offset;
 
   // ATTRIBUTS
   private DefaultListModel<String> list;
@@ -67,13 +71,21 @@ public class GraphicTape extends JList<String> {
         }
       }
     });
+
+    tape.addTapeMovedEventListener(new TapeMovedEventListener() {
+      @Override
+      public void onTapeMoved(TapeMovedEvent e) {
+        offset ^= true;
+      }
+    });
+
+    offset = false;
   }
 
   // COMMANDES
 
   @Override
   public void paintComponent(Graphics g) {
-    super.paintComponent(g);
     int w = (getWidth() / CELL_COUNT);
     int h = getHeight();
     w = h = Math.min(w, h);
@@ -81,37 +93,39 @@ public class GraphicTape extends JList<String> {
     setFixedCellHeight(h);
     setPreferredSize(new Dimension(CELL_COUNT * w, h));
     setSize(CELL_COUNT * w, h);
+    super.paintComponent(g);
   }
 
   // TYPE IMBRIQUE
 
-  class TapeCellRenderer extends JLabel implements ListCellRenderer<String> {
-
+  private class TapeCellRenderer
+    extends JLabel
+    implements ListCellRenderer<String>
+  {
 
     public TapeCellRenderer(int cellW, int cellH) {
-        setOpaque(true);
-        setPreferredSize(new Dimension(cellW, cellH));
-        setHorizontalAlignment(CENTER);
+      setOpaque(true);
+      setPreferredSize(new Dimension(cellW, cellH));
+      setHorizontalAlignment(CENTER);
     }
 
-    public Component getListCellRendererComponent(JList<? extends String> list,
-                                                  String value,
-                                                  int index,
-                                                  boolean isSelected,
-                                                  boolean cellHasFocus) {
-
-        
-        setText(value);
-
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        setBackground(COLOR_TAB[index % COLOR_TAB.length]);
-        if(selectable && isSelected){
-          setBackground(SELECTED_COLOR);
-          setForeground(SELECTED_COLOR_FOREGROUND);
-        }
-
-        return this;
+    public Component getListCellRendererComponent(
+      JList<? extends String> list,
+      String value,
+      int index,
+      boolean isSelected,
+      boolean cellHasFocus
+    ) {
+      index += GraphicTape.this.offset ? 1 : 0;
+      setText(value);
+      setBorder(BorderFactory.createLineBorder(Color.BLACK));
+      setBackground(COLOR_TAB[index % COLOR_TAB.length]);
+      if(selectable && isSelected){
+        setBackground(SELECTED_COLOR);
+        setForeground(SELECTED_COLOR_FOREGROUND);
+      }
+      return this;
     }
-}
+  }
 }
 
