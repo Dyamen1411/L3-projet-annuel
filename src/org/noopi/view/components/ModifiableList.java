@@ -176,29 +176,6 @@ public class ModifiableList extends JPanel {
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
 
-  public void setActive(boolean active){
-    addButton.setEnabled(active);
-    removeButton.setEnabled(active);
-    field.setEditable(active);
-  }
-  
-  private void addRule(){
-    String element = field.getText();
-    if (model.contains(element) || element.equals("")) {
-      return;
-    }
-    model.add(0, element);
-    try {
-      vcs.fireVetoableChange(
-        new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
-      );
-      fireElementAddedEvent(field.getText());
-      field.setText("");
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
   protected void fireElementAddedEvent(String s) {
     Object[] list = listenerList.getListenerList();
     boolean b = false;
