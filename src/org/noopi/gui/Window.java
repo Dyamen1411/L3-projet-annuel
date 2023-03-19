@@ -76,7 +76,13 @@ public final class Window {
     createView();
     placeComponents();
     createController();
-    debug();
+  }
+
+  public void display() {
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
+    frame.pack();
   }
 
   private void debug() {
@@ -106,13 +112,6 @@ public final class Window {
     }
   }
 
-  public void display() {
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setLocationRelativeTo(null);
-    frame.setVisible(true);
-    frame.pack();
-  }
-
   private void createModel() {
     symbols = new SymbolDatabase();
     states = new StateDatabase();
@@ -128,6 +127,7 @@ public final class Window {
     tape = new Tape();
     machine = new TuringMachine(transitions);
     history = new TransitionHistory();
+    debug();
   }
 
   private void createView() {
