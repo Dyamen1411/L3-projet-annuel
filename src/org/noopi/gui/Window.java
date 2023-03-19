@@ -19,8 +19,10 @@ import org.noopi.utils.events.history.HistoryPushEvent;
 import org.noopi.utils.events.history.HistoryResetEvent;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
+import org.noopi.utils.events.view.RunEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
+import org.noopi.utils.events.view.StopEvent;
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.StateDatabase;
@@ -38,8 +40,10 @@ import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;
 import org.noopi.utils.listeners.view.SpeedChangeEventListener;
 import org.noopi.utils.listeners.view.StepEventListener;
+import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
+import org.noopi.utils.listeners.view.RunEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
@@ -121,7 +125,10 @@ public final class Window {
     machineTimer = new Timer(0, new ActionListener(){
       @Override
       public void actionPerformed(ActionEvent e) {
-        machine.step(tape.readSymbol());
+        stepMachine();
+        if (machine.isDone()) {
+          machineTimer.stop();
+        }
       }
     });
     tape = new Tape();
@@ -307,22 +314,6 @@ public final class Window {
       }
     });
 
-    // layout.addStepEventListener(new StepEventListener() {
-    //   @Override
-    //   public void onStep(StepEvent e) {
-    //     Symbol s = tape.readSymbol();
-    //     Transition.Right result = machine.step(s);
-    //     machine.setState(result.getState());
-    //     tape.writeSymbol(result.getSymbol());
-    //     MachineAction a = result.getMachineAction();
-    //     switch (a) {
-    //       case MACHINE_STOP: layout.showInformation("La machine s'est arretee"); break;
-    //       case TAPE_LEFT: tape.shift(MachineAction.TAPE_RIGHT); break;
-    //       case TAPE_RIGHT: tape.shift(MachineAction.TAPE_LEFT); break;
-    //     }
-    //   }
-    // });
-
     layout.addStepEventListener(new StepEventListener() {
       @Override
       public void onStep(StepEvent e) {
@@ -351,6 +342,20 @@ public final class Window {
         }
       }
     );
+
+    layout.addRunEventListener(new RunEventListener() {
+      @Override
+      public void onRun(RunEvent e) {
+        if (!machineTimer.isRunning()) machineTimer.start();
+      }
+    });
+
+    layout.addStopEventListener(new StopEventListener() {
+      @Override
+      public void onStop(StopEvent e) {
+        if (machineTimer.isRunning()) machineTimer.stop();
+      }
+    });
   }
 
   private void createHistoryController() {
