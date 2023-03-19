@@ -20,7 +20,6 @@ public class GraphicTape extends JList<String> {
 
   public static final int CELL_COUNT = 9;
 
-  private static final String DEFAULT_SYMBOL = Symbol.DEFAULT.toString();
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
   private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.GRAY};
