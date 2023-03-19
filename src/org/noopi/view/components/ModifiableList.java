@@ -2,8 +2,8 @@ package org.noopi.view.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
@@ -59,7 +59,6 @@ public class ModifiableList extends JPanel {
     listenerList = new EventListenerList();
     vcs = new VetoableChangeSupport(this);
 
-
     JPanel header = new JPanel();
     header.add(field);
     header.add(addButton);
@@ -79,42 +78,28 @@ public class ModifiableList extends JPanel {
       }
     });
 
-    field.addKeyListener(new KeyListener() {
-
-      @Override
-      public void keyPressed(KeyEvent e) {
-      }
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-      }
-
+    field.addKeyListener(new KeyAdapter() {
       @Override
       public void keyTyped(KeyEvent e) {
         if(e.getKeyChar() == '\n'){
-          addElement();
+          addElement(field.getText());
         }
       }
-      
     });
 
     addButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        addElement();
+        addElement(field.getText());
       }
     });
 
     removeButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        removeElement();
+        removeElement(field.getText());
       }
     });
-  }
-
-  public void pushElement(String e) {
-    model.add(0, e);
   }
 
   public void addElements(String[] l) {
@@ -123,7 +108,7 @@ public class ModifiableList extends JPanel {
       return;
     }
     for (String e : l) {
-      pushElement(e);
+      addElement(e);
     }
   }
 
@@ -134,6 +119,41 @@ public class ModifiableList extends JPanel {
 
   public void clear() {
     model.clear();
+  }
+
+  public void setActive(boolean active){
+    addButton.setEnabled(active);
+    removeButton.setEnabled(active);
+    field.setEditable(active);
+  }
+
+  public void addElement(String element) {
+    if (model.contains(element) || element.equals("")) {
+      return;
+    }
+    try {
+      vcs.fireVetoableChange(
+        new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
+      );
+      model.add(0, element);
+      fireElementAddedEvent(element);
+    } catch (Exception ex) {
+      // ex.printStackTrace();
+      // TODO: throw duplicate exception in order to catch it in frame layout or
+      //  window to show user an error message ?
+    }
+  }
+
+  public void removeElement(String element) {
+    try {
+      vcs.fireVetoableChange(
+        new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
+      );
+      model.removeElement(element);
+      fireElementRemovedEvent(element);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   public void addElementAddedEventListener(ElementAddedEventListener l) {
@@ -156,43 +176,6 @@ public class ModifiableList extends JPanel {
     vcs.addVetoableChangeListener(PROPERTY_REM_EVENT, l);
   }
 
-  public void setActive(boolean active){
-    addButton.setEnabled(active);
-    removeButton.setEnabled(active);
-    field.setEditable(active);
-  }
-
-  private void addElement() {
-    String element = field.getText();
-    if (model.contains(element) || element.equals("")) {
-      return;
-    }
-    try {
-      vcs.fireVetoableChange(
-        new PropertyChangeEvent(this, PROPERTY_ADD_EVENT, "", element)
-      );
-      model.add(0, element);
-      fireElementAddedEvent(field.getText());
-    } catch (Exception ex) {
-      // ex.printStackTrace();
-      // TODO: throw duplicate exception in order to catch it in frame layout or
-      //  window to show user an error message ?
-    }
-  }
-
-  private void removeElement() {
-    String element = field.getText();
-    try {
-      vcs.fireVetoableChange(
-        new PropertyChangeEvent(this, PROPERTY_REM_EVENT, element, "")
-      );
-      model.removeElement(element);
-      fireElementRemovedEvent(element);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
   protected void fireElementAddedEvent(String s) {
     Object[] list = listenerList.getListenerList();
     boolean b = false;
@@ -206,7 +189,6 @@ public class ModifiableList extends JPanel {
       ((ElementAddedEventListener) list[i + 1]).onElementAdded(addEvent);
     }
   }
-
 
   protected void fireElementRemovedEvent(String s) {
     Object[] list = listenerList.getListenerList();
