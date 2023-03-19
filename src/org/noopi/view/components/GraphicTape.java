@@ -72,7 +72,8 @@ public class GraphicTape extends JList<String> {
   // COMMANDES
 
   @Override
-  public void paint(Graphics g) {
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
     int w = (getWidth() / CELL_COUNT);
     int h = getHeight();
     w = h = Math.min(w, h);
@@ -80,7 +81,6 @@ public class GraphicTape extends JList<String> {
     setFixedCellHeight(h);
     setPreferredSize(new Dimension(CELL_COUNT * w, h));
     setSize(CELL_COUNT * w, h);
-    super.paint(g);
   }
 
   // TYPE IMBRIQUE

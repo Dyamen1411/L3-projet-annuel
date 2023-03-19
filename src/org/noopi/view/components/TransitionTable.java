@@ -64,6 +64,8 @@ public class TransitionTable extends JPanel {
     table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    table.setCellSelectionEnabled(true);
 
     table.getTableHeader().setReorderingAllowed(false);
 
