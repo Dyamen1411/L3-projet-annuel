@@ -45,8 +45,9 @@ public class GraphicTape extends JList<String> {
     this.selectable = selectable;
 
     list = new DefaultListModel<>();
-    for (int i = CELL_COUNT; i > 0; --i) {
-      list.add(0, DEFAULT_SYMBOL);
+    Symbol[] symbols = tape.getSlice((CELL_COUNT - 1) / 2);
+    for (int i = 0; i < CELL_COUNT; ++i) {
+      list.add(i, symbols[i].toString());
     }
     setModel(list);
     setCellRenderer(new TapeCellRenderer(cellWidth, cellHeight));
