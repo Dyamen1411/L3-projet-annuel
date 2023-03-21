@@ -2,9 +2,6 @@ package org.noopi.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -171,33 +168,6 @@ public final class Window {
         }
       }
     });
-
-    layout.addSymbolRegisteredVetoableChangeListener(
-      new VetoableChangeListener() {
-        @Override
-        public void vetoableChange(PropertyChangeEvent e)
-          throws PropertyVetoException
-        {
-          String newValue = (String) e.getNewValue();
-          if (symbols.contains(newValue)) {
-            throw new PropertyVetoException("Symbol already contained", e);
-          }
-        }
-      }
-    );
-
-    layout.addSymbolUnregisteredVetoableChangeListener(
-      new VetoableChangeListener() {
-        @Override
-        public void vetoableChange(PropertyChangeEvent evt)
-          throws PropertyVetoException
-        {
-          if (!symbols.contains((String) evt.getOldValue())) {
-            throw new PropertyVetoException("Unknown symbol", evt);
-          }
-        }
-      }
-    );
   }
 
   private void createStateController() {
@@ -224,33 +194,6 @@ public final class Window {
         }
       }
     });
-
-    layout.addStateRegisteredVetoableChangeListener(
-      new VetoableChangeListener() {
-        @Override
-        public void vetoableChange(PropertyChangeEvent e)
-          throws PropertyVetoException
-        {
-          String newValue = (String) e.getNewValue();
-          if (states.contains(newValue)) {
-            throw new PropertyVetoException("State already contained", e);
-          }
-        }
-      }
-    );
-
-    layout.addStateUnregisteredVetoableChangeListener(
-      new VetoableChangeListener() {
-        @Override
-        public void vetoableChange(PropertyChangeEvent evt)
-          throws PropertyVetoException
-        {
-          if (!states.contains((String) evt.getOldValue())) {
-            throw new PropertyVetoException("Unknown State", evt);
-          }
-        }
-      }
-    );
   }
 
   private void createInitialTapeController() {

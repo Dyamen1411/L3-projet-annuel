@@ -1,7 +1,5 @@
 package org.noopi.view;
 
-import java.beans.VetoableChangeListener;
-
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
@@ -204,29 +202,5 @@ public interface IFrameLayout {
    * @param l
    */
   void addStateUnRegisteredEventListener(ElementRemovedEventListener l);
-
-  /**
-   * TODO: decribe
-   * @param l
-   */
-  void addSymbolRegisteredVetoableChangeListener(VetoableChangeListener l);
-
-  /**
-   * TODO: decribe
-   * @param l
-   */
-  void addStateRegisteredVetoableChangeListener(VetoableChangeListener l);
-
-  /**
-   * TODO: decribe
-   * @param l
-   */
-  void addSymbolUnregisteredVetoableChangeListener(VetoableChangeListener l);
-
-  /**
-   * TODO: decribe
-   * @param l
-   */
-  void addStateUnregisteredVetoableChangeListener(VetoableChangeListener l);
 
 }

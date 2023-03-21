@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.VetoableChangeListener;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.events.tape.TapeMovedEvent;
@@ -56,9 +55,9 @@ import org.noopi.utils.MachineAction;
 import org.noopi.utils.State;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.Transition;
+import org.noopi.view.components.DatabaseList;
 import org.noopi.view.components.GBC;
 import org.noopi.view.components.GraphicTape;
-import org.noopi.view.components.ModifiableList;
 import org.noopi.view.components.TransitionTable;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 import org.noopi.view.components.model.GraphicArrow;
@@ -105,8 +104,8 @@ public class FrameLayout implements IFrameLayout {
   private Map<Item, JMenuItem> menuItems;
   private TransitionTableModel transitions;
   private TransitionTable transitionTable;
-  private ModifiableList symbolList;
-  private ModifiableList stateList;
+  private DatabaseList<Symbol> symbolList;
+  private DatabaseList<State> stateList;
   private JButton initialTapeLeft;
   private JButton initialTapeRight;
   private JComboBox<String> initialTapeSymbolSelector;
@@ -332,34 +331,6 @@ public class FrameLayout implements IFrameLayout {
     stateList.addElementRemovedEventListener(l);
   }
 
-  public void addSymbolRegisteredVetoableChangeListener(
-    VetoableChangeListener l
-  ) {
-    assert l != null;
-    symbolList.addElementAddedVetoableChangeListener(l);
-  }
-
-  public void addStateRegisteredVetoableChangeListener(
-    VetoableChangeListener l
-  ) {
-    assert l != null;
-    stateList.addElementAddedVetoableChangeListener(l);
-  }
-
-  public void addSymbolUnregisteredVetoableChangeListener(
-    VetoableChangeListener l
-  ) {
-    assert l != null;
-    symbolList.addElementRemovedVetoableChangeListener(l);
-  }
-
-  public void addStateUnregisteredVetoableChangeListener(
-    VetoableChangeListener l
-  ) {
-    assert l != null;
-    stateList.addElementRemovedVetoableChangeListener(l);
-  }
-
   public void addActiveMachineListener(ActiveMachineListener l){
     assert l != null;
     isActiveCheckBox.addActionListener(new ActionListener() {
@@ -401,8 +372,14 @@ public class FrameLayout implements IFrameLayout {
     stopButton = new JButton("Stopper");
     startButton = new JButton("Lancer");
     stepButton = new JButton("Pas à pas");
-    symbolList = new ModifiableList("Symboles", "Ajouter", "Retirer");
-    stateList = new ModifiableList("Etats", "Ajouter", "Retirer");
+    symbolList = new DatabaseList<>(
+      "Symboles", "Ajouter", "Retirer",
+      transitions.getSymbolDatabase()
+    );
+    stateList = new DatabaseList<>(
+      "Etats", "Ajouter", "Retirer",
+      transitions.getStatesDatabase()
+    );
     transitionTable = new TransitionTable(transitions);
     isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
 
