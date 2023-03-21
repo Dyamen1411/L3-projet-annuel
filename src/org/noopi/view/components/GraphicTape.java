@@ -24,13 +24,13 @@ public class GraphicTape extends JList<String> {
 
   private static final int START_INDEX = 0;
   private static final int END_INDEX = CELL_COUNT - 1;
-  private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.GRAY};
+  private static final Color COLOR_TAB[] = {Color.LIGHT_GRAY, Color.GRAY, Color.DARK_GRAY};
   private static final Color SELECTED_COLOR = Color.BLUE;
   private static final Color SELECTED_COLOR_FOREGROUND = Color.BLACK;
 
   private ITape model;
 
-  private boolean offset;
+  private int offset;
 
   // ATTRIBUTS
   private DefaultListModel<String> list;
@@ -75,11 +75,16 @@ public class GraphicTape extends JList<String> {
     tape.addTapeMovedEventListener(new TapeMovedEventListener() {
       @Override
       public void onTapeMoved(TapeMovedEvent e) {
-        offset ^= true;
+        switch (e.getDirection()) {
+          case TAPE_LEFT: --offset; break;
+          case TAPE_RIGHT: ++offset; break;
+          default: return;
+        }
+        offset %= COLOR_TAB.length;
       }
     });
 
-    offset = false;
+    offset = 0;
   }
 
   // COMMANDES
@@ -116,10 +121,9 @@ public class GraphicTape extends JList<String> {
       boolean isSelected,
       boolean cellHasFocus
     ) {
-      index += GraphicTape.this.offset ? 1 : 0;
       setText(value);
       setBorder(BorderFactory.createLineBorder(Color.BLACK));
-      setBackground(COLOR_TAB[index % COLOR_TAB.length]);
+      setBackground(COLOR_TAB[(COLOR_TAB.length + index + offset) % COLOR_TAB.length]);
       if(selectable && isSelected){
         setBackground(SELECTED_COLOR);
         setForeground(SELECTED_COLOR_FOREGROUND);
