@@ -1,5 +1,6 @@
 package org.noopi.view.components;
 
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -8,7 +9,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -48,7 +48,7 @@ public class ModifiableList extends JPanel {
     String addButtonText,
     String removeButtonText
   ) {
-    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    setLayout(new GridBagLayout());
 
     field = new HintableTextField("", hint, FIELD_DISPLAYABLE_WIDTH);
     addButton = new JButton(addButtonText);
@@ -59,13 +59,10 @@ public class ModifiableList extends JPanel {
     listenerList = new EventListenerList();
     vcs = new VetoableChangeSupport(this);
 
-    JPanel header = new JPanel();
-    header.add(field);
-    header.add(addButton);
-    header.add(removeButton);
-
-    add(header);
-    add(new JScrollPane(list));
+    add(field, new GBC(0, 0, 1, 1).weight(1, 1));
+    add(addButton, new GBC(1, 0, 1, 1).weight(1, 1));
+    add(removeButton, new GBC(2, 0, 1, 1).weight(1, 1));
+    add(new JScrollPane(list), new GBC(0, 1, 3, 1).fill(GBC.HORIZONTAL).weight(1, 1));
 
     // FIX: if too quick, text field does not update
     list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {

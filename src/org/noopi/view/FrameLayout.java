@@ -430,31 +430,28 @@ public class FrameLayout implements IFrameLayout {
   private void placeComponent() {
     final Border border = BorderFactory.createLineBorder(Color.GRAY, 3);
     mainPanel.add(createTransitionsGUI(border), new GBC(0, 0, 1, 1).fill(GBC.BOTH).weight(3, 1));
-    mainPanel.add(createMachineGUI(border), new GBC(0, 1, 1, 1).fill(GBC.BOTH).weight(0, 2));
-    mainPanel.add(createControlsGUI(border), new GBC(0, 2, 1, 1).fill(GBC.BOTH).weight(0, 2));
+    mainPanel.add(createMachineGUI(border), new GBC(0, 1, 1, 1).fill(GBC.BOTH).weight(0, 0.5));
+    mainPanel.add(createControlsGUI(border), new GBC(0, 2, 1, 1).fill(GBC.BOTH).weight(0, 0.5));
     mainPanel.add(createHistoryGUI(border), new GBC(1, 0, 1, 3).fill(GBC.BOTH).weight(1, 0));
   }
 
   private JPanel createTransitionsGUI(Border border) {
-    JPanel transitions = new JPanel();
+    JPanel transitions = new JPanel(new GridBagLayout());
     transitions.setBorder(BorderFactory.createTitledBorder(border, "REGLES"));
 
-    JPanel symbolStateEditor = new JPanel();
-    { //--
-      symbolStateEditor.add(symbolList);
-      symbolStateEditor.add(stateList);
-    } //--
-    transitions.add(symbolStateEditor);
-
-    transitions.add(transitionTable);
+    transitions.add(symbolList, new GBC(0, 0, 1, 1).fill(GBC.HORIZONTAL));
+    transitions.add(new JLabel(" "), new GBC(1, 0, 1, 1));
+    transitions.add(stateList, new GBC(2, 0, 1, 1).fill(GBC.HORIZONTAL).anchor(GBC.CENTER));
+    transitions.add(new JLabel(" "), new GBC(3, 0, 1, 1));
+    transitions.add(transitionTable, new GBC(4, 0, 1, 1).fill(GBC.HORIZONTAL).anchor(GBC.EAST));
 
     return transitions;
   }
 
   private JPanel createMachineGUI(Border border) {
-    JPanel machine = new JPanel(new GridLayout(0, 1));
+    
+    JPanel machine = new JPanel(new GridBagLayout());
     machine.setBorder(BorderFactory.createTitledBorder(border, "REPRESENTATION GRAPHIQUE"));
-
     JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
     { //--
       JLabel l = new JLabel("Etat courant de la machine : ");
@@ -462,20 +459,9 @@ public class FrameLayout implements IFrameLayout {
       p.add(l);
       p.add(currentState);
     } //--
-    machine.add(p);
-    
-    p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    { //--
-      p.add(tape);
-    } //--
-    machine.add(p);
-
-    p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    { //--
-      p.add(new GraphicArrow());
-    } //--
-    machine.add(p);
-
+    machine.add(p, new GBC(0, 0, 1, 1));
+    machine.add(tape, new GBC(0, 1, 1, 1).anchor(GBC.CENTER));
+    machine.add(new GraphicArrow(), new GBC(0, 2, 1, 1).anchor(GBC.CENTER));
     
     return machine;
   }
