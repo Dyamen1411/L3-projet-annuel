@@ -77,6 +77,7 @@ public final class Window {
     createView();
     placeComponents();
     createController();
+    frame.revalidate();
   }
 
   public void display() {
