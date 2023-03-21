@@ -34,8 +34,6 @@ public class TransitionTableModel extends AbstractTableModel {
         }      
       }
     );
-
-    
   }
 
   @Override
@@ -51,7 +49,7 @@ public class TransitionTableModel extends AbstractTableModel {
   @Override
   public String getColumnName(int columnIndex) {
     return columnIndex == 0
-      ? "Tape Symbol"
+      ? "Symboles"
       : states.values()[columnIndex - 1].toString();
   }
 

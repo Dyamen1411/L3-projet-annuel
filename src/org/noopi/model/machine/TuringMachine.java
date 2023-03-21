@@ -49,8 +49,6 @@ public final class TuringMachine implements ITuringMachine {
     if (v.getMachineAction() == MachineAction.MACHINE_STOP) {
       done = true;
     }
-    // DEBUG
-    System.out.println(v + " ==> " + done);
     return v.copy();
   }
 

@@ -144,7 +144,6 @@ public final class Tape extends AbstractTape {
     Cell c = currentCell;
     for (int i = 1; i < cellsToTheLeft; ++i) {
       c = c.prev;
-      System.out.println(i);
       if (c.symbol.equals(s)) {
         c.symbol = Symbol.DEFAULT;
         update = true;

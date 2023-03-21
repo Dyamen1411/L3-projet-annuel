@@ -86,6 +86,7 @@ public final class Window {
     frame.pack();
   }
 
+  @SuppressWarnings("unused")
   private void debug() {
     try {
       // Three state busy beaver
@@ -131,7 +132,8 @@ public final class Window {
     tape = new Tape();
     machine = new TuringMachine(transitions);
     history = new TransitionHistory();
-    debug();
+    // DEBUG
+    // debug();
   }
 
   private void createView() {
@@ -148,8 +150,15 @@ public final class Window {
     layout.addSymbolRegisteredEventListener(new ElementAddedEventListener() {
       @Override
       public void onElementAdded(ElementAddedEvent e) {
+        String element = e.getElement();
         try {
-          symbols.registerEntry(e.getElement());
+          if (!symbols.contains(element))
+            symbols.registerEntry(element);
+          else
+            // TODO: add accents
+            layout.showError(
+              "Le symbole \"" + element + "\" est deja entregistre !"
+            );
         } catch (DatabaseDuplicateException e1) {
           // Should never happen
           e1.printStackTrace();
@@ -160,8 +169,15 @@ public final class Window {
     layout.addSymbolUnRegisteredEventListener(new ElementRemovedEventListener() {
       @Override
       public void onElementRemoved(ElementRemovedEvent e) {
+        String element = e.getElement();
         try {
-          symbols.unregisterEntry(e.getElement());
+          if (symbols.contains(element))
+            symbols.unregisterEntry(e.getElement());
+          else
+            // TODO: add accents
+            layout.showError(
+              "Le symbole \"" + element + "\" n'a jamais ete enregistre !"
+            );
         } catch (DatabaseMissingEntryException e1) {
           // Should never happen
           e1.printStackTrace();
@@ -174,8 +190,15 @@ public final class Window {
     layout.addStateRegisteredEventListener(new ElementAddedEventListener() {
       @Override
       public void onElementAdded(ElementAddedEvent e) {
+        String element = e.getElement();
         try {
-          states.registerEntry(e.getElement());
+          if (!states.contains(element))
+            states.registerEntry(element);
+          else
+            // TODO: add accents
+            layout.showError(
+              "L'etat \"" + element + "\" est deja entregistre !"
+            );
         } catch (DatabaseDuplicateException e1) {
           // Should never happen
           e1.printStackTrace();
@@ -186,8 +209,15 @@ public final class Window {
     layout.addStateUnRegisteredEventListener(new ElementRemovedEventListener() {
       @Override
       public void onElementRemoved(ElementRemovedEvent e) {
+        String element = e.getElement();
         try {
-          states.unregisterEntry(e.getElement());
+          if (states.contains(element))
+            states.unregisterEntry(e.getElement());
+          else
+            // TODO: add accents
+            layout.showError(
+              "L'etat \"" + element + "\" n'a jamais ete enregistre !"
+            );
         } catch (DatabaseMissingEntryException e1) {
           // Should never happen
           e1.printStackTrace();
@@ -201,12 +231,6 @@ public final class Window {
       @Override
       public void onTapeShifted(MachineAction a) {
         initialTape.shift(a);
-        // initialTape.getSlice(9);
-        // switch (a) {
-        //   case TAPE_LEFT: layout.shiftInitialTapeLeft(); break;
-        //   case TAPE_RIGHT: layout.shiftInitialTapeRight(); break;
-        //   default: /* error, should never happen */ break;
-        // }
       }
     });
 
@@ -218,11 +242,9 @@ public final class Window {
             return;
           }
           initialTape.writeSymbol(s);
-          // layout.setSymbolOnInitialTape(s);
         }
       }
     );
-
   }
 
   private void createTapeController() {
@@ -243,7 +265,6 @@ public final class Window {
         }
       }
     );
-
   }
 
   private void createMachineController() {
@@ -303,31 +324,24 @@ public final class Window {
 
   private void createHistoryController() {
     history.addHistoryPushEventListener(new HistoryPushEventListener() {
-
       @Override
       public void onHistoryPush(HistoryPushEvent e) {
         // TODO: fix
-        // layout.addRule(null);
       }
     });
 
     history.addHistoryPopEventListener(new HistoryPopEventListener() {
-
       @Override
       public void onHistoryPop(HistoryPopEvent e) {
         // TODO: fix
-        // layout.removeRule(null);
       }
-      
     });
 
     history.addHistoryResetEventListener(new HistoryResetEventListener() {
-
       @Override
       public void onHistoryReset(HistoryResetEvent e) {
-        // layout.resetRules();
+        // TODO: fix
       }
-      
     });
   }
 
@@ -351,5 +365,4 @@ public final class Window {
     }
     layout.setMachineState(result.getState());
   }
-
 }

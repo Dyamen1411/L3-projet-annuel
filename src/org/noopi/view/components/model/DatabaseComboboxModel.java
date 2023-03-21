@@ -9,8 +9,6 @@ import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-// TODO: There is a bug. When the user deletes an entry from the database but
-// it's selected by a combobox, the combobox does not update.
 public class DatabaseComboboxModel<T>
   extends AbstractListModel<T>
   implements ComboBoxModel<T>
@@ -26,7 +24,7 @@ public class DatabaseComboboxModel<T>
     d.addDatabaseRegisterEventListener(new DatabaseRegisterEventListener<E>() {
       @Override
       public void onRegisterEvent(DatabaseRegisterEvent<E> e) {
-        fireIntervalAdded(this, d.size() - 1, d.size());
+        fireContentsChanged(this, 0, Math.max(0, d.size()));
       }
     });
     d.addDatabaseUnregisterEventListener(
@@ -39,7 +37,7 @@ public class DatabaseComboboxModel<T>
           ) {
             setSelectedItem(null);
           }
-          fireIntervalAdded(this, d.size() - 1, d.size() - 1);
+          fireContentsChanged(this, 0, Math.max(0, d.size()));
         }
       }
     );

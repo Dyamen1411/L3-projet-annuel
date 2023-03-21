@@ -198,10 +198,9 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public void showInformation(String message) {
-    assert message != null;
     JOptionPane.showMessageDialog(
       mainPanel,
-      message,
+      message == null ? "" : message,
       "Information",
       JOptionPane.INFORMATION_MESSAGE
     );
@@ -209,8 +208,11 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public void showError(String message) {
-    throw new UnsupportedOperationException(
-      "showError is not implemented yet."
+    JOptionPane.showMessageDialog(
+      mainPanel,
+      message == null ? "" : message,
+      "Erreur",
+      JOptionPane.ERROR_MESSAGE
     );
   }
 
