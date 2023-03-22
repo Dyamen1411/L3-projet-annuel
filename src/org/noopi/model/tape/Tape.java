@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.Symbol;
-import org.noopi.utils.SymbolDatabase;
 import org.noopi.utils.Utils;
 
 public final class Tape extends AbstractTape {
