@@ -1,7 +1,12 @@
 package org.noopi.model.tape;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.Symbol;
+import org.noopi.utils.SymbolDatabase;
+import org.noopi.utils.Utils;
 
 public final class Tape extends AbstractTape {
 
@@ -22,6 +27,7 @@ public final class Tape extends AbstractTape {
   @Override
   public void reset(Symbol[] symbols) {
     assert symbols != null;
+    assert symbols.length > 0;
     cellsToTheLeft = 0;
     cellsToTheRight = symbols.length - 1;
     for (Symbol s : symbols) {
@@ -102,6 +108,20 @@ public final class Tape extends AbstractTape {
     }
     span[spanWidth] = currentCell.symbol;
     return span;
+  }
+
+  @Override
+  public void save(DataOutputStream dos, Symbol[] symbols) throws IOException {
+    Cell o = currentCell;
+    for (int i = 0; i < cellsToTheLeft; ++i) {
+      o = o.prev;
+    }
+    dos.writeInt(cellsToTheLeft + cellsToTheRight + 1);
+    dos.writeInt(cellsToTheRight + 1);
+    for (int i = 0; i <= cellsToTheLeft + cellsToTheRight; ++i) {
+      dos.writeInt(Utils.indexOf(symbols, o.symbol));
+      o = o.next;
+    }
   }
 
   public void from(ITape o) {

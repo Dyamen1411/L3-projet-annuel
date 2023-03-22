@@ -1,5 +1,7 @@
 package org.noopi.view;
 
+import java.io.File;
+
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
@@ -86,6 +88,16 @@ public interface IFrameLayout {
    * @param message The message to show.
    */
   void showError(String message);
+
+  /**
+   * TODO: describe
+   */
+  File openFile(File root);
+
+  /**
+   * TODO: describe
+   */
+  File selectFileToSave(File root);
 
   //------------------------//
   //--- Listener binding ---//

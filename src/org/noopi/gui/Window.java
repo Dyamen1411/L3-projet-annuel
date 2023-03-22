@@ -2,6 +2,14 @@ package org.noopi.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -16,7 +24,10 @@ import org.noopi.utils.events.history.HistoryPushEvent;
 import org.noopi.utils.events.history.HistoryResetEvent;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
+import org.noopi.utils.events.view.NewFileEvent;
+import org.noopi.utils.events.view.OpenFileEvent;
 import org.noopi.utils.events.view.RunEvent;
+import org.noopi.utils.events.view.SaveEvent;
 import org.noopi.utils.events.view.SpeedChangeEvent;
 import org.noopi.utils.events.view.StepEvent;
 import org.noopi.utils.events.view.StopEvent;
@@ -26,6 +37,7 @@ import org.noopi.utils.StateDatabase;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.SymbolDatabase;
 import org.noopi.utils.Transition;
+import org.noopi.utils.Utils;
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.listeners.tape.TapeInitializationEventListener;
 import org.noopi.utils.listeners.view.ActiveMachineListener;
@@ -40,7 +52,10 @@ import org.noopi.utils.listeners.view.StepEventListener;
 import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.InitialTapeSymbolWrittenEventListener;
 import org.noopi.utils.listeners.view.MachineInitialStateChangedEventListener;
+import org.noopi.utils.listeners.view.NewFileEventListener;
+import org.noopi.utils.listeners.view.OpenFileEventListener;
 import org.noopi.utils.listeners.view.RunEventListener;
+import org.noopi.utils.listeners.view.SaveEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.TransitionTableModel;
 import org.noopi.model.history.ITransitionHistory;
@@ -352,6 +367,55 @@ public final class Window {
     createTapeController();
     createMachineController();
     createHistoryController();
+
+    layout.addOpenFileEventListener(new OpenFileEventListener() {
+      @Override
+      public void onFileOpened(OpenFileEvent e) {
+        File f = layout.openFile(new File("."));
+        if (f == null || !f.exists() || f.isDirectory()) {
+          // TODO: accents
+          layout.showError("Le fichier selectionne est incorrect !");
+          return;
+        }
+        if (loadFile(f)) {
+          layout.showError("Impossible d'ouvrir le fichier !");
+          return;
+        }
+      }
+    });
+
+    layout.addSaveEventListener(new SaveEventListener() {
+      @Override
+      public void onSave(SaveEvent e) {
+        File f = layout.selectFileToSave(new File("."));
+        if (f == null || f.isDirectory()) {
+          // TODO: accents
+          layout.showError("Le fichier selectionne est incorrect !");
+          return;
+        }
+        if (saveFile(f)) {
+          layout.showError("Impossible d'ouvrir le fichier !");
+          return;
+        }
+      }
+    });
+
+    layout.addNewFileEventListener(new NewFileEventListener() {
+      @Override
+      public void onNewFile(NewFileEvent e) {
+        // TODO: accents
+        if (
+          (symbols.size() != 0 || states.size() != 0)
+          && !layout.showConfirmDialog("Vous allez perdre votre travail.\nEtes vous sur ?")
+        ) {
+          return;
+        }
+        tape.reset();
+        initialTape.reset();
+        symbols.clear();
+        states.clear();
+      }
+    });
   }
 
   private void stepMachine() {
@@ -364,5 +428,133 @@ public final class Window {
       case TAPE_RIGHT: tape.shift(MachineAction.TAPE_LEFT); break;
     }
     layout.setMachineState(result.getState());
+  }
+
+  private boolean loadFile(File f) {
+    symbols.clear();
+    states.clear();
+    tape.reset();
+    initialTape.reset();
+    initialState = null;
+    try (
+      DataInputStream dis = new DataInputStream(new FileInputStream(f))
+    ) {
+      String[] symbols = new String[dis.readInt()];
+      String[] states = new String[dis.readInt()];
+      Symbol[] actualSymbols = new Symbol[symbols.length];
+      State[] actualStates = new State[states.length];
+
+      // Symbols
+      for (int i = 0; i < symbols.length; ++i) {
+        String symbol = dis.readUTF();
+        if (
+          symbol == null
+          || symbol.equals("")
+          || this.symbols.contains(symbol)
+        )
+        { throw new Exception("duplicate symbol"); }
+        symbols[i] = symbol;
+        actualSymbols[i] = this.symbols.registerEntry(symbol);
+      }
+
+      // States
+      for (int i = 0; i < states.length; ++i) {
+        String state = dis.readUTF();
+        if (
+          state == null
+          || state.equals("")
+          || this.states.contains(state)
+        )
+        { throw new Exception("duplicate state"); }
+        states[i] = state;
+        actualStates[i] = this.states.registerEntry(state);
+      }
+
+      // Tape
+      int tapeSize = dis.readInt();
+      int tapeOffset = dis.readInt();
+      System.out.println("tape offset : " + tapeOffset);
+
+      for (int i = 0; i < tapeSize; ++i) {
+        int pointer = dis.readInt();
+        if ((pointer < 0 && pointer != -1) || pointer >= symbols.length) {
+          throw new Exception("Unknown tape symbol : index " + pointer);
+        }
+        initialTape.writeSymbol(
+          pointer == -1
+          ? Symbol.DEFAULT
+          : this.symbols.get(symbols[pointer])
+        );
+        initialTape.shift(MachineAction.TAPE_RIGHT);
+      }
+      for (int i = 0; i < tapeOffset; ++i) {
+        initialTape.shift(MachineAction.TAPE_LEFT);
+      }
+
+      // Transition table
+      for (int i = 0; i < symbols.length; i++) {
+        for (int j = 0; j < states.length; j++) {
+          final int stateIndex = dis.readInt();
+          final int action = dis.readInt();
+          final int symbolIndex = dis.readInt();
+          if (stateIndex < 0 || stateIndex > states.length) {
+            throw new Exception("Unknown transition state");
+          }
+          if (action < 0 || action > MachineAction.values().length) {
+            throw new Exception("Unknown transition action");
+          }
+          if (symbolIndex < 0 || symbolIndex > symbols.length) {
+            throw new Exception("Unknown transition symbol");
+          }
+          transitions.update(new Transition(
+            actualStates[j],
+            actualSymbols[i],
+            MachineAction.values()[action],
+            actualStates[stateIndex],
+            actualSymbols[symbolIndex]
+          ));
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("Error while loading the file :");
+      symbols.clear();
+      states.clear();
+      initialTape.reset();
+      initialState = null;
+      e.printStackTrace();
+      return true;
+    }
+    return false;
+  }
+
+  private boolean saveFile(File f) {
+    Symbol[] symbols = this.symbols.values();
+    State[] states = this.states.values();
+    try (
+      DataOutputStream dos = new DataOutputStream(new FileOutputStream(f))
+    ) {
+      dos.writeInt(symbols.length);
+      dos.writeInt(states.length);
+      for (Symbol s : symbols) {
+        dos.writeUTF(s.toString());
+      }
+      for (State s : states) {
+        dos.writeUTF(s.toString());
+      }
+      initialTape.save(dos, symbols);
+      for (int i = 0; i < symbols.length; i++) {
+        for (int j = 0; j < states.length; j++) {
+          Transition.Right t = transitions.getTransition(symbols[i], states[j]);
+          dos.writeInt(Utils.indexOf(states, t.getState()));
+          dos.writeInt(t.getMachineAction().ordinal());
+          dos.writeInt(Utils.indexOf(symbols, t.getSymbol()));
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("Error while saving the file :");
+      e.printStackTrace();
+      return true;
+    }
+    return false;
   }
 }

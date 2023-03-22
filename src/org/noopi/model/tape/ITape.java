@@ -1,5 +1,8 @@
 package org.noopi.model.tape;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import org.noopi.utils.MachineAction;
 import org.noopi.utils.Symbol;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
@@ -45,6 +48,12 @@ public interface ITape {
    * head. <code>spanWidth</code> must be greater or equal than 0.
    */
   Symbol[] getSlice(int spanWidth);
+
+  /**
+   * TODO: describe
+   * @param dos
+   */
+  void save(DataOutputStream dos, Symbol[] symbols) throws IOException;
 
   /**
    * TODO: describe

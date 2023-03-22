@@ -13,6 +13,8 @@ public interface IDatabase<R, T> {
 
   int size();
 
+  void clear();
+
   void addDatabaseRegisterEventListener(DatabaseRegisterEventListener<T> l);
   void addDatabaseUnregisterEventListener(DatabaseUnregisterEventListener<T> l);
 }

@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -24,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 
 import org.noopi.utils.events.tape.TapeInitializationEvent;
 import org.noopi.utils.events.tape.TapeMovedEvent;
@@ -147,9 +149,11 @@ public class FrameLayout implements IFrameLayout {
   }
 
   public Map<Item, JMenuItem> getMenuItemsMap() {
-    menuItems = new EnumMap<Item, JMenuItem>(Item.class);
-    for(Item i : Item.values()) {
-      menuItems.put(i, new JMenuItem(i.label()));
+    if (menuItems == null) {
+      menuItems = new EnumMap<Item, JMenuItem>(Item.class);
+      for(Item i : Item.values()) {
+        menuItems.put(i, new JMenuItem(i.label()));
+      }
     }
     return menuItems;
   }
@@ -169,19 +173,19 @@ public class FrameLayout implements IFrameLayout {
   @Override
   public void addTransition(Transition t) {
     assert t != null;
-    transitionsJList.add(createJLabel(t));
+    transitionsJList.add(createLabel(t));
   }
 
   @Override
   public void removeTransition(Transition t) {
     assert t != null;
-    transitionsJList.remove(createJLabel(t));
+    transitionsJList.remove(createLabel(t));
   }
 
   @Override
   public void pushHistory(Transition t) {
     assert t != null;
-    historyJList.add(createJLabel(t), 0);
+    historyJList.add(createLabel(t), 0);
   }
 
   @Override
@@ -191,9 +195,13 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public boolean showConfirmDialog(String message) {
-    throw new UnsupportedOperationException(
-      "showConfirmDialog is not implemented yet."
+    int r = JOptionPane.showConfirmDialog(
+      mainPanel,
+      message,
+      "Confirmation",
+      JOptionPane.YES_NO_OPTION
     );
+    return r == JOptionPane.YES_OPTION;
   }
 
   @Override
@@ -214,6 +222,24 @@ public class FrameLayout implements IFrameLayout {
       "Erreur",
       JOptionPane.ERROR_MESSAGE
     );
+  }
+
+  @Override
+  public File openFile(File root) {
+    assert root != null;
+    JFileChooser jfc = new JFileChooser(root);
+    jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    int r = jfc.showOpenDialog(mainPanel);
+    return r == JFileChooser.APPROVE_OPTION
+      ? jfc.getSelectedFile()
+      : null
+    ;
+  }
+
+  @Override
+  public File selectFileToSave(File root) {
+    // TODO: maybe do this an other way ?
+    return openFile(root);
   }
 
   @Override
@@ -387,7 +413,7 @@ public class FrameLayout implements IFrameLayout {
 
     speedSlider = new JSlider(0, 100, 20);
     setSpeedSlider();
-    setMenuBar();
+    initializeMenuBar();
 
     historyJList = new JList<JLabel>();
     transitionsJList = new JList<JLabel>();
@@ -643,7 +669,7 @@ public class FrameLayout implements IFrameLayout {
 
   }
 
-  private void setMenuBar() {
+  private void initializeMenuBar() {
     for (Menu m : Menu.STRUCT.keySet()) {
       JMenu menu = new JMenu(m.label());
       for (Item i : Menu.STRUCT.get(m)) {
@@ -664,7 +690,7 @@ public class FrameLayout implements IFrameLayout {
     speedSlider.setMinorTickSpacing(5); 
   }
 
-  private JLabel createJLabel(Transition t) {
+  private JLabel createLabel(Transition t) {
     return new JLabel(t.toString());
   }
 

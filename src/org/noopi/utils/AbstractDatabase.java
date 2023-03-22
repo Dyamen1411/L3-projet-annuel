@@ -1,6 +1,8 @@
 package org.noopi.utils;
 
+import java.security.KeyStore.Entry;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.event.EventListenerList;
 
@@ -11,14 +13,14 @@ import org.noopi.utils.exceptions.DatabaseMissingEntryException;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
-public abstract class AbstractDatabase<R, T>
-  implements IMutableDatabase<R, T>
+public abstract class AbstractDatabase<Identifier, Data>
+  implements IMutableDatabase<Identifier, Data>
 {
-  private HashMap<R, T> database;
+  private HashMap<Identifier, Data> database;
 
   private EventListenerList listenerList;
-  private DatabaseRegisterEvent<T> registerEvent;
-  private DatabaseUnregisterEvent<T> unregisterEvent;
+  private DatabaseRegisterEvent<Data> registerEvent;
+  private DatabaseUnregisterEvent<Data> unregisterEvent;
 
   public AbstractDatabase() {
     database = new HashMap<>();
@@ -26,40 +28,40 @@ public abstract class AbstractDatabase<R, T>
   }
 
   @Override
-  public boolean contains(R name) {
+  public boolean contains(Identifier name) {
     return database.containsKey(name);
   }
 
   @Override
-  public T get(R name) {
+  public Data get(Identifier name) {
     return database.get(name);
   }
 
   @Override
-  public final T registerEntry(R name) throws DatabaseDuplicateException {
+  public final Data registerEntry(Identifier name) throws DatabaseDuplicateException {
     if (database.containsKey(name)) {
       throw new DatabaseDuplicateException();
     }
-    T t = createEntry(name);
+    Data t = createEntry(name);
     database.put(name, t);
-    fireStateRegisteredEvent(t);
+    fireElementRegisteredEvent(t);
     return t;
   }
 
   @Override
-  public void unregisterEntry(R name) throws DatabaseMissingEntryException
+  public void unregisterEntry(Identifier name) throws DatabaseMissingEntryException
   {
     if (!database.containsKey(name)) {
       throw new DatabaseMissingEntryException();
     }
-    T s = database.get(name);
+    Data s = database.get(name);
     database.remove(name);
-    fireStateUnRegisteredEvent(s);
+    fireElementUnRegisteredEvent(s);
   }
 
   @Override
   public void addDatabaseRegisterEventListener(
-    DatabaseRegisterEventListener<T> l
+    DatabaseRegisterEventListener<Data> l
   ) {
     assert l != null;
     listenerList.add(DatabaseRegisterEventListener.class, l);
@@ -67,28 +69,48 @@ public abstract class AbstractDatabase<R, T>
 
   @Override
   public void addDatabaseUnregisterEventListener(
-    DatabaseUnregisterEventListener<T> l
+    DatabaseUnregisterEventListener<Data> l
   ) {
     assert l != null;
     listenerList.add(DatabaseUnregisterEventListener.class, l);
   }
 
   @Override
-  public T[] values() {
+  public Data[] values() {
     return database.values().toArray(assocListTypeInstance());
   }
 
   @Override
-  public R[] entries() {
+  public Identifier[] entries() {
     return database.keySet().toArray(entryListTypeInstance());
   }
 
-  public IDatabase<R, T> toReadable() {
-    return (IDatabase<R, T>) this;
+  public IDatabase<Identifier, Data> toReadable() {
+    return (IDatabase<Identifier, Data>) this;
+  }
+
+  public void clear() {
+    if (database.isEmpty()) {
+      return;
+    }
+    try {
+      for (Identifier d : entries()) {
+        unregisterEntry(d);
+      }
+    } catch(Exception e) {
+      System.err.println("Internal error (database.clear()).");
+      e.printStackTrace();
+      System.exit(-1);
+    }
+    assert database.isEmpty();
+  }
+
+  public int size() {
+    return database.size();
   }
 
   @SuppressWarnings("unchecked")
-  protected void fireStateRegisteredEvent(T s) {
+  protected void fireElementRegisteredEvent(Data s) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -99,13 +121,13 @@ public abstract class AbstractDatabase<R, T>
         registerEvent = new DatabaseRegisterEvent<>(s);
         b = true;
       }
-      ((DatabaseRegisterEventListener<T>) listeners[i + 1])
+      ((DatabaseRegisterEventListener<Data>) listeners[i + 1])
         .onRegisterEvent(registerEvent);
     }
   }
 
   @SuppressWarnings("unchecked")
-  protected void fireStateUnRegisteredEvent(T s) {
+  protected void fireElementUnRegisteredEvent(Data s) {
     Object[] listeners = listenerList.getListenerList();
     boolean b = false;
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -113,20 +135,16 @@ public abstract class AbstractDatabase<R, T>
         continue;
       }
       if (unregisterEvent == null || !b) {
-        unregisterEvent = new DatabaseUnregisterEvent<T>(s);
+        unregisterEvent = new DatabaseUnregisterEvent<Data>(s);
         b = true;
       }
-      ((DatabaseUnregisterEventListener<T>) listeners[i + 1])
+      ((DatabaseUnregisterEventListener<Data>) listeners[i + 1])
         .onUnregisterEvent(unregisterEvent);
     }
   }
 
-  public int size() {
-    return database.size();
-  }
+  protected abstract Data createEntry(Identifier name);
 
-  protected abstract T createEntry(R name);
-
-  protected abstract R[] entryListTypeInstance();
-  protected abstract T[] assocListTypeInstance();
+  protected abstract Identifier[] entryListTypeInstance();
+  protected abstract Data[] assocListTypeInstance();
 }
