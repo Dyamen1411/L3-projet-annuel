@@ -20,7 +20,7 @@ public abstract class AbstractDatabase<Identifier, Data>
   private DatabaseRegisterEvent<Data> registerEvent;
   private DatabaseUnregisterEvent<Data> unregisterEvent;
 
-  public AbstractDatabase() {
+  protected AbstractDatabase() {
     database = new HashMap<>();
     listenerList = new EventListenerList();
   }

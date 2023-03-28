@@ -3,7 +3,7 @@ package org.noopi.model.tape;
 import javax.swing.event.EventListenerList;
 
 import org.noopi.model.machine.MachineAction;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.symbol.Symbol;
 import org.noopi.utils.events.tape.TapeMovedEvent;
 import org.noopi.utils.events.tape.TapeResetEvent;
 import org.noopi.utils.events.tape.TapeWriteEvent;

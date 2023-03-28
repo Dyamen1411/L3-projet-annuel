@@ -17,7 +17,9 @@ import javax.swing.event.ListSelectionListener;
 import org.noopi.model.database.IDatabase;
 import org.noopi.model.machine.MachineAction;
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.state.StateDatabase;
+import org.noopi.model.symbol.Symbol;
+import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.transition.Transition;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 import org.noopi.view.components.model.TransitionTableModel;
@@ -25,25 +27,21 @@ import org.noopi.view.components.model.TransitionTableModel;
 public class TransitionTable extends JPanel {
   private final JTable table;
 
-  private IDatabase<String, Symbol> symbols;
-  private IDatabase<String, State> states;
-  private org.noopi.model.transition.TransitionTableModel transitions;
-
   private TransitionTableModel model;
 
   private JComboBox<String> symbolEditor;
   private JComboBox<String> stateEditor;
   private JComboBox<MachineAction> actionEditor;
 
-  public TransitionTable(org.noopi.model.transition.TransitionTableModel transitions) {
-    assert transitions != null;
-    this.transitions = transitions;
-    this.symbols = transitions.getSymbolDatabase();
-    this.states = transitions.getStatesDatabase();
-    model = new TransitionTableModel(symbols, states, transitions);
+  public TransitionTable() {
+    model = TransitionTableModel.getInstance();
     table = new JTable(model);
-    symbolEditor = new JComboBox<>(new DatabaseComboboxModel<>(symbols));
-    stateEditor = new JComboBox<>(new DatabaseComboboxModel<>(states));
+    symbolEditor = new JComboBox<>(
+      new DatabaseComboboxModel<>(SymbolDatabase.getInstance())
+    );
+    stateEditor = new JComboBox<>(
+      new DatabaseComboboxModel<>(StateDatabase.getInstance())
+    );
     actionEditor = new JComboBox<>(MachineAction.values());
 
     setLayout(new BorderLayout());
@@ -57,7 +55,6 @@ public class TransitionTable extends JPanel {
     JScrollPane scroll = new JScrollPane(table);
     scroll.setPreferredSize(new Dimension(300, 140));
     add(scroll, BorderLayout.CENTER);
-
 
     table.setRowHeight(40);
 
@@ -82,10 +79,12 @@ public class TransitionTable extends JPanel {
           actionEditor.setSelectedItem(null);
           return;
         }
-        Symbol symbol = symbols.values()[y];
-        State state = states.values()[x - 1];
+        Symbol symbol = SymbolDatabase.getInstance().values()[y];
+        State state = StateDatabase.getInstance().values()[x - 1];
         Transition.Left k = new Transition.Left(symbol, state);
-        Transition.Right v = transitions.getTransition(k);
+        Transition.Right v =
+          org.noopi.model.transition.TransitionTableModel.getInstance()
+          .getTransition(k);
 
         symbolEditor.setSelectedItem(v.getSymbol().toString());
         actionEditor.setSelectedItem(v.getMachineAction());
@@ -151,6 +150,8 @@ public class TransitionTable extends JPanel {
     String symbol, MachineAction action, String state,
     boolean updateSymbol, boolean updateAction, boolean updateState
   ) {
+    final IDatabase<String, Symbol> symbols = SymbolDatabase.getInstance();
+    final IDatabase<String, State> states = StateDatabase.getInstance();
     final int x = table.getSelectedColumn();
     final int y = table.getSelectedRow();
     if(x <= 0 || y < 0) {
@@ -161,7 +162,9 @@ public class TransitionTable extends JPanel {
     State oldState = states.values()[x - 1];
     State newState = updateState ? states.get(state) : null;
     Transition.Left k = new Transition.Left(oldSymbol, oldState);
-    Transition.Right v = transitions.getTransition(k);
+    Transition.Right v =
+      org.noopi.model.transition.TransitionTableModel.getInstance()
+      .getTransition(k);
 
     if (updateSymbol) {
       v.setSymbol(newSymbol);

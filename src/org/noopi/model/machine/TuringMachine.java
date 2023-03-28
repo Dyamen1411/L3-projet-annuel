@@ -1,7 +1,8 @@
 package org.noopi.model.machine;
 
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.state.StateDatabase;
+import org.noopi.model.symbol.Symbol;
 import org.noopi.model.transition.Transition;
 import org.noopi.model.transition.TransitionTableModel;
 import org.noopi.utils.events.database.DatabaseUnregisterEvent;
@@ -9,17 +10,14 @@ import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
 public final class TuringMachine implements ITuringMachine {
 
-  private final TransitionTableModel transitionTable;
   private State currentState;
   private boolean done;
 
-  public TuringMachine(TransitionTableModel transitionTable) {
-    assert transitionTable != null;
-    this.transitionTable = transitionTable;
+  public TuringMachine() {
     currentState = State.DEFAULT;
     done = false;
 
-    transitionTable.getStatesDatabase().addDatabaseUnregisterEventListener(
+    StateDatabase.getInstance().addDatabaseUnregisterEventListener(
       new DatabaseUnregisterEventListener<State>() {
         @Override
         public void onUnregisterEvent(DatabaseUnregisterEvent<State> e) {
@@ -43,7 +41,8 @@ public final class TuringMachine implements ITuringMachine {
     assert !done;
     assert s != null;
     assert currentState != State.DEFAULT;
-    Transition.Right v = transitionTable.getTransition(s, currentState);
+    Transition.Right v = TransitionTableModel.getInstance()
+      .getTransition(s, currentState);
     currentState = v.getState();
     if (v.getMachineAction() == MachineAction.MACHINE_STOP) {
       done = true;

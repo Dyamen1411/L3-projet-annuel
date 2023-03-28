@@ -4,29 +4,20 @@ import javax.swing.table.AbstractTableModel;
 
 import org.noopi.model.database.IDatabase;
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.state.StateDatabase;
+import org.noopi.model.symbol.Symbol;
+import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.transition.Transition;
 import org.noopi.utils.listeners.TransitionTableUpdatedEventListener;
 
 public class TransitionTableModel extends AbstractTableModel {
 
-  private IDatabase<String, Symbol> symbols;
-  private IDatabase<String, State> states;
+  private static TransitionTableModel INSTANCE;
 
-  private final org.noopi.model.transition.TransitionTableModel transitions;
-
-  public TransitionTableModel(
-    IDatabase<String, Symbol> symbols,
-    IDatabase<String, State> states,
-    org.noopi.model.transition.TransitionTableModel transitions
+  private TransitionTableModel(
   ) {
-    assert symbols != null;
-    assert states != null;
-    this.symbols = symbols;
-    this.states = states;
-    this.transitions = transitions;
-
-    transitions.addTableUpdatedEventListener(
+    org.noopi.model.transition.TransitionTableModel.getInstance()
+    .addTableUpdatedEventListener(
       new TransitionTableUpdatedEventListener() {
         @Override
         public void onTableUpdated() {
@@ -38,19 +29,19 @@ public class TransitionTableModel extends AbstractTableModel {
 
   @Override
   public int getRowCount() {
-    return symbols.size();
+    return SymbolDatabase.getInstance().size();
   }
 
   @Override
   public int getColumnCount() {
-    return states.size() + 1;
+    return StateDatabase.getInstance().size() + 1;
   }
 
   @Override
   public String getColumnName(int columnIndex) {
     return columnIndex == 0
       ? "Symboles"
-      : states.values()[columnIndex - 1].toString();
+      : StateDatabase.getInstance().values()[columnIndex - 1].toString();
   }
 
   @Override
@@ -65,6 +56,11 @@ public class TransitionTableModel extends AbstractTableModel {
 
   @Override
   public Object getValueAt(int rowIndex, int columnIndex) {
+    final IDatabase<String, Symbol> symbols = SymbolDatabase.getInstance();
+    final IDatabase<String, State> states = StateDatabase.getInstance();
+    final org.noopi.model.transition.TransitionTableModel transitions =
+      org.noopi.model.transition.TransitionTableModel.getInstance();
+
     if (columnIndex == 0) {
       return symbols.entries()[rowIndex];
     }
@@ -77,4 +73,10 @@ public class TransitionTableModel extends AbstractTableModel {
     return v.getSymbol() + ", " + v.getMachineAction() + ", " + v.getState();
   }
   
+  public static final TransitionTableModel getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new TransitionTableModel();
+    }
+    return INSTANCE;
+  }
 }

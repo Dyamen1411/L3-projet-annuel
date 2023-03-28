@@ -1,6 +1,6 @@
 package org.noopi.utils.events.tape;
 
-import org.noopi.model.state.Symbol;
+import org.noopi.model.symbol.Symbol;
 
 public class TapeWriteEvent {
   private final Symbol s;

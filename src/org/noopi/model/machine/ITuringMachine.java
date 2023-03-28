@@ -1,7 +1,7 @@
 package org.noopi.model.machine;
 
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.symbol.Symbol;
 import org.noopi.model.transition.Transition;
 
 public interface ITuringMachine {

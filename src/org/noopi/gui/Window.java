@@ -57,8 +57,8 @@ import org.noopi.model.machine.MachineAction;
 import org.noopi.model.machine.TuringMachine;
 import org.noopi.model.state.State;
 import org.noopi.model.state.StateDatabase;
-import org.noopi.model.state.Symbol;
-import org.noopi.model.state.SymbolDatabase;
+import org.noopi.model.symbol.Symbol;
+import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.view.FrameLayout;
 import org.noopi.view.IFrameLayout;
 
@@ -75,9 +75,6 @@ public final class Window {
   private ITape initialTape;
   private ITransitionHistory history;
 
-  private SymbolDatabase symbols;
-  private StateDatabase states;
-  private TransitionTableModel transitions;
   private Timer machineTimer;
 
   // View
@@ -102,17 +99,17 @@ public final class Window {
   private void debug() {
     try {
       // Three state busy beaver
-      State state_a = states.registerEntry("a");
-      State state_b = states.registerEntry("b");
-      State state_c = states.registerEntry("c");
-      Symbol symbol_0 = symbols.registerEntry("0");
-      Symbol symbol_1 = symbols.registerEntry("1");
-      transitions.update(new Transition(state_a, symbol_0, MachineAction.TAPE_LEFT   , state_b, symbol_1));
-      transitions.update(new Transition(state_b, symbol_0, MachineAction.TAPE_LEFT   , state_c, symbol_0));
-      transitions.update(new Transition(state_c, symbol_0, MachineAction.TAPE_RIGHT  , state_c, symbol_1));
-      transitions.update(new Transition(state_a, symbol_1, MachineAction.MACHINE_STOP, state_a, symbol_1));
-      transitions.update(new Transition(state_b, symbol_1, MachineAction.TAPE_LEFT   , state_b, symbol_1));
-      transitions.update(new Transition(state_c, symbol_1, MachineAction.TAPE_RIGHT  , state_a, symbol_1));
+      State  state_a  = StateDatabase .getInstance().registerEntry("a");
+      State  state_b  = StateDatabase .getInstance().registerEntry("b");
+      State  state_c  = StateDatabase .getInstance().registerEntry("c");
+      Symbol symbol_0 = SymbolDatabase.getInstance().registerEntry("0");
+      Symbol symbol_1 = SymbolDatabase.getInstance().registerEntry("1");
+      TransitionTableModel.getInstance().update(new Transition(state_a, symbol_0, MachineAction.TAPE_LEFT   , state_b, symbol_1));
+      TransitionTableModel.getInstance().update(new Transition(state_b, symbol_0, MachineAction.TAPE_LEFT   , state_c, symbol_0));
+      TransitionTableModel.getInstance().update(new Transition(state_c, symbol_0, MachineAction.TAPE_RIGHT  , state_c, symbol_1));
+      TransitionTableModel.getInstance().update(new Transition(state_a, symbol_1, MachineAction.MACHINE_STOP, state_a, symbol_1));
+      TransitionTableModel.getInstance().update(new Transition(state_b, symbol_1, MachineAction.TAPE_LEFT   , state_b, symbol_1));
+      TransitionTableModel.getInstance().update(new Transition(state_c, symbol_1, MachineAction.TAPE_RIGHT  , state_a, symbol_1));
       for (int i = 0; i < 8; ++i) {
         initialTape.writeSymbol(symbol_0);
         initialTape.shift(MachineAction.TAPE_RIGHT);
@@ -127,9 +124,6 @@ public final class Window {
   }
 
   private void createModel() {
-    symbols = new SymbolDatabase();
-    states = new StateDatabase();
-    transitions = new TransitionTableModel(symbols, states);
     tape = new Tape();
     initialTape = new Tape();    
     machineTimer = new Timer(0, new ActionListener(){
@@ -142,7 +136,7 @@ public final class Window {
       }
     });
     tape = new Tape();
-    machine = new TuringMachine(transitions);
+    machine = new TuringMachine();
     history = new TransitionHistory();
     // DEBUG
     // debug();
@@ -150,7 +144,7 @@ public final class Window {
 
   private void createView() {
     frame = new JFrame();
-    layout = new FrameLayout(transitions, tape, initialTape);
+    layout = new FrameLayout(tape, initialTape);
   }
 
   private void placeComponents() {
@@ -164,8 +158,8 @@ public final class Window {
       public void onElementAdded(ElementAddedEvent e) {
         String element = e.getElement();
         try {
-          if (!symbols.contains(element))
-            symbols.registerEntry(element);
+          if (!SymbolDatabase.getInstance().contains(element))
+            SymbolDatabase.getInstance().registerEntry(element);
           else
             // TODO: add accents
             layout.showError(
@@ -183,8 +177,8 @@ public final class Window {
       public void onElementRemoved(ElementRemovedEvent e) {
         String element = e.getElement();
         try {
-          if (symbols.contains(element))
-            symbols.unregisterEntry(e.getElement());
+          if (SymbolDatabase.getInstance().contains(element))
+            SymbolDatabase.getInstance().unregisterEntry(e.getElement());
           else
             // TODO: add accents
             layout.showError(
@@ -204,8 +198,8 @@ public final class Window {
       public void onElementAdded(ElementAddedEvent e) {
         String element = e.getElement();
         try {
-          if (!states.contains(element))
-            states.registerEntry(element);
+          if (!StateDatabase.getInstance().contains(element))
+            StateDatabase.getInstance().registerEntry(element);
           else
             // TODO: add accents
             layout.showError(
@@ -223,8 +217,8 @@ public final class Window {
       public void onElementRemoved(ElementRemovedEvent e) {
         String element = e.getElement();
         try {
-          if (states.contains(element))
-            states.unregisterEntry(e.getElement());
+          if (StateDatabase.getInstance().contains(element))
+            StateDatabase.getInstance().unregisterEntry(e.getElement());
           else
             // TODO: add accents
             layout.showError(
@@ -268,7 +262,7 @@ public final class Window {
         }
     });
 
-    symbols.addDatabaseUnregisterEventListener(
+    SymbolDatabase.getInstance().addDatabaseUnregisterEventListener(
       new DatabaseUnregisterEventListener<Symbol>() {
         @Override
         public void onUnregisterEvent(DatabaseUnregisterEvent<Symbol> e) {
@@ -402,15 +396,18 @@ public final class Window {
       public void onNewFile(NewFileEvent e) {
         // TODO: accents
         if (
-          (symbols.size() != 0 || states.size() != 0)
-          && !layout.showConfirmDialog("Vous allez perdre votre travail.\nEtes vous sur ?")
+          ( SymbolDatabase.getInstance().size() != 0
+            || StateDatabase.getInstance().size() != 0)
+          && !layout.showConfirmDialog(
+            "Vous allez perdre votre travail.\nEtes vous sur ?"
+          )
         ) {
           return;
         }
         tape.reset();
         initialTape.reset();
-        symbols.clear();
-        states.clear();
+        SymbolDatabase.getInstance().clear();
+        StateDatabase.getInstance().clear();
       }
     });
   }
@@ -428,8 +425,8 @@ public final class Window {
   }
 
   private boolean loadFile(File f) {
-    symbols.clear();
-    states.clear();
+    SymbolDatabase.getInstance().clear();
+    StateDatabase.getInstance().clear();
     tape.reset();
     initialTape.reset();
     initialState = null;
@@ -447,11 +444,11 @@ public final class Window {
         if (
           symbol == null
           || symbol.equals("")
-          || this.symbols.contains(symbol)
+          || SymbolDatabase.getInstance().contains(symbol)
         )
         { throw new Exception("duplicate symbol"); }
         symbols[i] = symbol;
-        actualSymbols[i] = this.symbols.registerEntry(symbol);
+        actualSymbols[i] = SymbolDatabase.getInstance().registerEntry(symbol);
       }
 
       // States
@@ -460,11 +457,11 @@ public final class Window {
         if (
           state == null
           || state.equals("")
-          || this.states.contains(state)
+          || StateDatabase.getInstance().contains(state)
         )
         { throw new Exception("duplicate state"); }
         states[i] = state;
-        actualStates[i] = this.states.registerEntry(state);
+        actualStates[i] = StateDatabase.getInstance().registerEntry(state);
       }
 
       // Tape
@@ -480,7 +477,7 @@ public final class Window {
         initialTape.writeSymbol(
           pointer == -1
           ? Symbol.DEFAULT
-          : this.symbols.get(symbols[pointer])
+          : SymbolDatabase.getInstance().get(symbols[pointer])
         );
         initialTape.shift(MachineAction.TAPE_RIGHT);
       }
@@ -503,7 +500,7 @@ public final class Window {
           if (symbolIndex < 0 || symbolIndex > symbols.length) {
             throw new Exception("Unknown transition symbol");
           }
-          transitions.update(new Transition(
+          TransitionTableModel.getInstance().update(new Transition(
             actualStates[j],
             actualSymbols[i],
             MachineAction.values()[action],
@@ -514,19 +511,19 @@ public final class Window {
       }
     } catch (Exception e) {
       System.err.println("Error while loading the file :");
-      symbols.clear();
-      states.clear();
+      e.printStackTrace();
+      SymbolDatabase.getInstance().clear();
+      StateDatabase.getInstance().clear();
       initialTape.reset();
       initialState = null;
-      e.printStackTrace();
       return true;
     }
     return false;
   }
 
   private boolean saveFile(File f) {
-    Symbol[] symbols = this.symbols.values();
-    State[] states = this.states.values();
+    Symbol[] symbols = SymbolDatabase.getInstance().values();
+    State[] states = StateDatabase.getInstance().values();
     try (
       DataOutputStream dos = new DataOutputStream(new FileOutputStream(f))
     ) {
@@ -541,7 +538,8 @@ public final class Window {
       initialTape.save(dos, symbols);
       for (int i = 0; i < symbols.length; i++) {
         for (int j = 0; j < states.length; j++) {
-          Transition.Right t = transitions.getTransition(symbols[i], states[j]);
+          Transition.Right t = TransitionTableModel.getInstance()
+            .getTransition(symbols[i], states[j]);
           dos.writeInt(Utils.indexOf(states, t.getState()));
           dos.writeInt(t.getMachineAction().ordinal());
           dos.writeInt(Utils.indexOf(symbols, t.getSymbol()));

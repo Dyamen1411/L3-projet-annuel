@@ -7,7 +7,9 @@ import javax.swing.event.EventListenerList;
 import org.noopi.model.database.IDatabase;
 import org.noopi.model.machine.MachineAction;
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.state.StateDatabase;
+import org.noopi.model.symbol.Symbol;
+import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.utils.events.database.DatabaseRegisterEvent;
 import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.TransitionTableUpdatedEventListener;
@@ -15,24 +17,19 @@ import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 
 public class TransitionTableModel {
-  
+
+  private static TransitionTableModel INSTANCE;
+
   private HashMap<Transition.Left, Transition.Right> table;
 
   private EventListenerList listenerList;
 
-  private final IDatabase<String, Symbol> symbols;
-  private final IDatabase<String, State> states;
-
-  public TransitionTableModel(
-    IDatabase<String, Symbol> symbols,
-    IDatabase<String, State> states
-  ) {
-    assert symbols != null;
-    assert states != null;
-    this.symbols = symbols;
-    this.states = states;
+  private TransitionTableModel() {
     table = new HashMap<>();
     listenerList = new EventListenerList();
+
+    final IDatabase<String, Symbol> symbols = SymbolDatabase.getInstance();
+    final IDatabase<String, State> states = StateDatabase.getInstance();
 
     symbols.addDatabaseRegisterEventListener(
       new DatabaseRegisterEventListener<Symbol>() {
@@ -120,14 +117,6 @@ public class TransitionTableModel {
     listenerList.add(TransitionTableUpdatedEventListener.class, l);
   }
 
-  public IDatabase<String, Symbol> getSymbolDatabase() {
-    return symbols;
-  }
-
-  public IDatabase<String, State> getStatesDatabase() {
-    return states;
-  }
-
   protected void fireTableUpdated() {
     Object[] listeners = listenerList.getListenerList();
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
@@ -136,5 +125,12 @@ public class TransitionTableModel {
       }
       ((TransitionTableUpdatedEventListener) listeners[i + 1]).onTableUpdated();
     }
+  }
+
+  public static final TransitionTableModel getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new TransitionTableModel();
+    }
+    return INSTANCE;
   }
 }

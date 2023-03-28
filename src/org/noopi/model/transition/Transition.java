@@ -2,7 +2,7 @@ package org.noopi.model.transition;
 
 import org.noopi.model.machine.MachineAction;
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.symbol.Symbol;
 
 public class Transition {
   private final State oldState;

@@ -53,7 +53,9 @@ import org.noopi.utils.listeners.view.StopEventListener;
 import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.machine.MachineAction;
 import org.noopi.model.state.State;
-import org.noopi.model.state.Symbol;
+import org.noopi.model.state.StateDatabase;
+import org.noopi.model.symbol.Symbol;
+import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.tape.ITape;
 import org.noopi.model.transition.Transition;
 import org.noopi.model.transition.TransitionTableModel;
@@ -104,7 +106,6 @@ public class FrameLayout implements IFrameLayout {
   private GraphicTape tape;
   private GraphicTape initialTape;
   private Map<Item, JMenuItem> menuItems;
-  private TransitionTableModel transitions;
   private TransitionTable transitionTable;
   private DatabaseList<Symbol> symbolList;
   private DatabaseList<State> stateList;
@@ -118,14 +119,11 @@ public class FrameLayout implements IFrameLayout {
   //CONSTRUCTEURS
 
   public FrameLayout(
-    TransitionTableModel transitions,
     ITape tapeModel,
     ITape initialTapeModel
   ) {
-    assert transitions != null;
     assert tapeModel != null;
     assert initialTapeModel != null;
-    this.transitions = transitions;
     this.tapeModel = tapeModel;
     this.initialTapeModel = initialTapeModel;
     this.listenerList = new EventListenerList();
@@ -251,8 +249,7 @@ public class FrameLayout implements IFrameLayout {
       @Override
       public void itemStateChanged(ItemEvent e) {
         l.onInitialStateChanged(
-          transitions.getStatesDatabase()
-          .get((String) e.getItem())
+          StateDatabase.getInstance().get((String) e.getItem())
         );
       }
     });
@@ -291,7 +288,7 @@ public class FrameLayout implements IFrameLayout {
       public void itemStateChanged(ItemEvent e) {
         Symbol s = e.getItem() == null
           ? Symbol.DEFAULT
-          : transitions.getSymbolDatabase().get((String) e.getItem());
+          : SymbolDatabase.getInstance().get((String) e.getItem());
         l.onTapeWritten(s);
       }
     });
@@ -402,13 +399,13 @@ public class FrameLayout implements IFrameLayout {
     stepButton = new JButton("Pas à pas");
     symbolList = new DatabaseList<>(
       "Symboles", "Ajouter", "Retirer",
-      transitions.getSymbolDatabase()
+      SymbolDatabase.getInstance()
     );
     stateList = new DatabaseList<>(
       "Etats", "Ajouter", "Retirer",
-      transitions.getStatesDatabase()
+      StateDatabase.getInstance()
     );
-    transitionTable = new TransitionTable(transitions);
+    transitionTable = new TransitionTable();
     isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
 
     speedSlider = new JSlider(0, 100, 20);
@@ -423,10 +420,10 @@ public class FrameLayout implements IFrameLayout {
     initialTapeLeft = new JButton("Gauche");
     initialTapeRight = new JButton("Droite");
     initialTapeSymbolSelector = new JComboBox<>(
-      new DatabaseComboboxModel<>(transitions.getSymbolDatabase())
+      new DatabaseComboboxModel<>(SymbolDatabase.getInstance())
     );
     initialStateSelector = new JComboBox<>(
-      new DatabaseComboboxModel<>(transitions.getStatesDatabase())
+      new DatabaseComboboxModel<>(StateDatabase.getInstance())
     );
     currentState = new JLabel("");
     currentState.setForeground(Color.RED);
