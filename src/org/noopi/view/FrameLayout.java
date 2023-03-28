@@ -58,7 +58,6 @@ import org.noopi.model.symbol.Symbol;
 import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.tape.ITape;
 import org.noopi.model.transition.Transition;
-import org.noopi.model.transition.TransitionTableModel;
 import org.noopi.view.components.DatabaseList;
 import org.noopi.view.components.GBC;
 import org.noopi.view.components.GraphicTape;
