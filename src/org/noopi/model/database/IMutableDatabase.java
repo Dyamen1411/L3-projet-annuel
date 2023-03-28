@@ -1,4 +1,4 @@
-package org.noopi.utils;
+package org.noopi.model.database;
 
 import org.noopi.utils.exceptions.DatabaseDuplicateException;
 import org.noopi.utils.exceptions.DatabaseMissingEntryException;

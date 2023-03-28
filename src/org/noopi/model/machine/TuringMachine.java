@@ -1,10 +1,9 @@
 package org.noopi.model.machine;
 
-import org.noopi.model.TransitionTableModel;
-import org.noopi.utils.MachineAction;
-import org.noopi.utils.State;
-import org.noopi.utils.Symbol;
-import org.noopi.utils.Transition;
+import org.noopi.model.state.State;
+import org.noopi.model.state.Symbol;
+import org.noopi.model.transition.Transition;
+import org.noopi.model.transition.TransitionTableModel;
 import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;
 

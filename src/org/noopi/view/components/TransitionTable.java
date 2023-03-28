@@ -14,11 +14,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.noopi.utils.IDatabase;
-import org.noopi.utils.MachineAction;
-import org.noopi.utils.State;
-import org.noopi.utils.Symbol;
-import org.noopi.utils.Transition;
+import org.noopi.model.database.IDatabase;
+import org.noopi.model.machine.MachineAction;
+import org.noopi.model.state.State;
+import org.noopi.model.state.Symbol;
+import org.noopi.model.transition.Transition;
 import org.noopi.view.components.model.DatabaseComboboxModel;
 import org.noopi.view.components.model.TransitionTableModel;
 
@@ -27,7 +27,7 @@ public class TransitionTable extends JPanel {
 
   private IDatabase<String, Symbol> symbols;
   private IDatabase<String, State> states;
-  private org.noopi.model.TransitionTableModel transitions;
+  private org.noopi.model.transition.TransitionTableModel transitions;
 
   private TransitionTableModel model;
 
@@ -35,7 +35,7 @@ public class TransitionTable extends JPanel {
   private JComboBox<String> stateEditor;
   private JComboBox<MachineAction> actionEditor;
 
-  public TransitionTable(org.noopi.model.TransitionTableModel transitions) {
+  public TransitionTable(org.noopi.model.transition.TransitionTableModel transitions) {
     assert transitions != null;
     this.transitions = transitions;
     this.symbols = transitions.getSymbolDatabase();

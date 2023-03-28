@@ -1,14 +1,13 @@
-package org.noopi.model;
+package org.noopi.model.transition;
 
 import java.util.HashMap;
 
 import javax.swing.event.EventListenerList;
 
-import org.noopi.utils.IDatabase;
-import org.noopi.utils.MachineAction;
-import org.noopi.utils.State;
-import org.noopi.utils.Symbol;
-import org.noopi.utils.Transition;
+import org.noopi.model.database.IDatabase;
+import org.noopi.model.machine.MachineAction;
+import org.noopi.model.state.State;
+import org.noopi.model.state.Symbol;
 import org.noopi.utils.events.database.DatabaseRegisterEvent;
 import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.TransitionTableUpdatedEventListener;

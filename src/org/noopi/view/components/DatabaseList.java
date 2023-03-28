@@ -15,7 +15,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.noopi.utils.IDatabase;
+import org.noopi.model.database.IDatabase;
 import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;

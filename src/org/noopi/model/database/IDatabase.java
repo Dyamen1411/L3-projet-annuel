@@ -1,4 +1,4 @@
-package org.noopi.utils;
+package org.noopi.model.database;
 
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;
 import org.noopi.utils.listeners.database.DatabaseUnregisterEventListener;

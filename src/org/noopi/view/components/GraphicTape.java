@@ -12,8 +12,8 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
+import org.noopi.model.state.Symbol;
 import org.noopi.model.tape.ITape;
-import org.noopi.utils.Symbol;
 import org.noopi.utils.events.tape.TapeMovedEvent;
 import org.noopi.utils.listeners.tape.TapeMovedEventListener;
 import org.noopi.utils.listeners.view.TapeUpdatedEventListener;

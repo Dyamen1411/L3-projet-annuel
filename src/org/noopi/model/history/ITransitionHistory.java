@@ -1,6 +1,6 @@
 package org.noopi.model.history;
 
-import org.noopi.utils.Transition;
+import org.noopi.model.transition.Transition;
 import org.noopi.utils.listeners.history.HistoryPopEventListener;
 import org.noopi.utils.listeners.history.HistoryPushEventListener;
 import org.noopi.utils.listeners.history.HistoryResetEventListener;

@@ -3,8 +3,8 @@ package org.noopi.model.tape;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.noopi.utils.MachineAction;
-import org.noopi.utils.Symbol;
+import org.noopi.model.machine.MachineAction;
+import org.noopi.model.state.Symbol;
 import org.noopi.utils.Utils;
 
 public final class Tape extends AbstractTape {

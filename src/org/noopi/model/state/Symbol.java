@@ -1,4 +1,4 @@
-package org.noopi.utils;
+package org.noopi.model.state;
 
 public final class Symbol {
   public static final Symbol DEFAULT = new Symbol("");

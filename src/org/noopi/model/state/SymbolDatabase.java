@@ -1,4 +1,6 @@
-package org.noopi.utils;
+package org.noopi.model.state;
+
+import org.noopi.model.database.AbstractDatabase;
 
 public class SymbolDatabase extends AbstractDatabase<String, Symbol> {
   private static final String[] R = new String[0];

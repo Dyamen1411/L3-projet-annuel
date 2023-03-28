@@ -2,10 +2,10 @@ package org.noopi.view.components.model;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.noopi.utils.IDatabase;
-import org.noopi.utils.State;
-import org.noopi.utils.Symbol;
-import org.noopi.utils.Transition;
+import org.noopi.model.database.IDatabase;
+import org.noopi.model.state.State;
+import org.noopi.model.state.Symbol;
+import org.noopi.model.transition.Transition;
 import org.noopi.utils.listeners.TransitionTableUpdatedEventListener;
 
 public class TransitionTableModel extends AbstractTableModel {
@@ -13,12 +13,12 @@ public class TransitionTableModel extends AbstractTableModel {
   private IDatabase<String, Symbol> symbols;
   private IDatabase<String, State> states;
 
-  private final org.noopi.model.TransitionTableModel transitions;
+  private final org.noopi.model.transition.TransitionTableModel transitions;
 
   public TransitionTableModel(
     IDatabase<String, Symbol> symbols,
     IDatabase<String, State> states,
-    org.noopi.model.TransitionTableModel transitions
+    org.noopi.model.transition.TransitionTableModel transitions
   ) {
     assert symbols != null;
     assert states != null;

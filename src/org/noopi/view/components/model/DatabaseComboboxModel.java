@@ -3,7 +3,7 @@ package org.noopi.view.components.model;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
-import org.noopi.utils.IDatabase;
+import org.noopi.model.database.IDatabase;
 import org.noopi.utils.events.database.DatabaseRegisterEvent;
 import org.noopi.utils.events.database.DatabaseUnregisterEvent;
 import org.noopi.utils.listeners.database.DatabaseRegisterEventListener;

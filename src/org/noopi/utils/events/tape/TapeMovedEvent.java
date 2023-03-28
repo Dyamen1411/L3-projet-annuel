@@ -1,6 +1,6 @@
 package org.noopi.utils.events.tape;
 
-import org.noopi.utils.MachineAction;
+import org.noopi.model.machine.MachineAction;
 
 public class TapeMovedEvent {
   private final MachineAction d;
