@@ -70,7 +70,7 @@ public final class Window {
 
   // Model
   private ITuringMachine machine;
-  private State initialState;
+  private State initialMachineState;
   private ITape tape;
   private ITape initialTape;
   private ITransitionHistory history;
@@ -125,7 +125,9 @@ public final class Window {
 
   private void createModel() {
     tape = new Tape();
-    initialTape = new Tape();    
+    initialTape = new Tape();
+    machine = new TuringMachine();
+    history = new TransitionHistory();
     machineTimer = new Timer(0, new ActionListener(){
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -135,9 +137,6 @@ public final class Window {
         }
       }
     });
-    tape = new Tape();
-    machine = new TuringMachine();
-    history = new TransitionHistory();
     // DEBUG
     // debug();
   }
@@ -296,8 +295,8 @@ public final class Window {
       public void onActiveStateChange(boolean active) {
         if (active) {
           tape.from(initialTape);
-          machine.reset(initialState);
-          layout.setMachineState(initialState);
+          machine.reset(initialMachineState);
+          layout.setMachineState(initialMachineState);
         } else {
           layout.setMachineState(State.DEFAULT); // ?
         }
@@ -308,7 +307,7 @@ public final class Window {
       new MachineInitialStateChangedEventListener() {
         @Override
         public void onInitialStateChanged(State state) {
-          initialState = state;
+          initialMachineState = state;
         }
       }
     );
@@ -368,7 +367,7 @@ public final class Window {
           layout.showError("Le fichier selectionne est incorrect !");
           return;
         }
-        if (loadFile(f)) {
+        if (loadMachineFromFile(f)) {
           layout.showError("Impossible d'ouvrir le fichier !");
           return;
         }
@@ -384,7 +383,7 @@ public final class Window {
           layout.showError("Le fichier selectionne est incorrect !");
           return;
         }
-        if (saveFile(f)) {
+        if (saveMachineToFile(f)) {
           layout.showError("Impossible d'ouvrir le fichier !");
           return;
         }
@@ -424,12 +423,12 @@ public final class Window {
     layout.setMachineState(result.getState());
   }
 
-  private boolean loadFile(File f) {
+  private boolean loadMachineFromFile(File f) {
     SymbolDatabase.getInstance().clear();
     StateDatabase.getInstance().clear();
     tape.reset();
     initialTape.reset();
-    initialState = null;
+    initialMachineState = null;
     try (
       DataInputStream dis = new DataInputStream(new FileInputStream(f))
     ) {
@@ -515,13 +514,13 @@ public final class Window {
       SymbolDatabase.getInstance().clear();
       StateDatabase.getInstance().clear();
       initialTape.reset();
-      initialState = null;
+      initialMachineState = null;
       return true;
     }
     return false;
   }
 
-  private boolean saveFile(File f) {
+  private boolean saveMachineToFile(File f) {
     Symbol[] symbols = SymbolDatabase.getInstance().values();
     State[] states = StateDatabase.getInstance().values();
     try (
@@ -552,4 +551,5 @@ public final class Window {
     }
     return false;
   }
+
 }
