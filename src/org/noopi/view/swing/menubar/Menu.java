@@ -1,4 +1,4 @@
-package org.noopi.view;
+package org.noopi.view.swing.menubar;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -13,14 +13,15 @@ public enum Menu {
     label = lb;
   }
 
-  String label() {
+  public String label() {
     return label;
   }
 
-  static final Map<Menu, Item[]> STRUCT;
+  public static final Map<Menu, Item[]> STRUCTURE;
+
   static {
-    STRUCT = new EnumMap<Menu, Item[]>(Menu.class);
-    STRUCT.put(
+    STRUCTURE = new EnumMap<Menu, Item[]>(Menu.class);
+    STRUCTURE.put(
       Menu.FILE,
       new Item[] {
         Item.NEW,

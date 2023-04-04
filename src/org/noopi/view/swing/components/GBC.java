@@ -1,4 +1,4 @@
-package org.noopi.view.components;
+package org.noopi.view.swing.components;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;

@@ -1,4 +1,4 @@
-package org.noopi.view;
+package org.noopi.view.swing.menubar;
 
 public enum Item {
     NEW("Nouveau fichier"),
@@ -12,7 +12,7 @@ public enum Item {
         label = lb;
     }
     
-    String label() {
+    public String label() {
         return label;
     }
 }

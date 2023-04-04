@@ -1,4 +1,4 @@
-package org.noopi.view.components.model;
+package org.noopi.view.swing.components.model;
 
 import javax.swing.table.AbstractTableModel;
 

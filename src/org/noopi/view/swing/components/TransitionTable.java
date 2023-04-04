@@ -1,4 +1,4 @@
-package org.noopi.view.components;
+package org.noopi.view.swing.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -21,8 +21,8 @@ import org.noopi.model.state.StateDatabase;
 import org.noopi.model.symbol.Symbol;
 import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.transition.Transition;
-import org.noopi.view.components.model.DatabaseComboboxModel;
-import org.noopi.view.components.model.TransitionTableModel;
+import org.noopi.view.swing.components.model.DatabaseComboboxModel;
+import org.noopi.view.swing.components.model.TransitionTableModel;
 
 public class TransitionTable extends JPanel {
   private final JTable table;

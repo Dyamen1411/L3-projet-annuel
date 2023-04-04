@@ -59,8 +59,8 @@ import org.noopi.model.state.State;
 import org.noopi.model.state.StateDatabase;
 import org.noopi.model.symbol.Symbol;
 import org.noopi.model.symbol.SymbolDatabase;
-import org.noopi.view.FrameLayout;
 import org.noopi.view.IFrameLayout;
+import org.noopi.view.swing.FrameLayout;
 
 public final class Window {
 

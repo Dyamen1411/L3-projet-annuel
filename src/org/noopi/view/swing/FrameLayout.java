@@ -1,4 +1,4 @@
-package org.noopi.view;
+package org.noopi.view.swing;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -58,12 +58,15 @@ import org.noopi.model.symbol.Symbol;
 import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.tape.ITape;
 import org.noopi.model.transition.Transition;
-import org.noopi.view.components.DatabaseList;
-import org.noopi.view.components.GBC;
-import org.noopi.view.components.GraphicTape;
-import org.noopi.view.components.TransitionTable;
-import org.noopi.view.components.model.DatabaseComboboxModel;
-import org.noopi.view.components.model.GraphicArrow;
+import org.noopi.view.IFrameLayout;
+import org.noopi.view.swing.components.DatabaseList;
+import org.noopi.view.swing.components.GBC;
+import org.noopi.view.swing.components.GraphicTape;
+import org.noopi.view.swing.components.TransitionTable;
+import org.noopi.view.swing.components.model.DatabaseComboboxModel;
+import org.noopi.view.swing.components.model.GraphicArrow;
+import org.noopi.view.swing.menubar.Item;
+import org.noopi.view.swing.menubar.Menu;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -78,10 +81,31 @@ public class FrameLayout implements IFrameLayout {
 
   //ATTRIBUTS
 
-  private boolean started;
+  private boolean hasMachineStarted;
 
   private ITape tapeModel;
   private ITape initialTapeModel;
+
+  private JPanel mainPanel;
+  private JMenuBar menuBar;
+  private JButton stopButton;
+  private JButton startButton;
+  private JButton stepButton;
+  private JSlider speedSlider;
+  private JList<JLabel> historyList;
+  private JList<JLabel> transitionsList;
+  private GraphicTape tape;
+  private GraphicTape initialTape;
+  private Map<Item, JMenuItem> menuItems;
+  private TransitionTable transitionTable;
+  private DatabaseList<Symbol> symbolList;
+  private DatabaseList<State> stateList;
+  private JButton initialTapeMoveLeftButton;
+  private JButton initialTapeMoveRightButton;
+  private JComboBox<String> initialTapeSymbolSelector;
+  private JComboBox<String> initialMachineStateSelector;
+  private JLabel currentMachineState;
+  private JCheckBox activateMachineCheckBox;
 
   private EventListenerList listenerList;
 
@@ -94,39 +118,15 @@ public class FrameLayout implements IFrameLayout {
   private NewFileEvent newFileEvent;
   private SaveEvent saveEvent;
 
-  private JPanel mainPanel;
-  private JMenuBar menuBar;
-  private JButton stopButton;
-  private JButton startButton;
-  private JButton stepButton;
-  private JSlider speedSlider;
-  private JList<JLabel> historyJList;
-  private JList<JLabel> transitionsJList;
-  private GraphicTape tape;
-  private GraphicTape initialTape;
-  private Map<Item, JMenuItem> menuItems;
-  private TransitionTable transitionTable;
-  private DatabaseList<Symbol> symbolList;
-  private DatabaseList<State> stateList;
-  private JButton initialTapeLeft;
-  private JButton initialTapeRight;
-  private JComboBox<String> initialTapeSymbolSelector;
-  private JComboBox<String> initialStateSelector;
-  private JLabel currentState;
-  private JCheckBox isActiveCheckBox;
-
   //CONSTRUCTEURS
 
-  public FrameLayout(
-    ITape tapeModel,
-    ITape initialTapeModel
-  ) {
+  public FrameLayout(ITape tapeModel, ITape initialTapeModel) {
     assert tapeModel != null;
     assert initialTapeModel != null;
     this.tapeModel = tapeModel;
     this.initialTapeModel = initialTapeModel;
     this.listenerList = new EventListenerList();
-    started = false;
+    this.hasMachineStarted = false;
     createView();
     placeComponent();
     createController();
@@ -145,7 +145,7 @@ public class FrameLayout implements IFrameLayout {
     return menuBar;
   }
 
-  public Map<Item, JMenuItem> getMenuItemsMap() {
+  private Map<Item, JMenuItem> getMenuItemsMap() {
     if (menuItems == null) {
       menuItems = new EnumMap<Item, JMenuItem>(Item.class);
       for(Item i : Item.values()) {
@@ -159,35 +159,35 @@ public class FrameLayout implements IFrameLayout {
 
   @Override
   public void resetTransitions() {
-    transitionsJList.removeAll();
+    transitionsList.removeAll();
   }
 
   @Override
   public void setMachineState(State s) {
-    currentState.setText(s.toString());
+    currentMachineState.setText(s.toString());
   }
 
   @Override
   public void addTransition(Transition t) {
     assert t != null;
-    transitionsJList.add(createLabel(t));
+    transitionsList.add(createLabel(t));
   }
 
   @Override
   public void removeTransition(Transition t) {
     assert t != null;
-    transitionsJList.remove(createLabel(t));
+    transitionsList.remove(createLabel(t));
   }
 
   @Override
   public void pushHistory(Transition t) {
     assert t != null;
-    historyJList.add(createLabel(t), 0);
+    historyList.add(createLabel(t), 0);
   }
 
   @Override
   public void popHistory() {
-    historyJList.remove(0);
+    historyList.remove(0);
   }
 
   @Override
@@ -244,7 +244,7 @@ public class FrameLayout implements IFrameLayout {
     MachineInitialStateChangedEventListener l
   ) {
     assert l != null;
-    initialStateSelector.addItemListener(new ItemListener() {
+    initialMachineStateSelector.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
         l.onInitialStateChanged(
@@ -265,13 +265,13 @@ public class FrameLayout implements IFrameLayout {
   @Override
   public void addInitialTapeShiftEventListener(TapeShiftEventListener l) {
     assert l != null;
-    initialTapeLeft.addActionListener(new ActionListener() {
+    initialTapeMoveLeftButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         l.onTapeShifted(MachineAction.TAPE_LEFT);
       }
     });
-    initialTapeRight.addActionListener(new ActionListener() {
+    initialTapeMoveRightButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         l.onTapeShifted(MachineAction.TAPE_RIGHT);
@@ -335,32 +335,39 @@ public class FrameLayout implements IFrameLayout {
     listenerList.add(SaveEventListener.class, l);
   }
 
+  @Override
   public void addSymbolRegisteredEventListener(ElementAddedEventListener l) {
     assert l != null;
     symbolList.addElementAddedEventListener(l);
   }
 
+  @Override
   public void addStateRegisteredEventListener(ElementAddedEventListener l) {
     assert l != null;
     stateList.addElementAddedEventListener(l);
   }
 
-  public void addSymbolUnRegisteredEventListener(ElementRemovedEventListener l) {
+  @Override
+  public void addSymbolUnRegisteredEventListener(
+    ElementRemovedEventListener l
+  ) {
     assert l != null;
     symbolList.addElementRemovedEventListener(l);
   }
 
+  @Override
   public void addStateUnRegisteredEventListener(ElementRemovedEventListener l) {
     assert l != null;
     stateList.addElementRemovedEventListener(l);
   }
 
+  @Override
   public void addActiveMachineListener(ActiveMachineListener l){
     assert l != null;
-    isActiveCheckBox.addActionListener(new ActionListener() {
+    activateMachineCheckBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        l.onActiveStateChange(isActiveCheckBox.isSelected());
+        l.onActiveStateChange(activateMachineCheckBox.isSelected());
       }
     });
   }
@@ -368,25 +375,25 @@ public class FrameLayout implements IFrameLayout {
   // OUTILS
 
   private void refreshMachineActivationCheckBox() {
-    isActiveCheckBox.setEnabled(
-      isActiveCheckBox.isSelected()
-      || initialStateSelector.getSelectedItem() != null
+    activateMachineCheckBox.setEnabled(
+      activateMachineCheckBox.isSelected()
+      || initialMachineStateSelector.getSelectedItem() != null
     );
   }
 
   private void refreshView() {
     refreshMachineActivationCheckBox();
-    boolean active = isActiveCheckBox.isSelected();
+    boolean active = activateMachineCheckBox.isSelected();
     symbolList.setActive(!active);
     stateList.setActive(!active);
     transitionTable.setActive(!active);
-    initialTapeLeft.setEnabled(!active);
-    initialTapeRight.setEnabled(!active);
-    initialStateSelector.setEnabled(!active);
+    initialTapeMoveLeftButton.setEnabled(!active);
+    initialTapeMoveRightButton.setEnabled(!active);
+    initialMachineStateSelector.setEnabled(!active);
     initialTapeSymbolSelector.setEnabled(!active);
-    stepButton.setEnabled(active && !started);
-    startButton.setEnabled(active && !started);
-    stopButton.setEnabled(active && started);
+    stepButton.setEnabled(active && !hasMachineStarted);
+    startButton.setEnabled(active && !hasMachineStarted);
+    stopButton.setEnabled(active && hasMachineStarted);
   }
 
   private void createView() {
@@ -405,27 +412,27 @@ public class FrameLayout implements IFrameLayout {
       StateDatabase.getInstance()
     );
     transitionTable = new TransitionTable();
-    isActiveCheckBox = new JCheckBox("Activer/Desactiver la machine");
+    activateMachineCheckBox = new JCheckBox("Activer/Desactiver la machine");
 
     speedSlider = new JSlider(0, 100, 20);
     setSpeedSlider();
     initializeMenuBar();
 
-    historyJList = new JList<JLabel>();
-    transitionsJList = new JList<JLabel>();
+    historyList = new JList<JLabel>();
+    transitionsList = new JList<JLabel>();
 
     tape = new GraphicTape(tapeModel, false, 150);
     initialTape = new GraphicTape(initialTapeModel, true, 47);
-    initialTapeLeft = new JButton("Gauche");
-    initialTapeRight = new JButton("Droite");
+    initialTapeMoveLeftButton = new JButton("Gauche");
+    initialTapeMoveRightButton = new JButton("Droite");
     initialTapeSymbolSelector = new JComboBox<>(
       new DatabaseComboboxModel<>(SymbolDatabase.getInstance())
     );
-    initialStateSelector = new JComboBox<>(
+    initialMachineStateSelector = new JComboBox<>(
       new DatabaseComboboxModel<>(StateDatabase.getInstance())
     );
-    currentState = new JLabel("");
-    currentState.setForeground(Color.RED);
+    currentMachineState = new JLabel("");
+    currentMachineState.setForeground(Color.RED);
   }
 
   private void placeComponent() {
@@ -461,7 +468,7 @@ public class FrameLayout implements IFrameLayout {
       JLabel l = new JLabel("Etat courant de la machine : ");
       l.setForeground(Color.RED);
       p.add(l);
-      p.add(currentState);
+      p.add(currentMachineState);
     } //--
     machine.add(p);
     
@@ -525,11 +532,11 @@ public class FrameLayout implements IFrameLayout {
       // LABEL INITIAL STATE
       new JLabel("Modifiez l'état initial ici -->"),
       // INITIAL STATE SELECTOR
-      initialStateSelector,
+      initialMachineStateSelector,
       // LEFT BUTTON
-      initialTapeLeft,
+      initialTapeMoveLeftButton,
       // RIGHT BUTTON
-      initialTapeRight,
+      initialTapeMoveRightButton,
       // SYMBOL SELECTOR
       initialTapeSymbolSelector,
       // VOID LABELS
@@ -549,7 +556,7 @@ public class FrameLayout implements IFrameLayout {
           q.add(componentsLeft[i], constraintsLeft[i]);
         }
       } //--
-      p.add(isActiveCheckBox, new GBC(0, 0, 1, 1));
+      p.add(activateMachineCheckBox, new GBC(0, 0, 1, 1));
       p.add(q, new GBC(0, 1, 1, 1));
     } //--
     controls.add(p);
@@ -571,7 +578,7 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private JScrollPane createHistoryGUI(Border border) {
-    JScrollPane historyScrollPane = new JScrollPane(historyJList);
+    JScrollPane historyScrollPane = new JScrollPane(historyList);
     historyScrollPane.setPreferredSize(new Dimension(300, 500));
     historyScrollPane.setBorder(
       BorderFactory.createTitledBorder(border, "HISTORIQUE")
@@ -581,7 +588,7 @@ public class FrameLayout implements IFrameLayout {
 
   private void createController() {
 
-    initialStateSelector.addItemListener(new ItemListener() {
+    initialMachineStateSelector.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
         refreshMachineActivationCheckBox();
@@ -608,7 +615,7 @@ public class FrameLayout implements IFrameLayout {
     startButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        started = true;
+        hasMachineStarted = true;
         refreshView();
         fireRunEvent();
       }
@@ -617,7 +624,7 @@ public class FrameLayout implements IFrameLayout {
     stopButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        started = false;
+        hasMachineStarted = false;
         refreshView();
         fireStopEvent();
       }
@@ -656,7 +663,7 @@ public class FrameLayout implements IFrameLayout {
       }
     });
 
-    isActiveCheckBox.addActionListener(new ActionListener() {
+    activateMachineCheckBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         refreshView();
@@ -666,9 +673,9 @@ public class FrameLayout implements IFrameLayout {
   }
 
   private void initializeMenuBar() {
-    for (Menu m : Menu.STRUCT.keySet()) {
+    for (Menu m : Menu.STRUCTURE.keySet()) {
       JMenu menu = new JMenu(m.label());
-      for (Item i : Menu.STRUCT.get(m)) {
+      for (Item i : Menu.STRUCTURE.get(m)) {
         menu.add(
           i == null
           ? new JSeparator()

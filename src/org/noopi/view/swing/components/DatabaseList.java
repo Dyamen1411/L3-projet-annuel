@@ -1,4 +1,4 @@
-package org.noopi.view.components;
+package org.noopi.view.swing.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +20,7 @@ import org.noopi.utils.events.view.ElementAddedEvent;
 import org.noopi.utils.events.view.ElementRemovedEvent;
 import org.noopi.utils.listeners.view.ElementAddedEventListener;
 import org.noopi.utils.listeners.view.ElementRemovedEventListener;
-import org.noopi.view.components.model.DatabaseListModel;
+import org.noopi.view.swing.components.model.DatabaseListModel;
 
 public class DatabaseList<T> extends JPanel {
 
