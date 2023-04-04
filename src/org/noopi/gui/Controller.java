@@ -59,10 +59,10 @@ import org.noopi.model.state.State;
 import org.noopi.model.state.StateDatabase;
 import org.noopi.model.symbol.Symbol;
 import org.noopi.model.symbol.SymbolDatabase;
-import org.noopi.view.IFrameLayout;
-import org.noopi.view.swing.FrameLayout;
+import org.noopi.view.IWindow;
+import org.noopi.view.swing.SwingWindow;
 
-public final class Window {
+public final class Controller {
 
   // ATTRIBUTES
 
@@ -79,9 +79,9 @@ public final class Window {
 
   // View
   private JFrame frame;
-  private IFrameLayout layout;
+  private IWindow layout;
 
-  public Window() {
+  public Controller() {
     createModel();
     createView();
     placeComponents();
@@ -143,7 +143,7 @@ public final class Window {
 
   private void createView() {
     frame = new JFrame();
-    layout = new FrameLayout(tape, initialTape);
+    layout = new SwingWindow(tape, initialTape);
   }
 
   private void placeComponents() {

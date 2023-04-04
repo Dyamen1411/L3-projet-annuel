@@ -58,7 +58,7 @@ import org.noopi.model.symbol.Symbol;
 import org.noopi.model.symbol.SymbolDatabase;
 import org.noopi.model.tape.ITape;
 import org.noopi.model.transition.Transition;
-import org.noopi.view.IFrameLayout;
+import org.noopi.view.IWindow;
 import org.noopi.view.swing.components.DatabaseList;
 import org.noopi.view.swing.components.GBC;
 import org.noopi.view.swing.components.GraphicTape;
@@ -77,7 +77,7 @@ import java.util.EnumMap;
 
 import java.awt.GridLayout;
 
-public class FrameLayout implements IFrameLayout {
+public class SwingWindow implements IWindow {
 
   //ATTRIBUTS
 
@@ -120,7 +120,7 @@ public class FrameLayout implements IFrameLayout {
 
   //CONSTRUCTEURS
 
-  public FrameLayout(ITape tapeModel, ITape initialTapeModel) {
+  public SwingWindow(ITape tapeModel, ITape initialTapeModel) {
     assert tapeModel != null;
     assert initialTapeModel != null;
     this.tapeModel = tapeModel;

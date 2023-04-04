@@ -22,7 +22,7 @@ import org.noopi.utils.listeners.view.TapeShiftEventListener;
 import org.noopi.model.state.State;
 import org.noopi.model.transition.Transition;
 
-public interface IFrameLayout {
+public interface IWindow {
 
   /**
    * 
@@ -37,7 +37,7 @@ public interface IFrameLayout {
   JMenuBar getMenuBar();
 
   //------------------------//
-  //--- GUI  interaction ---//
+  //---   Interaction    ---//
   //------------------------//
 
   /**
