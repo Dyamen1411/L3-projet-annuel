@@ -1,3 +1,9 @@
+if ! which mvn > /dev/null 2>&1; then
+  echo "Maven is not installed on your machine."
+  echo "Install maven to compile and run this project."
+  exit 1
+fi
+
 if ! mvn clean compile package; then
   exit 1
 fi
